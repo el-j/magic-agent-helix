@@ -1,36 +1,36 @@
 {
-  "name": "magic-helix-core",
-  "version": "0.1.0",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "engines": {
-    "node": "^20.11.1 || >=22.0.0"
-  },
-  "scripts": {
-    "build": "tsc --build && node ./scripts/copy-templates.js"
-  },
-  "keywords": [
-    "magic-agent-helix",
-    "copilot",
-    "github-copilot",
-    "ai"
-  ],
-  "author": "Your Name / Community",
-  "license": "MIT",
-  "publishConfig": {
-    "access": "public"
-  },
-  "dependencies": {
-    "commander": "^12.1.0",
-    "glob": "^11.0.3",
-    "gradient-string": "^3.0.0",
-    "inquirer": "^10.1.2",
-    "ora": "^9.0.0",
-    "picocolors": "^1.0.1"
-  },
-  "files": [
-    "dist/**/*",
-    "README.md",
-    "CHANGELOG.md"
-  ]
+	"name": "magic-helix-core",
+	"version": "0.1.0",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"engines": {
+		"node": "^20.11.1 || >=22.0.0"
+	},
+	"scripts": {
+		"build": "tsc --build && node ./scripts/copy-templates.js"
+	},
+	"keywords": [
+		"magic-agent-helix",
+		"copilot",
+		"github-copilot",
+		"ai"
+	],
+	"author": "Your Name / Community",
+	"license": "MIT",
+	"publishConfig": {
+		"access": "public"
+	},
+	"dependencies": {
+		"commander": "^12.1.0",
+		"glob": "^11.0.3",
+		"gradient-string": "^3.0.0",
+		"inquirer": "^10.1.2",
+		"ora": "^9.0.0",
+		"picocolors": "^1.0.1"
+	},
+	"files": [
+		"dist/**/*",
+		"README.md",
+		"CHANGELOG.md"
+	]
 }

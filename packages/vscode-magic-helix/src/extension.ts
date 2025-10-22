@@ -1,35 +1,35 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
 let terminal: vscode.Terminal | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
+	// Register the main command
+	let disposable = vscode.commands.registerCommand("magic-helix.run", () => {
+		// Check for open workspace
+		if (!vscode.workspace.workspaceFolders) {
+			vscode.window.showErrorMessage(
+				"MagicAgentHelix: You must have a project or folder open.",
+			);
+			return;
+		}
 
-  // Register the main command
-  let disposable = vscode.commands.registerCommand('magic-helix.run', () => {
-    
-    // Check for open workspace
-    if (!vscode.workspace.workspaceFolders) {
-      vscode.window.showErrorMessage('MagicAgentHelix: You must have a project or folder open.');
-      return;
-    }
+		// Use the existing terminal or create a new one
+		if (!terminal || terminal.exitStatus) {
+			terminal = vscode.window.createTerminal("MagicAgentHelix");
+		}
 
-    // Use the existing terminal or create a new one
-    if (!terminal || terminal.exitStatus) {
-      terminal = vscode.window.createTerminal('MagicAgentHelix');
-    }
+		terminal.show();
+		terminal.sendText("npx magic-helix run");
 
-    terminal.show();
-    terminal.sendText('npx magic-helix run');
-    
-    vscode.window.showInformationMessage('Running MagicAgentHelix...');
-  });
+		vscode.window.showInformationMessage("Running MagicAgentHelix...");
+	});
 
-  context.subscriptions.push(disposable);
+	context.subscriptions.push(disposable);
 }
 
 // This method is called when your extension is deactivated
 export function deactivate() {
-  if (terminal) {
-    terminal.dispose();
-  }
+	if (terminal) {
+		terminal.dispose();
+	}
 }

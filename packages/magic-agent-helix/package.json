@@ -1,43 +1,43 @@
 {
-  "name": "magic-agent-helix",
-  "version": "0.1.0",
-  "description": "A CLI to inspect a project and generate granular, path-specific AI instructions for agents like GitHub Copilot.",
-  "engines": {
-    "node": "^20.11.1 || >=22.0.0"
-  },
-  "bin": {
-    "magic-helix": "./dist/cli.js"
-  },
-  "scripts": {
-    "build": "tsc --build"
-  },
-  "keywords": [
-    "magic-agent-helix",
-    "copilot",
-    "github-copilot",
-    "ai"
-  ],
-  "author": "Your Name / Community",
-  "license": "MIT",
-  "publishConfig": {
-    "access": "public"
-  },
-  "pkg": {
-    "scripts": "dist/cli.js",
-    "targets": [
-      "node20-linux-x64",
-      "node20-macos-x64",
-      "node20-win-x64"
-    ],
-    "outputPath": "release"
-  },
-  "dependencies": {
-    "commander": "^12.1.0",
-    "magic-helix-core": "*"
-  },
-  "files": [
-    "dist/**/*",
-    "README.md",
-    "CHANGELOG.md"
-  ]
+	"name": "magic-agent-helix",
+	"version": "0.1.0",
+	"description": "A CLI to inspect a project and generate granular, path-specific AI instructions for agents like GitHub Copilot.",
+	"engines": {
+		"node": "^20.11.1 || >=22.0.0"
+	},
+	"bin": {
+		"magic-helix": "./dist/cli.js"
+	},
+	"scripts": {
+		"build": "tsc --build"
+	},
+	"keywords": [
+		"magic-agent-helix",
+		"copilot",
+		"github-copilot",
+		"ai"
+	],
+	"author": "Your Name / Community",
+	"license": "MIT",
+	"publishConfig": {
+		"access": "public"
+	},
+	"pkg": {
+		"scripts": "dist/cli.js",
+		"targets": [
+			"node20-linux-x64",
+			"node20-macos-x64",
+			"node20-win-x64"
+		],
+		"outputPath": "release"
+	},
+	"dependencies": {
+		"commander": "^12.1.0",
+		"magic-helix-core": "*"
+	},
+	"files": [
+		"dist/**/*",
+		"README.md",
+		"CHANGELOG.md"
+	]
 }

@@ -8,7 +8,7 @@
         <Button
           label="Select Project Folder"
           icon="pi pi-folder-open"
-          @click="selectProject"
+          @click="handleSelectProject"
           :loading="isLoading"
           class="bg-green-500 hover:bg-green-600 border-green-500"
         />
@@ -20,31 +20,40 @@
 
         <!-- Column 1: Project Info & Tags -->
         <div class="md:col-span-1">
-          <Card class="bg-gray-800 shadow-lg">
-            <template #title>
-              <span class="text-gray-100">Project: {{ analysisResult.name }}</span>
-            </template>
-            <template #subtitle>
-              <span class="text-gray-400">{{ analysisResult.path }}</span>
-            </template>
-            <template #content>
-              <p class="text-lg font-semibold mb-3 text-gray-200">Detected Tags:</p>
-              <div v-if="analysisResult.tags.length" class="flex flex-wrap gap-2">
-                <Tag v-for="tag in analysisResult.tags" :key="tag" :value="tag" severity="success" class="bg-green-600 text-white"></Tag>
-              </div>
-              <p v-else class="text-gray-400">No matching tags found.</p>
-            </template>
-          </Card>
+          <ProjectInfoCard
+            :project-name="analysisResult.name"
+            :project-path="analysisResult.path"
+            :tags="analysisResult.tags"
+          />
         </div>
 
         <!-- Column 2: Generated Files -->
         <div class="md:col-span-2">
           <Panel header="Generated Instruction Files" class="bg-gray-800 shadow-lg" :toggleable="true">
+            <div class="mb-4 flex gap-2">
+              <Button
+                label="Download All as ZIP"
+                icon="pi pi-download"
+                @click="handleDownloadZip"
+                class="bg-blue-500 hover:bg-blue-600 border-blue-500"
+                :disabled="!generatedFiles.length"
+              />
+              <Button
+                label="Download Individual Files"
+                icon="pi pi-file"
+                @click="handleDownloadAll"
+                class="bg-green-500 hover:bg-green-600 border-green-500"
+                :disabled="!generatedFiles.length"
+              />
+            </div>
             <Accordion :activeIndex="0">
               <AccordionTab v-for="(file, index) in generatedFiles" :key="index" :header="file.name">
-                <div class="bg-gray-900 p-4 rounded-md">
-                  <pre class="whitespace-pre-wrap text-sm text-gray-300">{{ file.content }}</pre>
-                </div>
+                <InstructionFileEditor
+                  :file="file"
+                  :index="index"
+                  @download="handleDownloadFile"
+                  @reset="handleResetFile"
+                />
               </AccordionTab>
             </Accordion>
             <div v-if="!generatedFiles.length" class="p-4 text-center text-gray-400">
@@ -65,187 +74,67 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import {
-  analyzeProjectTags,
-  mergeConfigs,
-  BUILT_IN_CONFIG,
-  Config,
-  ProjectAnalysisData,
-  TagTemplateMap
-} from 'magic-helix-core';
+import { ref, watch } from "vue";
+
+// Composables
+import { useProjectAnalysis } from "./composables/useProjectAnalysis";
+import { useFileManagement } from "./composables/useFileManagement";
+
+// Components
+import ProjectInfoCard from "./components/ProjectInfoCard.vue";
+import InstructionFileEditor from "./components/InstructionFileEditor.vue";
 
 // PrimeVue Components (local registration)
-import Button from 'primevue/button';
-import Card from 'primevue/card';
-import Tag from 'primevue/tag';
-import Message from 'primevue/message';
-import Accordion from 'primevue/accordion';
-import AccordionTab from 'primevue/accordiontab';
-import ProgressSpinner from 'primevue/progressspinner';
-import Panel from 'primevue/panel';
+import Button from "primevue/button";
+import Message from "primevue/message";
+import ProgressSpinner from "primevue/progressspinner";
+import Panel from "primevue/panel";
 
-// --- State ---
-const isLoading = ref(false);
-const error = ref<string | null>(null);
-const currentFile = ref<string>('');
-const analysisResult = ref<{ name: string, path: string, tags: string[] } | null>(null);
-const generatedFiles = ref<{ name: string, content: string }[]>([]);
+// Use composables
+const { isLoading, error, currentFile, analysisResult, selectProject } =
+	useProjectAnalysis();
 
-// --- Mock Templates ---
-// In a real browser app, we can't read the .md files from the core package.
-// We'd have to either fetch them from a URL or, for this demo, just mock them.
-const mockTemplates: Record<string, string> = {
-  'vue/vue-core.md': '# Vue Core Rules\n- Use Composition API.\n- Use <script setup>.',
-  'vue/vue-pinia.md': '# Pinia Rules\n- Use setup stores.',
-  'vue/style-primevue.md': '# PrimeVue Rules\n- Use PassThrough (PT) for styling.',
-  'react/react-core.md': '# React Core Rules\n- Use Functional Components and Hooks.',
-  'react/react-zustand.md': '# Zustand Rules\n- Define actions in the store.',
-  'nestjs/nestjs-core.md': '# NestJS Rules\n- Use Module > Controller > Service.',
-  'generic/style-tailwind.md': '# Tailwind Rules\n- Use utility classes.',
-  'generic/test-vitest.md': '# Vitest Rules\n- Use `vi.mock()` for dependencies.',
-  'generic/lang-typescript.md': '# TypeScript Rules\n- Avoid `any`.',
-  'generic/state-rxjs.md': '# RxJS Rules\n- Suffix observables with `$`.'
+const {
+	generatedFiles,
+	hasFiles,
+	generateFiles,
+	downloadSingleFile,
+	downloadAllFiles,
+	downloadAsZipArchive,
+	resetFileContent,
+} = useFileManagement();
+
+// Watch for analysis result changes and generate files
+watch(analysisResult, (newResult) => {
+	if (newResult) {
+		generateFiles(newResult.name, newResult.tags);
+	}
+});
+
+// Event handlers
+const handleSelectProject = async () => {
+	await selectProject();
 };
 
-/**
- * Main function to select and scan a project folder.
- */
-async function selectProject() {
-  // @ts-ignore: File System Access API may not be in all TS libs
-  if (!window.showDirectoryPicker) {
-    error.value = 'File System Access API is not supported in this browser. Please use a modern browser like Chrome or Edge.';
-    return;
-  }
+const handleDownloadFile = (file: { name: string; content: string }) => {
+	downloadSingleFile(file);
+};
 
-  isLoading.value = true;
-  error.value = null;
-  analysisResult.value = null;
-  generatedFiles.value = [];
+const handleDownloadAll = () => {
+	downloadAllFiles();
+};
 
-  try {
-    // 1. Get Directory Handle
-    // @ts-ignore
-    const dirHandle = await window.showDirectoryPicker();
+const handleDownloadZip = () => {
+	downloadAsZipArchive();
+};
 
-    // 2. Scan Files and build Analysis Data (in-browser)
-    const { analysisData, projectName } = await scanDirectory(dirHandle);
-
-    // 3. Load & Merge Config (pure logic)
-    // For this demo, we're not loading a user config, just using the built-in one.
-    const config = mergeConfigs({}); // Pass empty user config
-    const { dependencyTagMap, configFileTagMap, fileGlobTagMap, tagTemplateMap } = config;
-
-    // 4. Run Analysis (pure logic)
-    const tags = analyzeProjectTags(
-      analysisData,
-      dependencyTagMap,
-      configFileTagMap,
-      fileGlobTagMap
-    );
-
-    // 5. Generate File Content (Mocked)
-    const files: { name: string, content: string }[] = [];
-    for (const tag of tags) {
-      const templates = tagTemplateMap[tag as keyof TagTemplateMap];
-      if (templates) {
-        for (const t of templates) {
-          const content = mockTemplates[t.template as keyof typeof mockTemplates] || `# Mock Content for ${t.template}`;
-          const header = `---
-# Auto-generated by magic-helix for: ${projectName}
-# Source Template: ${t.template}
-applyTo: "approximated/path/src/**/*"
----
-`;
-          files.push({
-            name: `${projectName}.${t.suffix}`,
-            content: header + '\n' + content,
-          });
-        }
-      }
-    }
-
-    // 6. Set results
-    analysisResult.value = { name: projectName, path: dirHandle.name, tags: Array.from(tags) };
-    generatedFiles.value = files;
-
-  } catch (err: any) {
-    if (err.name === 'AbortError') {
-      error.value = 'Folder selection was cancelled.';
-    } else {
-      error.value = `An error occurred: ${err.message}`;
-      console.error(err);
-    }
-  } finally {
-    isLoading.value = false;
-    currentFile.value = '';
-  }
-}
-
-/**
- * Recursively scans a directory handle and builds the ProjectAnalysisData.
- */
-async function scanDirectory(dirHandle: any): Promise<{ analysisData: ProjectAnalysisData, projectName: string }> {
-  let dependencies = {};
-  const configFiles: string[] = [];
-  const projectFiles: string[] = [];
-  let projectName = dirHandle.name.replace(/@/g, '').replace(/\//g, '-');
-
-  // Helper function to scan
-  async function recursiveScan(handle: any, currentPath: string) {
-    for await (const entry of handle.values()) {
-      const entryPath = currentPath ? `${currentPath}/${entry.name}` : entry.name;
-      currentFile.value = entryPath; // Update loading message
-
-      if (entry.kind === 'file') {
-        projectFiles.push(entryPath);
-
-        // Check for package.json at root
-        if (entryPath === 'package.json') {
-          try {
-            const file = await entry.getFile();
-            const text = await file.text();
-            const pkg = JSON.parse(text);
-            projectName = (pkg.name || projectName).replace(/@/g, '').replace(/\//g, '-');
-            dependencies = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
-          } catch (e) {
-            console.warn('Could not parse package.json', e);
-          }
-        }
-
-        // Check for config files at root
-        if (currentPath === '') {
-           if (entry.name.endsWith('.config.js') || entry.name.endsWith('.config.ts') || entry.name === 'tsconfig.json') {
-             configFiles.push(entry.name);
-           }
-        }
-
-      } else if (entry.kind === 'directory') {
-        // Don't scan node_modules, dist, .git, etc.
-        if (entry.name !== 'node_modules' && entry.name !== 'dist' && entry.name !== '.git' && entry.name !== '.vscode') {
-          await recursiveScan(entry, entryPath);
-        }
-      }
-    }
-  }
-
-  await recursiveScan(dirHandle, '');
-
-  return {
-    analysisData: { dependencies, configFiles, projectFiles },
-    projectName
-  };
-}
+const handleResetFile = (index: number) => {
+	if (analysisResult.value) {
+		resetFileContent(
+			index,
+			analysisResult.value.name,
+			analysisResult.value.tags,
+		);
+	}
+};
 </script>
-
-<style>
-/* Basic styles for index.css if you don't have one */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Ensure PrimeVue components are clickable */
-[data-pc-section="header"] {
-  cursor: pointer;
-}
-</style>

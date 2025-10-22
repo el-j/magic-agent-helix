@@ -1,32 +1,32 @@
 {
-  "name": "vscode-magic-helix",
-  "displayName": "MagicAgentHelix Runner",
-  "description": "Runs the MagicAgentHelix CLI from the VS Code Command Palette.",
-  "version": "0.1.0",
-  "publisher": "YOUR_PUBLISHER_NAME",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/YOUR_USERNAME/magic-agent-helix.git"
-  },
-  "engines": {
-    "vscode": "^1.85.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "onCommand:magic-helix.run"
-  ],
-  "main": "./dist/extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "magic-helix.run",
-        "title": "MagicAgentHelix: Align Conventions"
-      }
-    ]
-  },
-  "scripts": {
-    "build": "tsc --build"
-  }
+	"name": "vscode-magic-helix",
+	"displayName": "MagicAgentHelix Runner",
+	"description": "Runs the MagicAgentHelix CLI from the VS Code Command Palette.",
+	"version": "0.1.0",
+	"publisher": "YOUR_PUBLISHER_NAME",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/YOUR_USERNAME/magic-agent-helix.git"
+	},
+	"engines": {
+		"vscode": "^1.85.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:magic-helix.run"
+	],
+	"main": "./dist/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "magic-helix.run",
+				"title": "MagicAgentHelix: Align Conventions"
+			}
+		]
+	},
+	"scripts": {
+		"build": "tsc --build"
+	}
 }

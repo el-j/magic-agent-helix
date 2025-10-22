@@ -38,7 +38,9 @@ async function main() {
 
 		await program.parseAsync(process.argv);
 	} catch (err) {
-		console.error(pc.red(`❌ An unexpected error occurred: ${(err as Error).message}`));
+		console.error(
+			pc.red(`❌ An unexpected error occurred: ${(err as Error).message}`),
+		);
 		process.exit(1);
 	}
 }
