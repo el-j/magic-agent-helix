@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { BUILT_IN_CONFIG } from "../built-in-config";
-import type { Config, MergedConfig } from "../types";
+import { BUILT_IN_CONFIG } from "./built-in-config";
+import type { Config, MergedConfig } from "./types";
 import { mergeConfigs } from "./config-merger";
 
 describe("mergeConfigs", () => {

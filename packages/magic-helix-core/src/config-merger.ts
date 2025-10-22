@@ -1,8 +1,8 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import pc from "picocolors";
-import { BUILT_IN_CONFIG } from "../built-in-config";
-import type { Config, MergedConfig } from "../types";
+import { BUILT_IN_CONFIG } from "./built-in-config";
+import type { Config, MergedConfig } from "./types";
 
 export const CONFIG_FILENAME = "ai-aligner.config.json";
 

@@ -3,7 +3,7 @@
 
 # Build output
 /dist
-
+/packages/**/dist
 # IDE
 .vscode
 .idea

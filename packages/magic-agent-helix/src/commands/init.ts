@@ -4,7 +4,7 @@ import gradient from "gradient-string";
 import inquirer from "inquirer";
 import ora from "ora";
 import pc from "picocolors";
-import type { Config } from "../types";
+import type { Config } from "magic-helix-core";
 
 // --- CONFIGURATION ---
 const CONFIG_FILENAME = "ai-aligner.config.json";

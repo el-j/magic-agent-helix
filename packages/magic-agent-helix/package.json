@@ -9,8 +9,7 @@
     "magic-helix": "./dist/cli.js"
   },
   "scripts": {
-    "build": "tsc --build && node ./scripts/copy-templates.js",
-    "build:pkg": "pkg ."
+    "build": "tsc --build"
   },
   "keywords": [
     "magic-agent-helix",
@@ -34,11 +33,7 @@
   },
   "dependencies": {
     "commander": "^12.1.0",
-    "glob": "^11.0.3",
-    "gradient-string": "^3.0.0",
-    "inquirer": "^10.1.2",
-    "ora": "^9.0.0",
-    "picocolors": "^1.0.1"
+    "magic-helix-core": "*"
   },
   "files": [
     "dist/**/*",

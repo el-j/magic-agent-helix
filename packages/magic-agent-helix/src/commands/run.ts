@@ -5,13 +5,13 @@ import gradient from "gradient-string";
 import inquirer from "inquirer";
 import ora from "ora";
 import pc from "picocolors";
-import { loadUserConfig, mergeConfigs } from "../core/config-merger";
+import { loadUserConfig, mergeConfigs } from "magic-helix-core";
 import type {
 	ConfigFileTagMap,
 	DependencyTagMap,
 	FileGlobTagMap,
 	TagTemplateMap,
-} from "../types";
+} from "magic-helix-core";
 
 // --- CONFIGURATION ---
 const ROOT_PACKAGE_JSON = path.resolve(process.cwd(), "package.json");

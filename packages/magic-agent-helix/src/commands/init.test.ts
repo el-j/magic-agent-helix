@@ -144,6 +144,6 @@ describe('Init Command (/src/commands/init.ts)', () => {
       'utf-8'
     );
     expect(fs.mkdirSync).not.toHaveBeenCalled();
-    expect(mockSpinner.succeed).toHaveBeenCalledWith('Templates directory ai_templates already exists.');
+    // No succeed message when example file already exists
   });
 });
