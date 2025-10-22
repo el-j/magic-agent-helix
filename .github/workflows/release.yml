@@ -1,0 +1,47 @@
+name: Release & Publish
+
+on:
+  push:
+    branches:
+      - main
+      - development
+      - 'feature/*'
+
+jobs:
+  release:
+    name: Test, Build & Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # This is required for semantic-release to push tags
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Lint Check
+        run: npm run lint
+
+      - name: Test & Coverage
+        run: npm run test:coverage
+
+      - name: Build Package
+        run: npm run build
+
+      - name: Semantic Release
+        run: npx semantic-release
+        env:
+          # This token is used to publish to NPM
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # This token is used to create tags, releases, and commit back to the repo
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
