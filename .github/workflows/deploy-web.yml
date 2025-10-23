@@ -39,7 +39,7 @@ jobs:
 
       - name: Build Web Playground
         # Use --base=./ for correct relative paths on GitHub Pages
-        run: npm run build --workspace=magic-helix-web
+        run: npm run build --workspace=playground
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
@@ -48,7 +48,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload the built web app
-          path: 'packages/magic-helix-web/dist'
+          path: 'playground/dist'
 
       - name: Deploy to GitHub Pages
         id: deployment

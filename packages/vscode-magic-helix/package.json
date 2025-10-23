@@ -1,7 +1,7 @@
 {
 	"name": "vscode-magic-helix",
 	"displayName": "MagicAgentHelix Runner",
-	"description": "Runs the MagicAgentHelix CLI from the VS Code Command Palette.",
+	"description": "Runs the MagicAgentHelix CLI from VS Code to align AI instructions in your monorepo.",
 	"version": "0.1.0",
 	"publisher": "YOUR_PUBLISHER_NAME",
 	"repository": {
@@ -15,18 +15,55 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:magic-helix.run"
+		"onStartupFinished"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
 				"command": "magic-helix.run",
-				"title": "MagicAgentHelix: Align Conventions"
+				"title": "Run MagicAgentHelix",
+				"category": "MagicAgentHelix",
+				"icon": "$(wand)"
+			},
+			{
+				"command": "magic-helix.showOutput",
+				"title": "Show Output",
+				"category": "MagicAgentHelix",
+				"icon": "$(output)"
+			},
+			{
+				"command": "magic-helix.showStatus",
+				"title": "Show Status Panel",
+				"category": "MagicAgentHelix",
+				"icon": "$(graph)"
 			}
-		]
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "magic-helix.run",
+					"when": "workspaceFolderCount > 0"
+				},
+				{
+					"command": "magic-helix.showOutput",
+					"when": "workspaceFolderCount > 0"
+				},
+				{
+					"command": "magic-helix.showStatus",
+					"when": "workspaceFolderCount > 0"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"build": "tsc --build"
+	},
+	"dependencies": {
+		"@types/node": "^20.11.0"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.85.0",
+		"typescript": "^5.0.0"
 	}
 }

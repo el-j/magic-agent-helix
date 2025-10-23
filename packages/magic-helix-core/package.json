@@ -1,13 +1,26 @@
 {
 	"name": "magic-helix-core",
 	"version": "0.1.0",
-	"main": "./dist/index.js",
+	"type": "module",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.mjs",
 	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.cjs",
+			"default": "./dist/index.mjs"
+		}
+	},
 	"engines": {
 		"node": "^20.11.1 || >=22.0.0"
 	},
 	"scripts": {
-		"build": "tsc --build && node ./scripts/copy-templates.js"
+		"build": "npm run build:types && npm run build:bundle && npm run build:templates",
+		"build:types": "tsc --project tsconfig.declarations.json --outDir dist",
+		"build:bundle": "vite build",
+		"build:templates": "node ./scripts/copy-templates.js"
 	},
 	"keywords": [
 		"magic-agent-helix",
@@ -27,6 +40,9 @@
 		"inquirer": "^10.1.2",
 		"ora": "^9.0.0",
 		"picocolors": "^1.0.1"
+	},
+	"devDependencies": {
+		"vite": "^5.3.5"
 	},
 	"files": [
 		"dist/**/*",

@@ -4,18 +4,19 @@
 	"private": true,
 	"description": "Monorepo for MagicAgentHelix CLI and VS Code Extension",
 	"workspaces": [
-		"packages/*"
+		"packages/*",
+		"playground"
 	],
 	"engines": {
 		"node": "^20.11.1 || >=22.0.0"
 	},
 	"scripts": {
-		"build": "npm run build --workspaces",
+		"build": "npm run build --workspace=magic-helix-core && npm run build --workspace=magic-agent-helix && npm run build --workspace=vscode-magic-helix",
 		"build:core": "npm run build --workspace=magic-helix-core",
 		"build:cli": "npm run build --workspace=magic-agent-helix",
 		"build:vscode": "npm run build --workspace=vscode-magic-helix",
-		"build:web": "npm run build --workspace=magic-helix-web",
-		"dev:web": "npm run dev --workspace=magic-helix-web",
+		"build:playground": "npm run build --workspace=playground",
+		"dev:playground": "npm run dev --workspace=playground",
 		"lint": "biome lint .",
 		"format": "biome format --write .",
 		"test": "vitest run",

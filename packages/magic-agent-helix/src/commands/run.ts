@@ -5,7 +5,11 @@ import gradient from "gradient-string";
 import inquirer from "inquirer";
 import ora from "ora";
 import pc from "picocolors";
-import { loadUserConfig, mergeConfigs } from "magic-helix-core";
+import {
+	loadUserConfig,
+	mergeConfigs,
+	BUILT_IN_TEMPLATE_DIR,
+} from "magic-helix-core";
 import type {
 	ConfigFileTagMap,
 	DependencyTagMap,
@@ -15,11 +19,6 @@ import type {
 
 // --- CONFIGURATION ---
 const ROOT_PACKAGE_JSON = path.resolve(process.cwd(), "package.json");
-const BUILT_IN_TEMPLATE_DIR = path.resolve(
-	__dirname,
-	"..",
-	"default_templates",
-);
 
 // --- TYPES ---
 interface Project {

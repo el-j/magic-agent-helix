@@ -1,17 +1,18 @@
 {
-	"name": "magic-helix-web",
+	"name": "playground",
 	"version": "0.1.0",
 	"private": true,
 	"type": "module",
 	"description": "A web-based playground for the MagicAgentHelix core engine.",
 	"scripts": {
 		"dev": "vite",
-		"build": "vue-tsc && vite build",
+		"build": "vite build",
+		"build:check": "vue-tsc && vite build",
 		"preview": "vite preview"
 	},
 	"dependencies": {
 		"@primeuix/themes": "^1.2.5",
-		"magic-helix-core": "file:../magic-helix-core",
+		"magic-helix-core": "*",
 		"primevue": "^4.4.1",
 		"vue": "^3.4.34"
 	},

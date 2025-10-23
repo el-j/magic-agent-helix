@@ -2,8 +2,12 @@
 // from 'src/default_templates' into the build ('dist/default_templates')
 // folder so the 'run' command can find them.
 
-const fs = require("node:fs");
-const path = require("node:path");
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const srcDir = path.resolve(__dirname, "../src/default_templates");
 const destDir = path.resolve(__dirname, "../dist/default_templates");

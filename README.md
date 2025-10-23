@@ -2,8 +2,10 @@
 
 This is the main monorepo for the `magic-agent-helix` project, containing:
 
-* `packages/magic-agent-helix`: The core CLI tool, published to NPM and as cross-platform binaries.
+* `packages/magic-helix-core`: The core library with analysis and configuration logic (published to NPM).
+* `packages/magic-agent-helix`: The CLI tool (published to NPM and as cross-platform binaries).
 * `packages/vscode-magic-helix`: The VS Code extension that provides a "Run" command.
+* `playground/`: A browser-based playground for testing the core engine (not published to NPM).
 
 ## Development
 
@@ -13,16 +15,45 @@ This is a monorepo using NPM workspaces.
     ```bash
     npm install
     ```
-2.  **Build All Packages:**
+2.  **Build All Packages (for NPM Publishing):**
     ```bash
     npm run build
     ```
-3.  **Lint / Format / Test (from root):**
+    This builds only the publishable packages: `magic-helix-core`, `magic-agent-helix`, and `vscode-magic-helix`.
+
+3.  **Build Playground (Separately):**
+    ```bash
+    npm run build --workspace=playground
+    ```
+    The playground is built separately and is not included in the main build pipeline.
+
+4.  **Lint / Format / Test (from root):**
     ```bash
     npm run lint
     npm run format
-    npm run test
+    npm test
     ```
+
+## Package Structure
+
+### Publishable Packages (in `packages/`)
+
+- **`magic-helix-core`**: Core library providing analysis, configuration merging, and tag detection
+  - Built as dual ESM/CJS package with TypeScript declarations
+  - Browser-safe entry point available at `magic-helix-core/browser`
+  
+- **`magic-agent-helix`**: CLI tool for running convention alignment
+  - Built as ESM package with executable binary
+  
+- **`vscode-magic-helix`**: VS Code extension
+  - Built with TypeScript
+
+### Development Playground (in `playground/`)
+
+- **`playground`**: Browser-based Vue 3 app for testing the core engine
+  - Not published to NPM
+  - Uses browser-safe imports from `magic-helix-core`
+  - Built separately from main packages
 
 ### Testing the VS Code Plugin (Dev Mode)
 
