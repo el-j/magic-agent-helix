@@ -8,10 +8,5 @@
 		"lib": ["es2020"],
 		"sourceMap": true
 	},
-	"include": ["src"],
-	"references": [
-		{
-			"path": "../magic-helix-core"
-		}
-	]
+	"include": ["src"]
 }
