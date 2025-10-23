@@ -32,11 +32,11 @@ jobs:
       - name: Lint Check
         run: npm run lint
 
-      - name: Test & Coverage
-        run: npm run test:coverage
-
       - name: Build Package
         run: npm run build
+
+      - name: Test & Coverage
+        run: npm run test:coverage
 
       - name: Semantic Release
         run: npx semantic-release

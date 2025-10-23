@@ -28,11 +28,11 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run Tests
-        run: npm run test:all
-
       - name: Build All Packages
         run: npm run build
+
+      - name: Run Tests
+        run: npm run test:all
 
       - name: Upload Coverage
         uses: codecov/codecov-action@v4
