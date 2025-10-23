@@ -6,6 +6,7 @@ on:
       - main
       - development
       - 'feature/*'
+  workflow_dispatch:
 
 jobs:
   release:
