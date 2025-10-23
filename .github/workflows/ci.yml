@@ -33,7 +33,7 @@ jobs:
         run: npm run build
 
       - name: Run Tests
-        run: npm run test:all
+        run: npm run test
 
       - name: Upload Coverage
         uses: codecov/codecov-action@v4

@@ -20,8 +20,6 @@
 		"lint": "biome lint .",
 		"format": "biome format --write .",
 		"test": "vitest run",
-		"test:vscode": "npm run test --workspace=vscode-magic-helix",
-		"test:all": "npm run test && npm run test:vscode",
 		"test:watch": "vitest",
 		"test:coverage": "vitest run --coverage",
 		"semantic-release": "semantic-release"
