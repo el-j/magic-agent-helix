@@ -33,11 +33,27 @@
 				"changelogFile": "CHANGELOG.md"
 			}
 		],
-		"@semantic-release/npm",
+		[
+			"@semantic-release/npm",
+			{
+				"pkgRoot": "packages/magic-agent-helix"
+			}
+		],
+		[
+			"@semantic-release/github",
+			{
+				"assets": [
+					{
+						"path": "packages/magic-agent-helix/dist/**",
+						"label": "CLI Distribution"
+					}
+				]
+			}
+		],
 		[
 			"@semantic-release/git",
 			{
-				"assets": ["package.json", "package-lock.json", "CHANGELOG.md"],
+				"assets": ["package.json", "packages/magic-agent-helix/package.json", "package-lock.json", "CHANGELOG.md"],
 				"message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
 			}
 		]

@@ -12,14 +12,21 @@ jobs:
   release:
     name: Test, Build & Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+      actions: read
+      checks: read
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # This is required for semantic-release to push tags
           fetch-depth: 0
-          persist-credentials: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -29,6 +36,11 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Lint Check
         run: npm run lint
@@ -42,7 +54,6 @@ jobs:
       - name: Semantic Release
         run: npx semantic-release
         env:
-          # This token is used to publish to NPM
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          # This token is used to create tags, releases, and commit back to the repo
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
