@@ -8,12 +8,15 @@ export const CONFIG_FILENAME = "ai-aligner.config.json";
 
 /**
  * Loads the user's optional config file.
+ * @param configPath Optional path to config file. Defaults to ai-aligner.config.json in cwd.
  * @returns A partial Config object or an empty object.
  */
-export function loadUserConfig(): Partial<Config> {
-	const configPath = path.resolve(process.cwd(), CONFIG_FILENAME);
+export function loadUserConfig(configPath?: string): Partial<Config> {
+	const resolvedPath = configPath
+		? path.resolve(process.cwd(), configPath)
+		: path.resolve(process.cwd(), CONFIG_FILENAME);
 
-	if (!fs.existsSync(configPath)) {
+	if (!fs.existsSync(resolvedPath)) {
 		console.log(
 			pc.gray("  No user config file found. Using built-in conventions only."),
 		);
@@ -24,10 +27,10 @@ export function loadUserConfig(): Partial<Config> {
 		console.log(
 			pc.blue("  User config file found. Merging with built-in conventions."),
 		);
-		return JSON.parse(fs.readFileSync(configPath, "utf-8"));
+		return JSON.parse(fs.readFileSync(resolvedPath, "utf-8"));
 	} catch (e) {
 		console.error(
-			pc.red(`❌ Error parsing ${CONFIG_FILENAME}: ${(e as Error).message}`),
+			pc.red(`❌ Error parsing config file: ${(e as Error).message}`),
 		);
 		console.warn(
 			pc.yellow(

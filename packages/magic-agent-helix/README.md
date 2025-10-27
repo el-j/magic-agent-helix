@@ -1,9 +1,319 @@
-# ✨ MagicAgentHelix (The CLI) ✨
+# ✨ MagicAgentHelix CLI ✨
 
-This is the core CLI package for MagicAgentHelix. It contains all the logic for scanning projects and generating AI instruction files.
+A powerful CLI tool that inspects your project and generates granular, path-specific AI instructions for agents like GitHub Copilot.
 
-It is designed to be used in two ways:
-1.  As an `npm` package (`npx magic-helix run`).
-2.  As a standalone binary (downloaded from GitHub Releases).
+## 🚀 Quick Start
 
-See the [monorepo root README.md](../../README.md) for full usage and development instructions.
+```bash
+# Install globally
+npm install -g magic-agent-helix
+
+# Or use with npx (no installation required)
+npx magic-agent-helix run
+```
+
+## 📦 Installation
+
+### Global Installation
+```bash
+npm install -g magic-agent-helix
+```
+
+### Project-Specific Installation
+```bash
+npm install --save-dev magic-agent-helix
+```
+
+Then add to your `package.json` scripts:
+```json
+{
+  "scripts": {
+    "align": "magic-helix run"
+  }
+}
+```
+
+## 🎯 Commands
+
+### `run` - Generate Instruction Files
+
+Scans your project and generates AI instruction files based on detected technologies.
+
+```bash
+magic-helix run [options]
+```
+
+**Options:**
+- `--dry-run` - Preview what would be generated without writing files
+- `--force` - Overwrite files and prune without prompting
+- `--skip-pruning` - Don't ask to remove old files
+- `--output-dir <path>` - Custom output directory (default: `.github/instructions`)
+- `--config <path>` - Path to custom config file
+- `--verbose` - Show detailed output
+- `--quiet` - Show minimal output
+- `--project <name>` - Target a specific project only
+
+**Examples:**
+```bash
+# Basic usage
+magic-helix run
+
+# Dry run to see what would be generated
+magic-helix run --dry-run
+
+# Generate for specific project only
+magic-helix run --project my-app
+
+# Use custom output directory
+magic-helix run --output-dir .ai/instructions
+
+# Quiet mode with force overwrite
+magic-helix run --quiet --force
+```
+
+### `refresh` (alias: `resync`) - Update Instruction Files
+
+Rescans your project and updates existing instruction files with new information.
+
+```bash
+magic-helix refresh [options]
+```
+
+**Options:**
+- `--config <path>` - Path to custom config file
+- `--verbose` - Show detailed output
+- `--quiet` - Show minimal output
+- `--project <name>` - Target a specific project only
+
+**Examples:**
+```bash
+# Refresh all instruction files
+magic-helix refresh
+
+# Refresh specific project
+magic-helix refresh --project my-app
+```
+
+### `list` - Show Project Information
+
+Lists detected projects, tags, and templates without generating files.
+
+```bash
+magic-helix list
+```
+
+**Example Output:**
+```
+📦 my-app
+   Path: packages/my-app
+   Tags: framework-vue, style-tailwind, test-vitest, lang-typescript
+   Would generate: my-app.vue-core.md, my-app.style-tailwind.md, ...
+```
+
+### `validate` - Check Instruction Files
+
+Validates instruction files for common issues and integrity.
+
+```bash
+magic-helix validate
+```
+
+**Checks performed:**
+- Frontmatter presence and structure
+- Required `applyTo` field
+- Content after frontmatter
+- Glob pattern validity
+
+### `clean` - Remove Generated Files
+
+Removes all generated instruction files with confirmation.
+
+```bash
+magic-helix clean
+```
+
+### `init` - Initialize Custom Configuration
+
+Creates a minimal configuration file for extending built-in rules.
+
+```bash
+magic-helix init
+```
+
+Creates:
+- `ai-aligner.config.json` - Configuration file
+- `ai_templates/` - Directory for custom templates
+
+## ⚙️ Configuration
+
+### Built-in Detection
+
+MagicAgentHelix automatically detects:
+
+**Frameworks:**
+- Vue.js, React, Angular, NestJS
+
+**Styling:**
+- Tailwind CSS, PrimeVue, Material-UI, Quasar
+
+**Testing:**
+- Vitest, Jest, Cypress, Playwright
+
+**State Management:**
+- RxJS, Pinia, Redux, Zustand
+
+**Languages:**
+- TypeScript, JavaScript, Go, Python
+
+### Custom Configuration
+
+Create `ai-aligner.config.json` to extend or override:
+
+```json
+{
+  "target": "github-copilot",
+  "templateDirectory": "ai_templates",
+  "outputDirectory": ".github/instructions",
+  "dependencyTagMap": {
+    "my-internal-package": "domain-my-rules"
+  },
+  "configFileTagMap": {
+    "my-custom-config.json": "domain-my-rules"
+  },
+  "fileGlobTagMap": {
+    "src/specific-folder/**/*.ts": "domain-my-rules"
+  },
+  "tagTemplateMap": {
+    "domain-my-rules": [
+      { "template": "my-custom-rule.md", "suffix": "my-rule.md" }
+    ]
+  }
+}
+```
+
+## 🎨 Custom Templates
+
+1. Run `magic-helix init` to create the template directory
+2. Add your custom `.md` files in `ai_templates/`
+3. Reference them in your config's `tagTemplateMap`
+
+Template format:
+```markdown
+# My Custom Rule
+
+- Follow this pattern
+- Use this convention
+- Avoid that anti-pattern
+```
+
+## 🔧 VS Code + GitHub Copilot Integration
+
+Add to your `.vscode/settings.json`:
+
+```json
+{
+  "github.copilot.advanced": {
+    "instructions": ".github/instructions"
+  }
+}
+```
+
+This ensures Copilot always reads your instruction files. Restart VS Code after adding.
+
+## 📊 Generated File Format
+
+Generated instruction files include frontmatter with precise file targeting:
+
+```markdown
+---
+# Auto-generated by ai-aligner for: my-app
+# Source Template: vue/vue-core.md
+# Generated: 2025-10-27T10:30:00.000Z
+applyTo: "packages/my-app/src/**/*.{vue}"
+---
+
+# Vue 3 Composition API Guidelines
+
+- Use `<script setup>` syntax
+- Prefer Composition API over Options API
+...
+```
+
+## 🚀 CI/CD Integration
+
+### GitHub Actions
+
+```yaml
+name: Update AI Instructions
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  update-instructions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - run: npx magic-agent-helix run --force
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "chore: update AI instructions"
+          file_pattern: ".github/instructions/*.md"
+```
+
+## 📚 Examples
+
+### Monorepo with Multiple Frameworks
+
+```bash
+# List all detected projects
+magic-helix list
+
+# Generate instructions for all projects
+magic-helix run
+
+# Update just the frontend project
+magic-helix refresh --project my-frontend
+```
+
+### Single Project
+
+```bash
+# Generate instructions
+magic-helix run
+
+# Validate they're correct
+magic-helix validate
+
+# Clean up if needed
+magic-helix clean
+```
+
+## 🛠️ Troubleshooting
+
+### No files generated?
+
+Run `magic-helix list` to see if your project is detected and what tags are found.
+
+### Wrong file extensions in `applyTo`?
+
+The CLI now automatically detects the right extensions based on your project's technologies.
+
+### Need to regenerate everything?
+
+```bash
+magic-helix clean
+magic-helix run
+```
+
+## 📖 More Information
+
+See the [monorepo root README.md](../../README.md) for full development and testing instructions.
+
+## 📄 License
+
+MIT
