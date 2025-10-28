@@ -29,6 +29,18 @@ A VS Code extension that runs MagicAgentHelix to align AI instructions across yo
   - Success: "$(check) Magic Helix Done"
   - Error: "$(error) Magic Helix Failed"
 
+### 🔧 Available Commands
+
+The extension provides access to all MagicAgentHelix CLI commands:
+
+- **Run MagicAgentHelix** (`magic-helix.run`) - Generate AI instruction files
+- **Refresh MagicAgentHelix** (`magic-helix.refresh`) - Update existing instruction files  
+- **List Projects & Tags** (`magic-helix.list`) - Show detected projects and tags
+- **Validate Instruction Files** (`magic-helix.validate`) - Check instruction files integrity
+- **Clean Generated Files** (`magic-helix.clean`) - Remove all generated files
+- **Show Output** (`magic-helix.showOutput`) - Display the output channel
+- **Show Status Panel** (`magic-helix.showStatus`) - Display the status panel
+
 ## Usage
 
 ### Running MagicAgentHelix
@@ -36,7 +48,12 @@ A VS Code extension that runs MagicAgentHelix to align AI instructions across yo
 1. **Via Status Bar**: Click the "Magic Helix" button in the bottom-left status bar
 2. **Via Command Palette**: 
    - Press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows/Linux)
-   - Type "Run MagicAgentHelix" and press Enter
+   - Type "MagicAgentHelix" and select from the available commands:
+     - "Run MagicAgentHelix" - Generate new instruction files
+     - "Refresh MagicAgentHelix" - Update existing instruction files
+     - "List Projects & Tags" - Show project information
+     - "Validate Instruction Files" - Check file integrity
+     - "Clean Generated Files" - Remove all generated files
 
 ### Viewing Status
 

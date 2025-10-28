@@ -27,6 +27,30 @@
 				"icon": "$(wand)"
 			},
 			{
+				"command": "magic-helix.refresh",
+				"title": "Refresh MagicAgentHelix",
+				"category": "MagicAgentHelix",
+				"icon": "$(sync)"
+			},
+			{
+				"command": "magic-helix.list",
+				"title": "List Projects & Tags",
+				"category": "MagicAgentHelix",
+				"icon": "$(list-tree)"
+			},
+			{
+				"command": "magic-helix.validate",
+				"title": "Validate Instruction Files",
+				"category": "MagicAgentHelix",
+				"icon": "$(checklist)"
+			},
+			{
+				"command": "magic-helix.clean",
+				"title": "Clean Generated Files",
+				"category": "MagicAgentHelix",
+				"icon": "$(trash)"
+			},
+			{
 				"command": "magic-helix.showOutput",
 				"title": "Show Output",
 				"category": "MagicAgentHelix",
@@ -43,6 +67,22 @@
 			"commandPalette": [
 				{
 					"command": "magic-helix.run",
+					"when": "workspaceFolderCount > 0"
+				},
+				{
+					"command": "magic-helix.refresh",
+					"when": "workspaceFolderCount > 0"
+				},
+				{
+					"command": "magic-helix.list",
+					"when": "workspaceFolderCount > 0"
+				},
+				{
+					"command": "magic-helix.validate",
+					"when": "workspaceFolderCount > 0"
+				},
+				{
+					"command": "magic-helix.clean",
 					"when": "workspaceFolderCount > 0"
 				},
 				{
