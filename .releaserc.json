@@ -36,6 +36,12 @@
 		[
 			"@semantic-release/npm",
 			{
+				"pkgRoot": "packages/magic-helix-core"
+			}
+		],
+		[
+			"@semantic-release/npm",
+			{
 				"pkgRoot": "packages/magic-agent-helix"
 			}
 		],
@@ -53,7 +59,7 @@
 		[
 			"@semantic-release/git",
 			{
-				"assets": ["package.json", "packages/magic-agent-helix/package.json", "package-lock.json", "CHANGELOG.md"],
+				"assets": ["package.json", "packages/magic-helix-core/package.json", "packages/magic-agent-helix/package.json", "package-lock.json", "CHANGELOG.md"],
 				"message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
 			}
 		]

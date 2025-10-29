@@ -4,6 +4,10 @@ import { Command } from "commander";
 import pc from "picocolors";
 import { init } from "./commands/init";
 import { run } from "./commands/run";
+import { refresh } from "./commands/refresh";
+import { list } from "./commands/list";
+import { clean } from "./commands/clean";
+import { validate } from "./commands/validate";
 
 // This is the main entry point for the CLI tool.
 // It uses 'commander' to set up sub-commands: 'init' and 'run'.
@@ -29,7 +33,44 @@ async function main() {
 			.description(
 				"Scan the monorepo and generate AI instruction files based on built-in and custom rules.",
 			)
+			.option("--dry-run", "Preview what would be generated without writing files")
+			.option("--force", "Overwrite files and prune without prompting")
+			.option("--skip-pruning", "Don't ask to remove old files")
+			.option("--output-dir <path>", "Custom output directory")
+			.option("--config <path>", "Path to custom config file")
+			.option("--verbose", "Show detailed output")
+			.option("--quiet", "Show minimal output")
+			.option("--project <name>", "Target a specific project only")
 			.action(run);
+
+		program
+			.command("refresh")
+			.description(
+				"Rescan the project and update existing instruction files with changed project information.",
+			)
+			.alias("resync")
+			.option("--config <path>", "Path to custom config file")
+			.option("--verbose", "Show detailed output")
+			.option("--quiet", "Show minimal output")
+			.option("--project <name>", "Target a specific project only")
+			.action(refresh);
+
+		program
+			.command("list")
+			.description(
+				"Show detected projects, tags, and templates without generating files.",
+			)
+			.action(list);
+
+		program
+			.command("validate")
+			.description("Check instruction files for common issues and integrity.")
+			.action(validate);
+
+		program
+			.command("clean")
+			.description("Remove all generated instruction files.")
+			.action(clean);
 
 		// Set 'run' as the default command if no other command is specified
 		if (process.argv.length < 3) {

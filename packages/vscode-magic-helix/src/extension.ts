@@ -36,7 +36,24 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Register the main command
 	const disposable = vscode.commands.registerCommand("magic-helix.run", async () => {
-		await runMagicHelix(context);
+		await runMagicHelix(context, "run");
+	});
+
+	// Register additional commands
+	const refreshCommand = vscode.commands.registerCommand("magic-helix.refresh", async () => {
+		await runMagicHelix(context, "refresh");
+	});
+
+	const listCommand = vscode.commands.registerCommand("magic-helix.list", async () => {
+		await runMagicHelix(context, "list");
+	});
+
+	const validateCommand = vscode.commands.registerCommand("magic-helix.validate", async () => {
+		await runMagicHelix(context, "validate");
+	});
+
+	const cleanCommand = vscode.commands.registerCommand("magic-helix.clean", async () => {
+		await runMagicHelix(context, "clean");
 	});
 
 	// Register command to show output panel
@@ -49,10 +66,10 @@ export function activate(context: vscode.ExtensionContext) {
 		showStatusPanel(context);
 	});
 
-	context.subscriptions.push(disposable, showOutputCommand, showStatusCommand);
+	context.subscriptions.push(disposable, refreshCommand, listCommand, validateCommand, cleanCommand, showOutputCommand, showStatusCommand);
 }
 
-async function runMagicHelix(context: vscode.ExtensionContext) {
+async function runMagicHelix(context: vscode.ExtensionContext, command: string = "run") {
 	// Check for open workspace
 	if (!vscode.workspace.workspaceFolders) {
 		vscode.window.showErrorMessage(
@@ -68,26 +85,9 @@ async function runMagicHelix(context: vscode.ExtensionContext) {
 	
 	// Update status bar
 	statusBarItem.text = "$(loading~spin) Magic Helix Running...";
-	statusBarItem.tooltip = "MagicAgentHelix is analyzing your project";
+	statusBarItem.tooltip = `MagicAgentHelix is running ${command}`;
 
 	try {
-		// Send initial progress
-		sendProgressUpdate(panel, {
-			stage: "Starting",
-			message: "Initializing MagicAgentHelix...",
-			progress: 0,
-			type: "info"
-		});
-
-		outputChannel.clear();
-		outputChannel.show(true);
-		outputChannel.appendLine("=".repeat(60));
-		outputChannel.appendLine("MagicAgentHelix - Starting Analysis");
-		outputChannel.appendLine("=".repeat(60));
-		outputChannel.appendLine(`Workspace: ${workspaceRoot}`);
-		outputChannel.appendLine(`Time: ${new Date().toLocaleString()}`);
-		outputChannel.appendLine("");
-
 		// Determine which CLI to use
 		const extensionPath = context.extensionPath;
 		outputChannel.appendLine(`Extension Path: ${extensionPath}`);
@@ -102,7 +102,7 @@ async function runMagicHelix(context: vscode.ExtensionContext) {
 			path.resolve(workspaceRoot, "packages/magic-agent-helix/dist/cli.mjs"),
 		];
 
-		let command: string;
+		let commandStr: string = "";
 		const cwd = workspaceRoot;
 		let foundCliPath: string | null = null;
 
@@ -120,7 +120,7 @@ async function runMagicHelix(context: vscode.ExtensionContext) {
 
 		if (foundCliPath) {
 			// Development mode: use local CLI
-			command = `node "${foundCliPath}" run`;
+			commandStr = `node "${foundCliPath}" ${command}`;
 			outputChannel.appendLine("Mode: Development (using local CLI)");
 			outputChannel.appendLine(`CLI Path: ${foundCliPath}`);
 			sendProgressUpdate(panel, {
@@ -131,7 +131,7 @@ async function runMagicHelix(context: vscode.ExtensionContext) {
 			});
 		} else {
 			// Production mode: use npx
-			command = "npx magic-agent-helix run";
+			commandStr = `npx magic-agent-helix ${command}`;
 			outputChannel.appendLine("Mode: Production (using npx)");
 			outputChannel.appendLine("⚠️ Local CLI not found. Using npx instead.");
 			outputChannel.appendLine("Note: Package must be published to npm for this to work.");
@@ -143,7 +143,24 @@ async function runMagicHelix(context: vscode.ExtensionContext) {
 			});
 		}
 
-		outputChannel.appendLine(`Command: ${command}`);
+		// Send initial progress
+		sendProgressUpdate(panel, {
+			stage: "Starting",
+			message: `Initializing MagicAgentHelix ${command}...`,
+			progress: 0,
+			type: "info"
+		});
+
+		outputChannel.clear();
+		outputChannel.show(true);
+		outputChannel.appendLine("=".repeat(60));
+		outputChannel.appendLine(`MagicAgentHelix - ${command.charAt(0).toUpperCase() + command.slice(1)}`);
+		outputChannel.appendLine("=".repeat(60));
+		outputChannel.appendLine(`Workspace: ${workspaceRoot}`);
+		outputChannel.appendLine(`Time: ${new Date().toLocaleString()}`);
+		outputChannel.appendLine("");
+
+		outputChannel.appendLine(`Command: ${commandStr}`);
 		outputChannel.appendLine("");
 		outputChannel.appendLine("Output:");
 		outputChannel.appendLine("-".repeat(60));
@@ -156,7 +173,7 @@ async function runMagicHelix(context: vscode.ExtensionContext) {
 		});
 
 		// Execute command and capture output
-		const { stdout, stderr } = await execAsync(command, {
+		const { stdout, stderr } = await execAsync(commandStr, {
 			cwd,
 			maxBuffer: 10 * 1024 * 1024, // 10MB buffer
 			env: { ...process.env, FORCE_COLOR: "0" } // Disable colors for cleaner logs
@@ -176,7 +193,7 @@ async function runMagicHelix(context: vscode.ExtensionContext) {
 
 		sendProgressUpdate(panel, {
 			stage: "Complete",
-			message: "✅ AI instruction files generated successfully!",
+			message: `✅ MagicAgentHelix ${command} completed successfully!`,
 			progress: 100,
 			type: "success"
 		});
@@ -185,7 +202,7 @@ async function runMagicHelix(context: vscode.ExtensionContext) {
 		statusBarItem.tooltip = "MagicAgentHelix completed successfully";
 
 		vscode.window.showInformationMessage(
-			"MagicAgentHelix completed successfully! Check the output for details.",
+			`MagicAgentHelix ${command} completed successfully! Check the output for details.`,
 			"Show Output"
 		).then(selection => {
 			if (selection === "Show Output") {

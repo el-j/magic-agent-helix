@@ -11,6 +11,8 @@ const mockCommand = {
 	version: vi.fn().mockReturnThis(),
 	command: vi.fn().mockReturnThis(),
 	action: vi.fn().mockReturnThis(),
+	option: vi.fn().mockReturnThis(),
+	alias: vi.fn().mockReturnThis(),
 	parseAsync: vi.fn().mockResolvedValue(undefined),
 };
 
