@@ -1,3 +1,9 @@
+## [1.1.0-beta.1](https://github.com/el-j/magic-agent-helix/compare/v1.0.0...v1.1.0-beta.1) (2025-10-29)
+
+### Features
+
+* enhance run command with CLI options and logging ([88df109](https://github.com/el-j/magic-agent-helix/commit/88df109438ac8d70357544dd16c6209187fe15cd))
+
 ## 1.0.0 (2025-10-27)
 
 ### Features
