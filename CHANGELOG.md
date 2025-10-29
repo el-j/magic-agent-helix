@@ -1,9 +1,8 @@
-## 1.0.0-beta.1 (2025-10-28)
+## 1.0.0 (2025-10-27)
 
 ### Features
 
 * **ci:** enable manual workflow triggers ([2da38f0](https://github.com/el-j/magic-agent-helix/commit/2da38f02fbb7d4ce4d4258200160ea7d572cf117))
-* enhance run command with CLI options and logging ([88df109](https://github.com/el-j/magic-agent-helix/commit/88df109438ac8d70357544dd16c6209187fe15cd))
 
 ### Bug Fixes
 
