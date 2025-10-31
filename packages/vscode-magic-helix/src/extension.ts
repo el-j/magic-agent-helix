@@ -34,26 +34,31 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(statusBarItem);
 	context.subscriptions.push(outputChannel);
 
-	// Register the main command
+	// Register the main command with options
 	const disposable = vscode.commands.registerCommand("magic-helix.run", async () => {
-		await runMagicHelix(context, "run");
+		await runMagicHelixWithOptions(context, "run");
+	});
+
+	// Register init command
+	const initCommand = vscode.commands.registerCommand("magic-helix.init", async () => {
+		await runMagicHelix(context, "init", []);
 	});
 
 	// Register additional commands
 	const refreshCommand = vscode.commands.registerCommand("magic-helix.refresh", async () => {
-		await runMagicHelix(context, "refresh");
+		await runMagicHelixWithOptions(context, "refresh");
 	});
 
 	const listCommand = vscode.commands.registerCommand("magic-helix.list", async () => {
-		await runMagicHelix(context, "list");
+		await runMagicHelix(context, "list", []);
 	});
 
 	const validateCommand = vscode.commands.registerCommand("magic-helix.validate", async () => {
-		await runMagicHelix(context, "validate");
+		await runMagicHelix(context, "validate", []);
 	});
 
 	const cleanCommand = vscode.commands.registerCommand("magic-helix.clean", async () => {
-		await runMagicHelix(context, "clean");
+		await runMagicHelix(context, "clean", []);
 	});
 
 	// Register command to show output panel
@@ -66,10 +71,142 @@ export function activate(context: vscode.ExtensionContext) {
 		showStatusPanel(context);
 	});
 
-	context.subscriptions.push(disposable, refreshCommand, listCommand, validateCommand, cleanCommand, showOutputCommand, showStatusCommand);
+	context.subscriptions.push(
+		disposable, 
+		initCommand,
+		refreshCommand, 
+		listCommand, 
+		validateCommand, 
+		cleanCommand, 
+		showOutputCommand, 
+		showStatusCommand
+	);
 }
 
-async function runMagicHelix(context: vscode.ExtensionContext, command: string = "run") {
+/**
+ * Show options UI and run command with selected options
+ */
+async function runMagicHelixWithOptions(context: vscode.ExtensionContext, command: string) {
+	const options: string[] = [];
+	
+	// Ask user which options to use
+	const selectedOptions = await vscode.window.showQuickPick(
+		[
+			{ label: "$(play) Run with defaults", value: [] },
+			{ label: "$(eye) Dry run (preview only)", value: ["--dry-run"] },
+			{ label: "$(check-all) Force (no prompts)", value: ["--force"] },
+			{ label: "$(comment) Verbose output", value: ["--verbose"] },
+			{ label: "$(mute) Quiet mode", value: ["--quiet"] },
+			{ label: "$(gear) Custom options...", value: null }
+		].map(opt => ({
+			label: opt.label,
+			description: opt.value === null ? "Configure options manually" : opt.value.join(" ") || "Default behavior",
+			value: opt.value
+		})),
+		{
+			placeHolder: `Select options for ${command} command`,
+			title: `MagicAgentHelix ${command.charAt(0).toUpperCase() + command.slice(1)}`
+		}
+	);
+
+	if (!selectedOptions) {
+		return; // User cancelled
+	}
+
+	if (selectedOptions.value === null) {
+		// Custom options
+		await showCustomOptionsUI(context, command, options);
+	} else {
+		// Use selected preset
+		options.push(...selectedOptions.value);
+	}
+
+	await runMagicHelix(context, command, options);
+}
+
+/**
+ * Show custom options UI
+ */
+async function showCustomOptionsUI(_context: vscode.ExtensionContext, command: string, options: string[]) {
+	// Multi-select options
+	const multiOptions = await vscode.window.showQuickPick(
+		[
+			{ label: "$(eye) Dry run", flag: "--dry-run", picked: false },
+			{ label: "$(check-all) Force (no prompts)", flag: "--force", picked: false },
+			{ label: "$(x) Skip pruning", flag: "--skip-pruning", picked: false },
+			{ label: "$(comment) Verbose output", flag: "--verbose", picked: false },
+			{ label: "$(mute) Quiet mode", flag: "--quiet", picked: false }
+		],
+		{
+			canPickMany: true,
+			placeHolder: "Select options (multiple allowed)",
+			title: `${command} Options`
+		}
+	);
+
+	if (multiOptions) {
+		options.push(...multiOptions.map(opt => opt.flag));
+	}
+
+	// Ask for project name
+	if (command === "run" || command === "refresh") {
+		const projectName = await vscode.window.showInputBox({
+			prompt: "Target specific project (leave empty for all)",
+			placeHolder: "e.g., my-package-name",
+			title: "Project Name (Optional)"
+		});
+
+		if (projectName) {
+			options.push("--project", projectName);
+		}
+	}
+
+	// Ask for custom config path
+	const useCustomConfig = await vscode.window.showQuickPick(
+		["No", "Yes"],
+		{
+			placeHolder: "Use custom config file?",
+			title: "Custom Configuration"
+		}
+	);
+
+	if (useCustomConfig === "Yes") {
+		const configPath = await vscode.window.showInputBox({
+			prompt: "Path to custom config file",
+			placeHolder: "e.g., ./my-config.json",
+			title: "Config File Path"
+		});
+
+		if (configPath) {
+			options.push("--config", configPath);
+		}
+	}
+
+	// Ask for custom output directory
+	if (command === "run") {
+		const useCustomOutput = await vscode.window.showQuickPick(
+			["No", "Yes"],
+			{
+				placeHolder: "Use custom output directory?",
+				title: "Output Directory"
+			}
+		);
+
+		if (useCustomOutput === "Yes") {
+			const outputDir = await vscode.window.showInputBox({
+				prompt: "Custom output directory",
+				placeHolder: "e.g., ./.ai-instructions",
+				title: "Output Directory Path"
+			});
+
+			if (outputDir) {
+				options.push("--output-dir", outputDir);
+			}
+		}
+	}
+}
+
+async function runMagicHelix(context: vscode.ExtensionContext, command: string = "run", cliOptions: string[] = []) {
 	// Check for open workspace
 	if (!vscode.workspace.workspaceFolders) {
 		vscode.window.showErrorMessage(
@@ -120,7 +257,7 @@ async function runMagicHelix(context: vscode.ExtensionContext, command: string =
 
 		if (foundCliPath) {
 			// Development mode: use local CLI
-			commandStr = `node "${foundCliPath}" ${command}`;
+			commandStr = `node "${foundCliPath}" ${command} ${cliOptions.join(" ")}`;
 			outputChannel.appendLine("Mode: Development (using local CLI)");
 			outputChannel.appendLine(`CLI Path: ${foundCliPath}`);
 			sendProgressUpdate(panel, {
@@ -131,7 +268,7 @@ async function runMagicHelix(context: vscode.ExtensionContext, command: string =
 			});
 		} else {
 			// Production mode: use npx
-			commandStr = `npx magic-agent-helix ${command}`;
+			commandStr = `npx magic-agent-helix ${command} ${cliOptions.join(" ")}`;
 			outputChannel.appendLine("Mode: Production (using npx)");
 			outputChannel.appendLine("⚠️ Local CLI not found. Using npx instead.");
 			outputChannel.appendLine("Note: Package must be published to npm for this to work.");

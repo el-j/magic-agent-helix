@@ -19,7 +19,7 @@ async function main() {
 		program
 			.name("ai-aligner")
 			.description("A CLI to align AI instructions in your monorepo.")
-			.version("0.1.0"); // This should match package.json
+			.version("0.2.0"); // This should match package.json
 
 		program
 			.command("init")

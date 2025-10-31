@@ -31,15 +31,41 @@ A VS Code extension that runs MagicAgentHelix to align AI instructions across yo
 
 ### 🔧 Available Commands
 
-The extension provides access to all MagicAgentHelix CLI commands:
+The extension provides access to all MagicAgentHelix CLI commands with **full option support**:
 
 - **Run MagicAgentHelix** (`magic-helix.run`) - Generate AI instruction files
-- **Refresh MagicAgentHelix** (`magic-helix.refresh`) - Update existing instruction files  
+  - Interactive options selector for --dry-run, --force, --verbose, --quiet
+  - Custom project targeting
+  - Custom config file path
+  - Custom output directory
+- **Initialize Config** (`magic-helix.init`) - Create ai-aligner.config.json
+- **Refresh MagicAgentHelix** (`magic-helix.refresh`) - Update existing instruction files
+  - Interactive options selector for --verbose, --quiet
+  - Custom project targeting
+  - Custom config file path
 - **List Projects & Tags** (`magic-helix.list`) - Show detected projects and tags
 - **Validate Instruction Files** (`magic-helix.validate`) - Check instruction files integrity
 - **Clean Generated Files** (`magic-helix.clean`) - Remove all generated files
 - **Show Output** (`magic-helix.showOutput`) - Display the output channel
 - **Show Status Panel** (`magic-helix.showStatus`) - Display the status panel
+
+### ⚙️ Interactive Options
+
+When running `Run` or `Refresh` commands, you'll be presented with an interactive options menu:
+
+1. **Quick Options** - Choose from common presets:
+   - Run with defaults
+   - Dry run (preview only)
+   - Force (no prompts)
+   - Verbose output
+   - Quiet mode
+   - Custom options...
+
+2. **Custom Options** - Configure everything:
+   - Multiple flag selection (dry-run, force, skip-pruning, verbose, quiet)
+   - Target specific project
+   - Use custom config file
+   - Set custom output directory
 
 ## Usage
 
@@ -49,11 +75,34 @@ The extension provides access to all MagicAgentHelix CLI commands:
 2. **Via Command Palette**: 
    - Press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows/Linux)
    - Type "MagicAgentHelix" and select from the available commands:
-     - "Run MagicAgentHelix" - Generate new instruction files
-     - "Refresh MagicAgentHelix" - Update existing instruction files
+     - "Run MagicAgentHelix" - Generate new instruction files (with options)
+     - "Initialize Config" - Create ai-aligner.config.json
+     - "Refresh MagicAgentHelix" - Update existing instruction files (with options)
      - "List Projects & Tags" - Show project information
      - "Validate Instruction Files" - Check file integrity
      - "Clean Generated Files" - Remove all generated files
+
+### Interactive Workflow
+
+#### First Time Setup
+1. Run **"Initialize Config"** to create `ai-aligner.config.json`
+2. Edit the config file to customize your setup
+3. Run **"Run MagicAgentHelix"** to generate instruction files
+
+#### Regular Usage
+1. Click the status bar or use Command Palette
+2. Select your desired options from the interactive menu
+3. Preview with `--dry-run` before committing changes
+4. Use `--force` to skip confirmation prompts for automation
+
+#### Quick Options
+When running `Run` or `Refresh`, select from:
+- **Run with defaults** - Standard behavior
+- **Dry run** - Preview changes without writing files
+- **Force** - Skip all prompts (great for CI/CD)
+- **Verbose** - See detailed output
+- **Quiet** - Minimal output only
+- **Custom options...** - Full control over all settings
 
 ### Viewing Status
 

@@ -2,7 +2,7 @@
 	"name": "vscode-magic-helix",
 	"displayName": "MagicAgentHelix Runner",
 	"description": "Runs the MagicAgentHelix CLI from VS Code to align AI instructions in your monorepo.",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"publisher": "YOUR_PUBLISHER_NAME",
 	"repository": {
 		"type": "git",
@@ -25,6 +25,12 @@
 				"title": "Run MagicAgentHelix",
 				"category": "MagicAgentHelix",
 				"icon": "$(wand)"
+			},
+			{
+				"command": "magic-helix.init",
+				"title": "Initialize Config",
+				"category": "MagicAgentHelix",
+				"icon": "$(file-add)"
 			},
 			{
 				"command": "magic-helix.refresh",
@@ -67,6 +73,10 @@
 			"commandPalette": [
 				{
 					"command": "magic-helix.run",
+					"when": "workspaceFolderCount > 0"
+				},
+				{
+					"command": "magic-helix.init",
 					"when": "workspaceFolderCount > 0"
 				},
 				{
