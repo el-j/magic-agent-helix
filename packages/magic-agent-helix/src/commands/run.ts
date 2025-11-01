@@ -33,10 +33,95 @@ interface Project {
 }
 
 /**
+ * Interactive wizard to guide users through configuration options
+ */
+async function runWizard(): Promise<Partial<CliOptions>> {
+	console.log(gradient.pastel.multiline("🤖 MagicAgentHelix Interactive Setup Wizard"));
+	console.log("Let's configure your AI instruction generation...\n");
+
+	const answers = await inquirer.prompt([
+		{
+			type: "list",
+			name: "target",
+			message: "Which AI assistant are you using?",
+			choices: [
+				{ name: "GitHub Copilot", value: "github-copilot" },
+				{ name: "Claude/Cursor", value: "claude" },
+				{ name: "GitHub Copilot Chat", value: "copilot-chat" },
+				{ name: "Generic Assistant", value: "generic" },
+			],
+			default: "github-copilot",
+		},
+		{
+			type: "confirm",
+			name: "dryRun",
+			message: "Would you like to preview what would be generated first (dry run)?",
+			default: true,
+		},
+		{
+			type: "input",
+			name: "outputDir",
+			message: "Where should the instruction files be generated?",
+			default: ".ai",
+			when: (answers) => !answers.dryRun,
+		},
+		{
+			type: "confirm",
+			name: "force",
+			message: "Overwrite existing files without prompting?",
+			default: false,
+			when: (answers) => !answers.dryRun,
+		},
+		{
+			type: "list",
+			name: "verbosity",
+			message: "How much output would you like to see?",
+			choices: [
+				{ name: "Verbose (detailed information)", value: "verbose" },
+				{ name: "Normal (standard output)", value: "normal" },
+				{ name: "Quiet (minimal output)", value: "quiet" },
+			],
+			default: "normal",
+		},
+	]);
+
+	// Convert verbosity to CLI options
+	const options: Partial<CliOptions> = {
+		target: answers.target,
+		dryRun: answers.dryRun,
+	};
+
+	if (answers.outputDir) {
+		options.outputDir = answers.outputDir;
+	}
+
+	if (answers.force) {
+		options.force = answers.force;
+	}
+
+	if (answers.verbosity === "verbose") {
+		options.verbose = true;
+	} else if (answers.verbosity === "quiet") {
+		options.quiet = true;
+	}
+
+	console.log(pc.green("\n✅ Configuration complete! Starting analysis...\n"));
+
+	return options;
+}
+
+/**
  * The 'run' command.
  * Scans the monorepo and generates instruction files.
  */
 export async function run(options: CliOptions = {}) {
+	// Run interactive wizard if requested
+	if (options.wizard) {
+		const wizardOptions = await runWizard();
+		// Merge wizard options with command line options (CLI options take precedence)
+		options = { ...wizardOptions, ...options };
+	}
+
 	const logLevel = getLogLevel(options);
 
 	if (shouldLog("normal", logLevel)) {
@@ -122,13 +207,44 @@ export async function run(options: CliOptions = {}) {
 		console.log(pc.gray(`Would ensure directory: ${targetDir}`));
 	}
 
+	// Apply template filtering if specified
+	let filteredTagTemplateMap = tagTemplateMap as TagTemplateMap;
+	if (options.template) {
+		const templatePatterns = options.template.split(',').map(p => p.trim());
+		filteredTagTemplateMap = {} as TagTemplateMap;
+
+		for (const [tag, templates] of Object.entries(tagTemplateMap)) {
+			const filteredTemplates = templates.filter(template => {
+				return templatePatterns.some(pattern => {
+					// Support wildcard matching
+					if (pattern.includes('*')) {
+						const regex = new RegExp(pattern.replace(/\*/g, '.*'));
+						return regex.test(template.template) || regex.test(tag);
+					}
+					return template.template.includes(pattern) || tag.includes(pattern);
+				});
+			});
+
+			if (filteredTemplates.length > 0) {
+				filteredTagTemplateMap[tag] = filteredTemplates;
+			}
+		}
+
+		if (shouldLog("verbose", logLevel)) {
+			console.log(pc.gray(`Template filter applied: ${options.template}`));
+		}
+	}
+
 	// 5. Generate files
 	if (shouldLog("normal", logLevel)) {
 		console.log(
 			pc.cyan(`\nGenerating instruction files in ${config.outputDirectory}...`),
 		);
 	}
+	const generateSpinner = ora("Generating instruction files...").start();
 	const generatedFiles: string[] = [];
+	let processedProjects = 0;
+	let totalTemplates = 0;
 	for (const project of projects) {
 		// Skip if specific project requested and this isn't it
 		if (options.project && project.name !== options.project) {
@@ -142,18 +258,22 @@ export async function run(options: CliOptions = {}) {
 			continue;
 		}
 
-		console.log(pc.bold(`  Processing: ${project.name}`));
+		processedProjects++;
+		if (shouldLog("normal", logLevel)) {
+			console.log(pc.bold(`  Processing: ${project.name}`));
+		}
 		if (shouldLog("verbose", logLevel)) {
 			console.log(pc.gray(`    Tags: ${[...project.tags].join(", ")}`));
 		}
 
-		const globPattern = buildPreciseGlobPattern(project.path, project.tags);
+		const globPattern = buildPreciseGlobPattern(project.path, project.tags, options.exclude);
 
 		for (const tag of project.tags) {
-			const templates = (tagTemplateMap as TagTemplateMap)[tag];
+			const templates = (filteredTagTemplateMap as TagTemplateMap)[tag];
 			if (!templates) continue;
 
 			for (const t of templates) {
+				totalTemplates++;
 				// Check for template in user's dir *first*, then fall back to built-in
 				let templateContent = readTemplate(userTemplateDir, t.template);
 				let source = "Custom";
@@ -197,6 +317,8 @@ export async function run(options: CliOptions = {}) {
 		}
 	}
 
+	generateSpinner.succeed(`Generated ${generatedFiles.length} files from ${totalTemplates} templates across ${processedProjects} projects`);
+
 	// 6. Pruning: Ask to remove old files
 	if (!options.dryRun && !options.skipPruning) {
 		await pruneOldFiles(targetDir, generatedFiles, options.force);
@@ -205,15 +327,18 @@ export async function run(options: CliOptions = {}) {
 	}
 
 	if (shouldLog("normal", logLevel)) {
+		console.log("\n" + "═".repeat(60));
 		if (options.dryRun) {
-			console.log("\n✨ Dry run complete! No files were modified.");
-			console.log(
-				pc.gray(`Would have generated ${generatedFiles.length} file(s).`),
-			);
+			console.log(pc.cyan("✨ Dry run complete! No files were modified."));
+			console.log(pc.gray(`📋 Would have generated ${generatedFiles.length} instruction file(s)`));
+			console.log(pc.gray(`📊 From ${totalTemplates} template(s) across ${processedProjects} project(s)`));
 		} else {
-			console.log("\n✨ Alignment complete!");
-			console.log(`Generated files are in: ${config.outputDirectory}`);
+			console.log(pc.green("✨ AI instruction alignment complete!"));
+			console.log(pc.bold(`📁 Generated ${generatedFiles.length} instruction file(s)`));
+			console.log(pc.gray(`📊 From ${totalTemplates} template(s) across ${processedProjects} project(s)`));
+			console.log(pc.gray(`📂 Files are located in: ${pc.bold(config.outputDirectory)}`));
 		}
+		console.log("═".repeat(60));
 	}
 
 	if (config.target === "github-copilot" && shouldLog("normal", logLevel)) {

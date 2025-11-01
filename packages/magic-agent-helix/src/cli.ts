@@ -42,6 +42,9 @@ async function main() {
 			.option("--verbose", "Show detailed output")
 			.option("--quiet", "Show minimal output")
 			.option("--project <name>", "Target a specific project only")
+			.option("--wizard", "Run in interactive wizard mode")
+			.option("--template <pattern>", "Filter templates by pattern (e.g., 'react,vue')")
+			.option("--exclude <pattern>", "Exclude files matching pattern (e.g., 'test/**,*.spec.ts')")
 			.action(run);
 
 		program

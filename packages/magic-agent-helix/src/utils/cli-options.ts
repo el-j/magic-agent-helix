@@ -12,6 +12,9 @@ export interface CliOptions {
 	verbose?: boolean;
 	quiet?: boolean;
 	project?: string;
+	wizard?: boolean;
+	template?: string;
+	exclude?: string;
 }
 
 /**
