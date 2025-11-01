@@ -10,6 +10,41 @@ let statusBarItem: vscode.StatusBarItem;
 let outputChannel: vscode.OutputChannel;
 let currentPanel: vscode.WebviewPanel | undefined;
 
+// Command history and favorites storage
+interface CommandHistoryItem {
+	command: string;
+	options: string[];
+	timestamp: number;
+	label: string;
+}
+
+interface FavoriteConfig {
+	name: string;
+	command: string;
+	options: string[];
+	created: number;
+}
+
+interface MagicHelixSettings {
+	defaultCommand: string;
+	defaultOptions: string[];
+	historySize: number;
+	autoSaveFavorites: boolean;
+	showStatusBar: boolean;
+	notifications: {
+		onSuccess: boolean;
+		onError: boolean;
+		showProgress: boolean;
+	};
+	cliPath: string;
+}
+
+interface WorkspaceConfig {
+	defaultOptions?: string[];
+	cliPath?: string;
+	favorites?: FavoriteConfig[];
+}
+
 interface ProgressUpdate {
 	stage: string;
 	message: string;
@@ -29,10 +64,29 @@ export function activate(context: vscode.ExtensionContext) {
 	statusBarItem.text = "$(wand) Magic Helix";
 	statusBarItem.tooltip = "Click to run MagicAgentHelix";
 	statusBarItem.command = "magic-helix.run";
-	statusBarItem.show();
+	
+	// Show status bar based on settings
+	const settings = getSettings();
+	if (settings.showStatusBar) {
+		statusBarItem.show();
+	}
 	
 	context.subscriptions.push(statusBarItem);
 	context.subscriptions.push(outputChannel);
+
+	// Listen for configuration changes
+	context.subscriptions.push(
+		vscode.workspace.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration('magicAgentHelix.showStatusBar')) {
+				const settings = getSettings();
+				if (settings.showStatusBar) {
+					statusBarItem.show();
+				} else {
+					statusBarItem.hide();
+				}
+			}
+		})
+	);
 
 	// Register the main command with options
 	const disposable = vscode.commands.registerCommand("magic-helix.run", async () => {
@@ -71,6 +125,19 @@ export function activate(context: vscode.ExtensionContext) {
 		showStatusPanel(context);
 	});
 
+	// Register quick access menu command
+	const quickAccessCommand = vscode.commands.registerCommand("magic-helix.quickAccess", async () => {
+		await showQuickAccessMenu(context);
+	});
+
+	const saveFavoriteCommand = vscode.commands.registerCommand("magic-helix.saveFavorite", async () => {
+		await saveCurrentConfigAsFavorite(context);
+	});
+
+	const configureWorkspaceCommand = vscode.commands.registerCommand("magic-helix.configureWorkspace", async () => {
+		await configureWorkspaceSettings();
+	});
+
 	context.subscriptions.push(
 		disposable, 
 		initCommand,
@@ -79,7 +146,10 @@ export function activate(context: vscode.ExtensionContext) {
 		validateCommand, 
 		cleanCommand, 
 		showOutputCommand, 
-		showStatusCommand
+		showStatusCommand,
+		quickAccessCommand,
+		saveFavoriteCommand,
+		configureWorkspaceCommand
 	);
 }
 
@@ -235,27 +305,47 @@ async function runMagicHelix(context: vscode.ExtensionContext, command: string =
 
 	const workspaceRoot = vscode.workspace.workspaceFolders[0].uri.fsPath;
 
+	// Get settings and merge with workspace config
+	const globalSettings = getSettings();
+	const workspaceConfig = getWorkspaceConfig();
+	
+	// Merge settings: workspace overrides global
+	const effectiveSettings = {
+		...globalSettings,
+		defaultOptions: workspaceConfig?.defaultOptions || globalSettings.defaultOptions,
+		cliPath: workspaceConfig?.cliPath || globalSettings.cliPath
+	};
+
+	const mergedOptions = [...effectiveSettings.defaultOptions, ...cliOptions];
+
+	// Save command to history
+	await saveCommandToHistory(context, command, mergedOptions, `${command} ${mergedOptions.join(' ')}`);
+
 	// Show status panel
 	const panel = showStatusPanel(context);
 	
-	// Update status bar
-	statusBarItem.text = "$(loading~spin) Magic Helix Running...";
-	statusBarItem.tooltip = `MagicAgentHelix is running ${command}`;
-
 	try {
 		// Determine which CLI to use
 		const extensionPath = context.extensionPath;
 		outputChannel.appendLine(`Extension Path: ${extensionPath}`);
 		
 		// Try multiple possible paths for the CLI
-		const possibleCliPaths = [
+		const possibleCliPaths: string[] = [];
+
+		// If custom CLI path is set, try it first
+		if (effectiveSettings.cliPath) {
+			possibleCliPaths.push(effectiveSettings.cliPath);
+		}
+
+		// Add default search paths
+		possibleCliPaths.push(
 			// When running in development from monorepo
 			path.resolve(extensionPath, "../../magic-agent-helix/dist/cli.mjs"),
 			// When running from packages/vscode-magic-helix
 			path.resolve(extensionPath, "../magic-agent-helix/dist/cli.mjs"),
 			// When workspace is the monorepo root
-			path.resolve(workspaceRoot, "packages/magic-agent-helix/dist/cli.mjs"),
-		];
+			path.resolve(workspaceRoot, "packages/magic-agent-helix/dist/cli.mjs")
+		);
 
 		let commandStr: string = "";
 		const cwd = workspaceRoot;
@@ -275,7 +365,7 @@ async function runMagicHelix(context: vscode.ExtensionContext, command: string =
 
 		if (foundCliPath) {
 			// Development mode: use local CLI
-			commandStr = `node "${foundCliPath}" ${command} ${cliOptions.join(" ")}`;
+			commandStr = `node "${foundCliPath}" ${command} ${mergedOptions.join(" ")}`;
 			outputChannel.appendLine("Mode: Development (using local CLI)");
 			outputChannel.appendLine(`CLI Path: ${foundCliPath}`);
 			sendProgressUpdate(panel, {
@@ -286,7 +376,7 @@ async function runMagicHelix(context: vscode.ExtensionContext, command: string =
 			});
 		} else {
 			// Production mode: use npx
-			commandStr = `npx magic-agent-helix ${command} ${cliOptions.join(" ")}`;
+			commandStr = `npx magic-agent-helix ${command} ${mergedOptions.join(" ")}`;
 			outputChannel.appendLine("Mode: Production (using npx)");
 			outputChannel.appendLine("⚠️ Local CLI not found. Using npx instead.");
 			outputChannel.appendLine("Note: Package must be published to npm for this to work.");
@@ -353,23 +443,16 @@ async function runMagicHelix(context: vscode.ExtensionContext, command: string =
 			type: "success"
 		});
 
-		statusBarItem.text = "$(check) Magic Helix Done";
-		statusBarItem.tooltip = "MagicAgentHelix completed successfully";
-
-		vscode.window.showInformationMessage(
-			`MagicAgentHelix ${command} completed successfully! Check the output for details.`,
-			"Show Output"
-		).then(selection => {
-			if (selection === "Show Output") {
-				outputChannel.show();
-			}
-		});
-
-		// Reset status bar after 5 seconds
-		setTimeout(() => {
-			statusBarItem.text = "$(wand) Magic Helix";
-			statusBarItem.tooltip = "Click to run MagicAgentHelix";
-		}, 5000);
+		if (effectiveSettings.notifications.onSuccess) {
+			vscode.window.showInformationMessage(
+				`MagicAgentHelix ${command} completed successfully! Check the output for details.`,
+				"Show Output"
+			).then(selection => {
+				if (selection === "Show Output") {
+					outputChannel.show();
+				}
+			});
+		}
 
 	} catch (error: unknown) {
 		const errorMessage = error instanceof Error ? error.message : String(error);
@@ -397,23 +480,16 @@ async function runMagicHelix(context: vscode.ExtensionContext, command: string =
 			type: "error"
 		});
 
-		statusBarItem.text = "$(error) Magic Helix Failed";
-		statusBarItem.tooltip = `Error: ${errorMessage}`;
-
-		vscode.window.showErrorMessage(
-			`MagicAgentHelix failed: ${errorMessage}`,
-			"Show Output"
-		).then(selection => {
-			if (selection === "Show Output") {
-				outputChannel.show();
-			}
-		});
-
-		// Reset status bar after 10 seconds
-		setTimeout(() => {
-			statusBarItem.text = "$(wand) Magic Helix";
-			statusBarItem.tooltip = "Click to run MagicAgentHelix";
-		}, 10000);
+		if (effectiveSettings.notifications.onError) {
+			vscode.window.showErrorMessage(
+				`MagicAgentHelix failed: ${errorMessage}`,
+				"Show Output"
+			).then(selection => {
+				if (selection === "Show Output") {
+					outputChannel.show();
+				}
+			});
+		}
 	}
 }
 
@@ -445,7 +521,59 @@ function showStatusPanel(context: vscode.ExtensionContext): vscode.WebviewPanel 
 }
 
 function sendProgressUpdate(panel: vscode.WebviewPanel, update: ProgressUpdate) {
+	// Update webview
 	panel.webview.postMessage(update);
+	
+	// Update status bar based on progress
+	updateStatusBar(update);
+}
+
+function updateStatusBar(update: ProgressUpdate) {
+	if (!statusBarItem) return;
+	
+	let icon: string;
+	let text: string;
+	
+	switch (update.type) {
+		case 'info':
+			icon = update.progress !== undefined ? `$(loading~spin)` : `$(info)`;
+			text = update.progress !== undefined 
+				? `Magic Helix: ${update.stage} (${update.progress}%)`
+				: `Magic Helix: ${update.stage}`;
+			break;
+		case 'success':
+			icon = `$(check)`;
+			text = `Magic Helix: ${update.stage}`;
+			// Reset to default after 5 seconds for success
+			setTimeout(() => {
+				if (statusBarItem) {
+					statusBarItem.text = "$(wand) Magic Helix";
+					statusBarItem.tooltip = "Click to run MagicAgentHelix";
+				}
+			}, 5000);
+			break;
+		case 'error':
+			icon = `$(error)`;
+			text = `Magic Helix: ${update.stage}`;
+			// Reset to default after 10 seconds for errors
+			setTimeout(() => {
+				if (statusBarItem) {
+					statusBarItem.text = "$(wand) Magic Helix";
+					statusBarItem.tooltip = "Click to run MagicAgentHelix";
+				}
+			}, 10000);
+			break;
+		case 'warning':
+			icon = `$(warning)`;
+			text = `Magic Helix: ${update.stage}`;
+			break;
+		default:
+			icon = `$(wand)`;
+			text = `Magic Helix: ${update.stage}`;
+	}
+	
+	statusBarItem.text = `${icon} ${text}`;
+	statusBarItem.tooltip = update.message;
 }
 
 function getWebviewContent(): string {
@@ -632,6 +760,367 @@ function getWebviewContent(): string {
 	</script>
 </body>
 </html>`;
+}
+
+/**
+ * Get extension settings
+ */
+function getSettings(): MagicHelixSettings {
+	const config = vscode.workspace.getConfiguration('magicAgentHelix');
+	return {
+		defaultCommand: config.get('defaultCommand', 'run'),
+		defaultOptions: config.get('defaultOptions', []),
+		historySize: config.get('historySize', 10),
+		autoSaveFavorites: config.get('autoSaveFavorites', false),
+		showStatusBar: config.get('showStatusBar', true),
+		notifications: {
+			onSuccess: config.get('notifications.onSuccess', true),
+			onError: config.get('notifications.onError', true),
+			showProgress: config.get('notifications.showProgress', true)
+		},
+		cliPath: config.get('cliPath', '')
+	};
+}
+
+/**
+ * Get workspace-specific configuration
+ */
+function getWorkspaceConfig(): WorkspaceConfig | null {
+	if (!vscode.workspace.workspaceFolders) {
+		return null;
+	}
+
+	const workspaceRoot = vscode.workspace.workspaceFolders[0].uri.fsPath;
+	const configPath = path.join(workspaceRoot, '.magic-helix.json');
+
+	try {
+		if (fs.existsSync(configPath)) {
+			const content = fs.readFileSync(configPath, 'utf8');
+			return JSON.parse(content);
+		}
+	} catch (error) {
+		// Silently ignore invalid config files
+		console.warn('Invalid .magic-helix.json file:', error);
+	}
+
+	return null;
+}
+
+/**
+ * Save workspace configuration
+ */
+async function saveWorkspaceConfig(config: WorkspaceConfig): Promise<void> {
+	if (!vscode.workspace.workspaceFolders) {
+		throw new Error('No workspace open');
+	}
+
+	const workspaceRoot = vscode.workspace.workspaceFolders[0].uri.fsPath;
+	const configPath = path.join(workspaceRoot, '.magic-helix.json');
+
+	await fs.promises.writeFile(configPath, JSON.stringify(config, null, 2));
+}
+
+/**
+ * Configure workspace settings interactively
+ */
+async function configureWorkspaceSettings(): Promise<void> {
+	if (!vscode.workspace.workspaceFolders) {
+		vscode.window.showErrorMessage('No workspace open');
+		return;
+	}
+
+	const workspaceRoot = vscode.workspace.workspaceFolders[0].uri.fsPath;
+	const configPath = path.join(workspaceRoot, '.magic-helix.json');
+
+	// Load existing config
+	const currentConfig = getWorkspaceConfig() || {};
+
+	// Ask user what to configure
+	const configOptions = await vscode.window.showQuickPick([
+		{ label: 'Default CLI Options', description: 'Set default options for all commands', detail: currentConfig.defaultOptions?.join(' ') || 'None' },
+		{ label: 'Custom CLI Path', description: 'Set custom path to MagicAgentHelix CLI', detail: currentConfig.cliPath || 'Auto-detect' },
+		{ label: 'View Current Config', description: 'Show current workspace configuration' },
+		{ label: 'Reset Config', description: 'Remove workspace configuration file' }
+	], {
+		placeHolder: 'Select workspace configuration option'
+	});
+
+	if (!configOptions) return;
+
+	switch (configOptions.label) {
+		case 'Default CLI Options': {
+			const options = await vscode.window.showInputBox({
+				prompt: 'Enter default CLI options (space-separated)',
+				value: currentConfig.defaultOptions?.join(' ') || '',
+				placeHolder: '--verbose --force'
+			});
+			if (options !== undefined) {
+				currentConfig.defaultOptions = options.trim() ? options.trim().split(/\s+/) : undefined;
+			}
+			break;
+		}
+
+		case 'Custom CLI Path': {
+			const cliPath = await vscode.window.showInputBox({
+				prompt: 'Enter custom CLI path',
+				value: currentConfig.cliPath || '',
+				placeHolder: '/path/to/magic-agent-helix/dist/cli.mjs'
+			});
+			if (cliPath !== undefined) {
+				currentConfig.cliPath = cliPath.trim() || undefined;
+			}
+			break;
+		}
+
+		case 'View Current Config': {
+			const configJson = JSON.stringify(currentConfig, null, 2);
+			const doc = await vscode.workspace.openTextDocument({
+				content: configJson,
+				language: 'json'
+			});
+			await vscode.window.showTextDocument(doc);
+			return; // Don't save
+		}
+
+		case 'Reset Config': {
+			const confirm = await vscode.window.showWarningMessage(
+				'Remove workspace configuration file?',
+				{ modal: true },
+				'Yes'
+			);
+			if (confirm === 'Yes') {
+				try {
+					await fs.promises.unlink(configPath);
+					vscode.window.showInformationMessage('Workspace configuration removed');
+				} catch (_error: unknown) {
+					vscode.window.showErrorMessage('Failed to remove configuration file');
+				}
+			}
+			return; // Don't save
+		}
+	}
+
+	// Save the updated config
+	try {
+		await saveWorkspaceConfig(currentConfig);
+		vscode.window.showInformationMessage('Workspace configuration saved');
+	} catch (error) {
+		vscode.window.showErrorMessage(`Failed to save configuration: ${error}`);
+	}
+}
+
+/**
+ * Get command history from storage
+ */
+function getCommandHistory(context: vscode.ExtensionContext): CommandHistoryItem[] {
+	const history = context.globalState.get<CommandHistoryItem[]>('magic-helix.commandHistory', []);
+	return history.sort((a, b) => b.timestamp - a.timestamp);
+}
+
+/**
+ * Save command to history
+ */
+function saveCommandToHistory(context: vscode.ExtensionContext, command: string, options: string[], label: string) {
+	const settings = getSettings();
+	const history = getCommandHistory(context);
+	const newItem: CommandHistoryItem = {
+		command,
+		options: [...options],
+		timestamp: Date.now(),
+		label
+	};
+	
+	// Remove duplicates and keep only the configured number of items
+	const filtered = history.filter(item => 
+		!(item.command === command && JSON.stringify(item.options) === JSON.stringify(options))
+	);
+	filtered.unshift(newItem);
+	
+	context.globalState.update('magic-helix.commandHistory', filtered.slice(0, settings.historySize));
+}
+
+/**
+ * Get favorite configurations from storage
+ */
+function getFavoriteConfigs(context: vscode.ExtensionContext): FavoriteConfig[] {
+	return context.globalState.get<FavoriteConfig[]>('magic-helix.favorites', []);
+}
+
+/**
+ * Save favorite configuration
+ */
+async function saveFavoriteConfig(context: vscode.ExtensionContext, name: string, command: string, options: string[]) {
+	const favorites = getFavoriteConfigs(context);
+	const newFav: FavoriteConfig = {
+		name,
+		command,
+		options: [...options],
+		created: Date.now()
+	};
+	
+	favorites.push(newFav);
+	context.globalState.update('magic-helix.favorites', favorites);
+	
+	vscode.window.showInformationMessage(`Favorite configuration "${name}" saved!`);
+}
+
+/**
+ * Save current config as favorite (uses last command from history)
+ */
+async function saveCurrentConfigAsFavorite(context: vscode.ExtensionContext) {
+	// Get the most recent command from history
+	const history = getCommandHistory(context);
+	if (history.length === 0) {
+		vscode.window.showWarningMessage("No recent commands found. Run a command first before saving as favorite.");
+		return;
+	}
+
+	const lastCommand = history[0]; // Most recent
+
+	// Ask for a name for the favorite
+	const name = await vscode.window.showInputBox({
+		prompt: "Enter a name for this favorite configuration",
+		placeHolder: `Favorite for ${lastCommand.label}`,
+		value: lastCommand.label
+	});
+
+	if (!name) {
+		return; // User cancelled
+	}
+
+	// Save as favorite
+	await saveFavoriteConfig(context, name, lastCommand.command, lastCommand.options);
+
+	vscode.window.showInformationMessage(`Saved "${name}" as a favorite configuration!`);
+}
+
+/**
+ * Show quick access menu with all available commands
+ */
+async function showQuickAccessMenu(context: vscode.ExtensionContext) {
+	const history = getCommandHistory(context);
+	const favorites = getFavoriteConfigs(context);
+	
+	const menuItems: vscode.QuickPickItem[] = [
+		{
+			label: "$(wand) Run MagicAgentHelix",
+			description: "Generate AI instruction files",
+			detail: "Scan project and create instruction files for AI assistants"
+		},
+		{
+			label: "$(file-add) Initialize Config",
+			description: "Create custom configuration",
+			detail: "Set up ai-aligner.config.json for custom rules"
+		},
+		{
+			label: "$(sync) Refresh Instructions",
+			description: "Update existing files",
+			detail: "Rescan and update instruction files with changes"
+		},
+		{
+			label: "$(list-tree) List Projects & Tags",
+			description: "Show detected projects",
+			detail: "Display projects, tags, and templates without generating files"
+		},
+		{
+			label: "$(checklist) Validate Files",
+			description: "Check instruction files",
+			detail: "Validate generated instruction files for issues"
+		},
+		{
+			label: "$(trash) Clean Files",
+			description: "Remove generated files",
+			detail: "Delete all generated instruction files"
+		},
+		{
+			label: "$(output) Show Output",
+			description: "View command output",
+			detail: "Open the output channel for detailed logs"
+		},
+		{
+			label: "$(graph) Show Status",
+			description: "View status panel",
+			detail: "Open the status and progress panel"
+		}
+	];
+
+	// Add separator and history if available
+	if (history.length > 0) {
+		menuItems.push({
+			label: "",
+			kind: vscode.QuickPickItemKind.Separator
+		});
+		menuItems.push({
+			label: "$(history) Recent Commands",
+			kind: vscode.QuickPickItemKind.Separator
+		});
+		
+		history.slice(0, 3).forEach((item: CommandHistoryItem) => {
+			menuItems.push({
+				label: `$(history) ${item.label}`,
+				description: item.command,
+				detail: `Options: ${item.options.join(' ')}`
+			});
+		});
+	}
+
+	// Add favorites if available
+	if (favorites.length > 0) {
+		menuItems.push({
+			label: "$(star) Favorite Configurations",
+			kind: vscode.QuickPickItemKind.Separator
+		});
+		
+		favorites.forEach((fav: FavoriteConfig) => {
+			menuItems.push({
+				label: `$(star) ${fav.name}`,
+				description: fav.command,
+				detail: `Options: ${fav.options.join(' ')}`
+			});
+		});
+	}
+
+	const selectedCommand = await vscode.window.showQuickPick(menuItems, {
+		placeHolder: "Select a MagicAgentHelix command",
+		title: "MagicAgentHelix Quick Access",
+		matchOnDescription: true,
+		matchOnDetail: true
+	});
+
+	if (selectedCommand) {
+		// Map labels back to commands
+		const commandMap: { [key: string]: string } = {
+			"$(wand) Run MagicAgentHelix": "magic-helix.run",
+			"$(file-add) Initialize Config": "magic-helix.init",
+			"$(sync) Refresh Instructions": "magic-helix.refresh",
+			"$(list-tree) List Projects & Tags": "magic-helix.list",
+			"$(checklist) Validate Files": "magic-helix.validate",
+			"$(trash) Clean Files": "magic-helix.clean",
+			"$(output) Show Output": "magic-helix.showOutput",
+			"$(graph) Show Status": "magic-helix.showStatus"
+		};
+
+		const command = commandMap[selectedCommand.label] || 
+			(selectedCommand.label.startsWith("$(history)") ? "history" : 
+			 selectedCommand.label.startsWith("$(star)") ? "favorite" : "");
+
+		if (command === "history") {
+			// Find the history item
+			const historyItem = history.find(item => `$(history) ${item.label}` === selectedCommand.label);
+			if (historyItem) {
+				await runMagicHelix(context, historyItem.command, historyItem.options);
+			}
+		} else if (command === "favorite") {
+			// Find the favorite item
+			const favName = selectedCommand.label.replace("$(star) ", "");
+			const favItem = favorites.find(fav => fav.name === favName);
+			if (favItem) {
+				await runMagicHelix(context, favItem.command, favItem.options);
+			}
+		} else if (command) {
+			await vscode.commands.executeCommand(command);
+		}
+	}
 }
 
 // This method is called when your extension is deactivated
