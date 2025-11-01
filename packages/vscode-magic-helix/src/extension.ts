@@ -159,6 +159,24 @@ async function showCustomOptionsUI(_context: vscode.ExtensionContext, command: s
 		if (projectName) {
 			options.push("--project", projectName);
 		}
+
+		// Ask for AI assistant target
+		const target = await vscode.window.showQuickPick(
+			[
+				{ label: "$(github) GitHub Copilot", value: "github-copilot" },
+				{ label: "$(robot) Claude/Cursor", value: "claude" },
+				{ label: "$(comment-discussion) Copilot Chat", value: "copilot-chat" },
+				{ label: "$(tools) Generic Assistant", value: "generic" }
+			],
+			{
+				placeHolder: "Select AI assistant target",
+				title: "AI Assistant Target"
+			}
+		);
+
+		if (target) {
+			options.push("--target", target.value);
+		}
 	}
 
 	// Ask for custom config path

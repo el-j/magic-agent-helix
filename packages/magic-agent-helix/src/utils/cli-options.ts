@@ -8,6 +8,7 @@ export interface CliOptions {
 	skipPruning?: boolean;
 	outputDir?: string;
 	config?: string;
+	target?: "github-copilot" | "claude" | "copilot-chat" | "generic";
 	verbose?: boolean;
 	quiet?: boolean;
 	project?: string;

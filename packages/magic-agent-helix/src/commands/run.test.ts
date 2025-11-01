@@ -12,7 +12,7 @@ import type * as path from "node:path";
 import inquirer from "inquirer";
 import { glob } from "glob";
 import ora from "ora";
-import { loadUserConfig, mergeConfigs } from "magic-helix-core";
+import { loadUserConfig, mergeConfigs, getFormatter } from "magic-helix-core";
 import { run } from "./run";
 import { BUILT_IN_CONFIG } from "magic-helix-core";
 
@@ -70,6 +70,7 @@ vi.mock("gradient-string", () => {
 vi.mock("magic-helix-core", () => ({
 	loadUserConfig: vi.fn(),
 	mergeConfigs: vi.fn(),
+	getFormatter: vi.fn(),
 	BUILT_IN_CONFIG: {
 		dependencyTagMap: {},
 		tagTemplateMap: {},
@@ -103,6 +104,11 @@ describe("Run Command (/src/commands/run.ts)", () => {
 		vi.clearAllMocks();
 		vi.mocked(loadUserConfig).mockReturnValue({});
 		vi.mocked(mergeConfigs).mockReturnValue(mockMergedConfig);
+		vi.mocked(getFormatter).mockReturnValue({
+			format: vi.fn((content) => content),
+			getFileExtension: vi.fn(() => ".md"),
+			getFrontmatter: vi.fn(() => "---\napplyTo: \"test\"\n---\n\n"),
+		});
 		vi.mocked(glob).mockImplementation(async (patterns: string | string[]) => {
 			if (
 				Array.isArray(patterns) &&

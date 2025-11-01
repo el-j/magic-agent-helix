@@ -1,0 +1,19 @@
+# Framework: Angular
+- **ALWAYS** use Angular standalone components.
+- **ALWAYS** use signals for reactive state management.
+- **NEVER** use NgModules for new components.
+- **ALWAYS** use TypeScript strict mode.
+- **ALWAYS** use the `OnPush` change detection strategy.
+- **DEPENDENCY INJECTION**: Use constructor injection with `inject()` function in standalone components.
+- **SIGNALS**: Use `signal()` for primitive values and `computed()` for derived state.
+- **EFFECTS**: Use `effect()` for side effects that react to signal changes.
+- **INPUTS**: Define component inputs with `input()` function.
+- **OUTPUTS**: Define component outputs with `output()` function.
+- **CONTROL FLOW**: Use `@if`, `@for`, and `@switch` for template control flow.
+- **LIFECYCLE**: Use `DestroyRef` and `takeUntilDestroyed()` for subscription cleanup.
+- **SERVICES**: Create injectable services with `injectable()` function.
+- **ROUTING**: Use functional guards and resolvers with dependency injection.
+- **FORMS**: Use reactive forms with `FormControl`, `FormGroup`, and `FormArray`.
+- **HTTP**: Use `HttpClient` with proper error handling and interceptors.
+- **TESTING**: Use `TestBed` for integration tests and direct instantiation for unit tests.
+- **NAMING**: Use PascalCase for component classes and kebab-case for selectors.

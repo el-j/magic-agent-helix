@@ -40,6 +40,7 @@ vi.mock("picocolors", () => {
 vi.mock("magic-helix-core", () => ({
 	loadUserConfig: vi.fn(),
 	mergeConfigs: vi.fn(),
+	getFormatter: vi.fn(),
 	BUILT_IN_CONFIG: {
 		dependencyTagMap: {},
 		tagTemplateMap: {},
