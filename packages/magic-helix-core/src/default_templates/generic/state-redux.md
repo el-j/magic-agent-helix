@@ -1,0 +1,21 @@
+# State Management: Redux
+- **ALWAYS** use Redux Toolkit (`@reduxjs/toolkit`) for modern Redux development.
+- **ALWAYS** use `createSlice()` for reducer logic and actions.
+- **ALWAYS** use `configureStore()` for store setup with good defaults.
+- **ALWAYS** use TypeScript for type-safe Redux code.
+- **ALWAYS** define action types as string constants or use `createAction()`.
+- **ALWAYS** use `createAsyncThunk()` for async logic and API calls.
+- **ALWAYS** normalize state shape for better performance and consistency.
+- **ALWAYS** use selector functions with `createSelector()` for computed values.
+- **ALWAYS** use `useSelector()` and `useDispatch()` hooks in React components.
+- **ALWAYS** avoid direct state mutations - use immutable updates.
+- **ALWAYS** use `redux-persist` for state persistence when needed.
+- **ALWAYS** use `redux-saga` or `redux-thunk` for complex async flows.
+- **ALWAYS** use `redux-devtools-extension` for debugging in development.
+- **ALWAYS** write comprehensive tests for reducers and selectors.
+- **ALWAYS** use `entityAdapter` from RTK for CRUD operations.
+- **ALWAYS** handle loading and error states in async thunks.
+- **ALWAYS** use `extraReducers` in `createSlice()` for async thunk handling.
+- **ALWAYS** keep reducers pure and side-effect free.
+- **ALWAYS** use meaningful action names and payload structures.
+- **ALWAYS** document complex state transformations with comments.

@@ -102,4 +102,23 @@ describe("Analysis Module", () => {
 
 		expect(tags.size).toBe(0);
 	});
+
+	it("should detect Angular framework", () => {
+		const angularData: ProjectAnalysisData = {
+			dependencies: {
+				"@angular/core": "15.0.0",
+			},
+			configFiles: [],
+			projectFiles: ["src/main.ts"],
+		};
+
+		const tags = analyzeProjectTags(
+			angularData,
+			{ "@angular/core": "framework-angular" },
+			{},
+			{},
+		);
+
+		expect(tags.has("framework-angular")).toBe(true);
+	});
 });

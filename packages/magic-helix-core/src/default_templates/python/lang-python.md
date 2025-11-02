@@ -1,0 +1,21 @@
+# Language: Python
+- **ALWAYS** use type hints for function parameters and return values.
+- **ALWAYS** use descriptive variable and function names (snake_case).
+- **ALWAYS** follow PEP 8 style guidelines.
+- **ALWAYS** use docstrings for modules, classes, and functions.
+- **ALWAYS** handle exceptions properly with specific exception types.
+- **ALWAYS** use context managers (`with` statements) for resource management.
+- **ALWAYS** prefer list comprehensions and generator expressions over loops when appropriate.
+- **ALWAYS** use `if __name__ == "__main__":` for script entry points.
+- **ALWAYS** import modules at the top of files.
+- **ALWAYS** use relative imports within packages.
+- **ALWAYS** validate input parameters and return values.
+- **ALWAYS** use logging instead of print statements for production code.
+- **ALWAYS** write unit tests with pytest or unittest.
+- **ALWAYS** use virtual environments for dependency management.
+- **ALWAYS** keep functions small and focused on single responsibilities.
+- **ALWAYS** use dataclasses or namedtuples for simple data structures.
+- **ALWAYS** prefer `pathlib` over `os.path` for path operations.
+- **ALWAYS** use f-strings for string formatting.
+- **ALWAYS** handle encoding explicitly when working with files.
+- **ALWAYS** use type checking tools like mypy in CI/CD pipelines.

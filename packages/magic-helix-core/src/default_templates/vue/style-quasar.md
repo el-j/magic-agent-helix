@@ -1,0 +1,22 @@
+# Styling: Quasar (Vue)
+- **ALWAYS** use Quasar v2+ with Vue 3 Composition API.
+- **ALWAYS** use `q-` prefixed classes for Quasar components.
+- **ALWAYS** use `QLayout`, `QHeader`, `QDrawer`, `QPage` for app structure.
+- **ALWAYS** use `QBtn` with appropriate color and size props.
+- **ALWAYS** use `QInput` and `QSelect` for form inputs.
+- **ALWAYS** use `QCard`, `QCardSection` for content containers.
+- **ALWAYS** use `QTable` for data tables with proper column definitions.
+- **ALWAYS** use `QDialog` for modals with `v-model` binding.
+- **ALWAYS** use `QMenu` for context menus and dropdowns.
+- **ALWAYS** use `QChip` for tags and status indicators.
+- **ALWAYS** use `QAvatar` for user profile displays.
+- **ALWAYS** use `QList` and `QItem` for navigation and lists.
+- **ALWAYS** use `QStepper` for multi-step processes.
+- **ALWAYS** use `QTabs` and `QTab` for tabbed interfaces.
+- **ALWAYS** use `QExpansionItem` for collapsible content.
+- **ALWAYS** use `QSpinner` for loading states.
+- **ALWAYS** use `QNotify` for toast notifications.
+- **ALWAYS** use `QLoading` for full-screen loading overlays.
+- **ALWAYS** use `Dark` plugin for dark mode support.
+- **ALWAYS** use `Quasar.lang` for internationalization.
+- **ALWAYS** use `Quasar.iconSet` for custom icon sets.

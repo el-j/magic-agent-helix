@@ -9,6 +9,7 @@ export * from "./types";
 export { BUILT_IN_CONFIG } from "./built-in-config";
 export { mergeConfigs, loadUserConfig } from "./config-merger";
 export { analyzeProjectTags, type ProjectAnalysisData } from "./analysis";
+export { getFormatter, type InstructionFormatter, type AssistantTarget } from "./formatters";
 
 // Export the path to the built-in templates directory
 export const BUILT_IN_TEMPLATE_DIR = resolve(__dirname, "default_templates");

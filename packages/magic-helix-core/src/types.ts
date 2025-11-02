@@ -34,10 +34,13 @@ export type TagTemplateMap = Record<
  */
 export interface Config {
 	/**
-	 * The AI agent target. 'github-copilot' is currently the only
-	 * supported target, which generates files in the .github/instructions/ directory.
+	 * The AI agent target. Supported targets:
+	 * - 'github-copilot': GitHub Copilot (default)
+	 * - 'claude': Anthropic Claude/Cursor
+	 * - 'copilot-chat': GitHub Copilot Chat
+	 * - 'generic': Generic assistant format
 	 */
-	target: "github-copilot";
+	target: "github-copilot" | "claude" | "copilot-chat" | "generic";
 
 	/**
 	 * The *user's* local directory where their .md templates are stored
