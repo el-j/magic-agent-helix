@@ -6,6 +6,10 @@ on:
       - main
       - development
       - 'feature/*'
+    tags:
+      - 'v*.*.*'        # Main release tags
+      - '*-alpha.*'     # Alpha tags
+      - '*-beta.*'      # Beta tags
   workflow_dispatch:
 
 jobs:
