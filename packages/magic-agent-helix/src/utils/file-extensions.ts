@@ -111,6 +111,7 @@ export function getFileExtensionsForTag(tag: string): string[] {
 export function buildPreciseGlobPattern(
 	projectPath: string,
 	tags: Set<string>,
+	excludePattern?: string,
 ): string {
 	const allExtensions = new Set<string>();
 
@@ -129,7 +130,26 @@ export function buildPreciseGlobPattern(
 
 	// Build pattern
 	const extList = Array.from(allExtensions).join(",");
-	return `${projectPath}/src/**/*.{${extList}}`;
+	let pattern = `${projectPath}/src/**/*.{${extList}}`;
+
+	// Add exclude pattern if provided
+	if (excludePattern) {
+		// Convert exclude pattern to glob negation
+		const excludePatterns = excludePattern.split(',').map(p => p.trim());
+		for (const exclude of excludePatterns) {
+			// Handle directory exclusions
+			if (exclude.endsWith('/**')) {
+				pattern += ` !(${projectPath}/src/${exclude})`;
+			} else if (exclude.includes('*')) {
+				pattern += ` !(${projectPath}/src/${exclude})`;
+			} else {
+				// Exact file match
+				pattern += ` !(${projectPath}/src/${exclude})`;
+			}
+		}
+	}
+
+	return pattern;
 }
 
 /**

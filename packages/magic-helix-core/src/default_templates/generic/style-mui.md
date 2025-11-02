@@ -1,0 +1,23 @@
+# Styling: Material-UI (MUI)
+- **ALWAYS** use `@mui/material` v5+ with Emotion styling engine.
+- **ALWAYS** use `sx` prop for component-level styling.
+- **ALWAYS** use `ThemeProvider` for consistent theming.
+- **ALWAYS** use `createTheme()` for custom theme configuration.
+- **ALWAYS** use semantic color tokens from the theme palette.
+- **ALWAYS** use `Box` component as a generic layout primitive.
+- **ALWAYS** use `Container` for max-width layouts and centering.
+- **ALWAYS** use `Grid` v2 (`Grid2`) for responsive layouts.
+- **ALWAYS** use `Typography` component for all text elements.
+- **ALWAYS** use `Button` variants (`contained`, `outlined`, `text`) appropriately.
+- **ALWAYS** use `IconButton` for icon-only actions.
+- **ALWAYS** use `TextField` with proper `label` and `helperText` props.
+- **ALWAYS** use `FormControl` and `FormLabel` for form organization.
+- **ALWAYS** use `Dialog` for modals with proper accessibility.
+- **ALWAYS** use `Menu` and `MenuItem` for dropdown menus.
+- **ALWAYS** use `Chip` for tags, filters, and small status indicators.
+- **ALWAYS** use `Avatar` for user profile images.
+- **ALWAYS** use `Card`, `CardContent`, and `CardActions` for content containers.
+- **ALWAYS** use `List`, `ListItem`, and `ListItemText` for list displays.
+- **ALWAYS** use `Table` components for tabular data.
+- **ALWAYS** use `useMediaQuery` hook for responsive behavior.
+- **ALWAYS** use `styled()` API for custom component styling when needed.

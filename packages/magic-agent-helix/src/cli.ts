@@ -19,7 +19,7 @@ async function main() {
 		program
 			.name("ai-aligner")
 			.description("A CLI to align AI instructions in your monorepo.")
-			.version("0.1.0"); // This should match package.json
+			.version("0.2.0"); // This should match package.json
 
 		program
 			.command("init")
@@ -38,9 +38,13 @@ async function main() {
 			.option("--skip-pruning", "Don't ask to remove old files")
 			.option("--output-dir <path>", "Custom output directory")
 			.option("--config <path>", "Path to custom config file")
+			.option("--target <assistant>", "AI assistant target (github-copilot, claude, copilot-chat, generic)")
 			.option("--verbose", "Show detailed output")
 			.option("--quiet", "Show minimal output")
 			.option("--project <name>", "Target a specific project only")
+			.option("--wizard", "Run in interactive wizard mode")
+			.option("--template <pattern>", "Filter templates by pattern (e.g., 'react,vue')")
+			.option("--exclude <pattern>", "Exclude files matching pattern (e.g., 'test/**,*.spec.ts')")
 			.action(run);
 
 		program
@@ -50,6 +54,7 @@ async function main() {
 			)
 			.alias("resync")
 			.option("--config <path>", "Path to custom config file")
+			.option("--target <assistant>", "AI assistant target (github-copilot, claude, copilot-chat, generic)")
 			.option("--verbose", "Show detailed output")
 			.option("--quiet", "Show minimal output")
 			.option("--project <name>", "Target a specific project only")
