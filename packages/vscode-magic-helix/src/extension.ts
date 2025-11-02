@@ -138,6 +138,11 @@ export function activate(context: vscode.ExtensionContext) {
 		await configureWorkspaceSettings();
 	});
 
+	// Register AI refine command
+	const refineWithAICommand = vscode.commands.registerCommand("magic-helix.refineWithAI", async (uri?: vscode.Uri) => {
+		await refineInstructionFileWithAI(uri);
+	});
+
 	context.subscriptions.push(
 		disposable, 
 		initCommand,
@@ -149,7 +154,8 @@ export function activate(context: vscode.ExtensionContext) {
 		showStatusCommand,
 		quickAccessCommand,
 		saveFavoriteCommand,
-		configureWorkspaceCommand
+		configureWorkspaceCommand,
+		refineWithAICommand
 	);
 }
 
@@ -1041,6 +1047,11 @@ async function showQuickAccessMenu(context: vscode.ExtensionContext) {
 			label: "$(graph) Show Status",
 			description: "View status panel",
 			detail: "Open the status and progress panel"
+		},
+		{
+			label: "$(sparkle) Refine with AI",
+			description: "Improve instruction files",
+			detail: "Use Copilot to refine and improve instruction files"
 		}
 	];
 
@@ -1097,7 +1108,8 @@ async function showQuickAccessMenu(context: vscode.ExtensionContext) {
 			"$(checklist) Validate Files": "magic-helix.validate",
 			"$(trash) Clean Files": "magic-helix.clean",
 			"$(output) Show Output": "magic-helix.showOutput",
-			"$(graph) Show Status": "magic-helix.showStatus"
+			"$(graph) Show Status": "magic-helix.showStatus",
+			"$(sparkle) Refine with AI": "magic-helix.refineWithAI"
 		};
 
 		const command = commandMap[selectedCommand.label] || 
@@ -1121,6 +1133,242 @@ async function showQuickAccessMenu(context: vscode.ExtensionContext) {
 			await vscode.commands.executeCommand(command);
 		}
 	}
+}
+
+/**
+ * Refine an instruction file using Copilot/Language Model API
+ */
+async function refineInstructionFileWithAI(uri?: vscode.Uri) {
+	try {
+		// Get the file to refine
+		let fileUri = uri;
+		if (!fileUri) {
+			// If not called from context menu, ask user to select
+			const activeEditor = vscode.window.activeTextEditor;
+			if (activeEditor?.document.fileName.includes('.github/instructions')) {
+				fileUri = activeEditor.document.uri;
+			} else {
+				// Show file picker for .github/instructions files
+				const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+				if (!workspaceFolder) {
+					vscode.window.showErrorMessage("No workspace folder open");
+					return;
+				}
+
+				const instructionsPath = path.join(workspaceFolder.uri.fsPath, ".github", "instructions");
+				if (!fs.existsSync(instructionsPath)) {
+					vscode.window.showErrorMessage("No .github/instructions folder found. Run MagicAgentHelix first to generate instruction files.");
+					return;
+				}
+
+				const files = fs.readdirSync(instructionsPath)
+					.filter(f => f.endsWith('.md'))
+					.map(f => ({ label: f, description: path.join(instructionsPath, f) }));
+
+				const selected = await vscode.window.showQuickPick(files, {
+					placeHolder: "Select an instruction file to refine with AI"
+				});
+
+				if (!selected) {
+					return;
+				}
+
+				fileUri = vscode.Uri.file(selected.description);
+			}
+		}
+
+		// Read the current content
+		const document = await vscode.workspace.openTextDocument(fileUri);
+		const currentContent = document.getText();
+
+		// Check if Language Model API is available
+		const models = await vscode.lm.selectChatModels({ vendor: 'copilot' });
+		
+		if (models.length === 0) {
+			const installCopilot = await vscode.window.showErrorMessage(
+				"GitHub Copilot is required for AI refinement. Would you like to install it?",
+				"Install Copilot",
+				"Cancel"
+			);
+			
+			if (installCopilot === "Install Copilot") {
+				vscode.commands.executeCommand('workbench.extensions.search', '@id:github.copilot');
+			}
+			return;
+		}
+
+		const model = models[0];
+
+		// Show progress
+		await vscode.window.withProgress({
+			location: vscode.ProgressLocation.Notification,
+			title: "Refining instruction file with AI...",
+			cancellable: true
+		}, async (progress, token) => {
+			progress.report({ increment: 0, message: "Analyzing file..." });
+
+			// Craft the prompt
+			if (!fileUri) {
+				vscode.window.showErrorMessage("No file selected");
+				return;
+			}
+			
+			const fileName = path.basename(fileUri.fsPath);
+			const projectContext = await getProjectContext(fileUri);
+
+			const prompt = `You are an expert at writing clear, actionable AI instructions for GitHub Copilot and other AI coding assistants.
+
+I have an instruction file for my project that needs refinement. Please analyze it and improve it by:
+
+1. **Clarity**: Make instructions more specific and actionable
+2. **Completeness**: Add missing context or important patterns
+3. **Structure**: Improve organization and readability
+4. **Relevance**: Ensure instructions match the project context
+5. **Best Practices**: Include coding standards and conventions
+
+**File**: ${fileName}
+**Project Context**: 
+${projectContext}
+
+**Current Content**:
+\`\`\`markdown
+${currentContent}
+\`\`\`
+
+Please provide an improved version of this instruction file. Keep the same general structure and purpose, but make it more effective. Return ONLY the improved markdown content, no explanations.`;
+
+			const messages = [
+				vscode.LanguageModelChatMessage.User(prompt)
+			];
+
+			progress.report({ increment: 30, message: "Requesting improvements from AI..." });
+
+			if (token.isCancellationRequested) {
+				return;
+			}
+
+			// Make the request
+			const response = await model.sendRequest(messages, {}, token);
+
+			progress.report({ increment: 40, message: "Receiving AI suggestions..." });
+
+			let improvedContent = "";
+			for await (const chunk of response.text) {
+				if (token.isCancellationRequested) {
+					return;
+				}
+				improvedContent += chunk;
+			}
+
+			progress.report({ increment: 20, message: "Processing suggestions..." });
+
+			// Show diff and ask user to confirm
+			const action = await vscode.window.showInformationMessage(
+				"AI has refined the instruction file. Would you like to preview the changes?",
+				"Preview & Apply",
+				"Cancel"
+			);
+
+			if (action === "Preview & Apply") {
+				// Create a temporary file with the improved content
+				const tempUri = vscode.Uri.file(fileUri.fsPath + '.ai-refined.md');
+				await vscode.workspace.fs.writeFile(tempUri, Buffer.from(improvedContent, 'utf-8'));
+
+				// Show diff
+				await vscode.commands.executeCommand('vscode.diff', 
+					fileUri, 
+					tempUri, 
+					`${fileName} ← AI Refined`
+				);
+
+				// Ask if they want to apply
+				const apply = await vscode.window.showInformationMessage(
+					"Apply the AI refinements to the original file?",
+					"Apply",
+					"Keep Original",
+					"Save As New"
+				);
+
+				if (apply === "Apply") {
+					const edit = new vscode.WorkspaceEdit();
+					edit.replace(
+						fileUri,
+						new vscode.Range(0, 0, document.lineCount, 0),
+						improvedContent
+					);
+					await vscode.workspace.applyEdit(edit);
+					await document.save();
+					vscode.window.showInformationMessage("✓ Instruction file refined with AI");
+					
+					// Delete temp file
+					await vscode.workspace.fs.delete(tempUri);
+				} else if (apply === "Save As New") {
+					const newFileName = fileName.replace('.md', '.ai-refined.md');
+					const newUri = vscode.Uri.file(path.join(path.dirname(fileUri.fsPath), newFileName));
+					await vscode.workspace.fs.writeFile(newUri, Buffer.from(improvedContent, 'utf-8'));
+					vscode.window.showInformationMessage(`✓ Saved refined version as ${newFileName}`);
+					
+					// Delete temp file
+					await vscode.workspace.fs.delete(tempUri);
+				} else {
+					// Keep original, delete temp
+					await vscode.workspace.fs.delete(tempUri);
+				}
+			}
+
+			progress.report({ increment: 10, message: "Complete!" });
+		});
+
+	} catch (err) {
+		if (err instanceof vscode.LanguageModelError) {
+			vscode.window.showErrorMessage(`AI refinement failed: ${err.message} (${err.code})`);
+			outputChannel.appendLine(`[AI Refine Error] ${err.message}`);
+		} else {
+			vscode.window.showErrorMessage(`Failed to refine instruction file: ${err}`);
+			outputChannel.appendLine(`[AI Refine Error] ${err}`);
+		}
+	}
+}
+
+/**
+ * Get project context for AI refinement
+ */
+async function getProjectContext(fileUri: vscode.Uri): Promise<string> {
+	const workspaceFolder = vscode.workspace.getWorkspaceFolder(fileUri);
+	if (!workspaceFolder) {
+		return "Unknown project";
+	}
+
+	const context: string[] = [];
+	
+	// Try to read package.json
+	const packageJsonPath = path.join(workspaceFolder.uri.fsPath, "package.json");
+	if (fs.existsSync(packageJsonPath)) {
+		try {
+			const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+			if (packageJson.name) {
+				context.push(`Project: ${packageJson.name}`);
+			}
+			if (packageJson.description) {
+				context.push(`Description: ${packageJson.description}`);
+			}
+			if (packageJson.dependencies) {
+				const deps = Object.keys(packageJson.dependencies).slice(0, 10).join(', ');
+				context.push(`Dependencies: ${deps}${Object.keys(packageJson.dependencies).length > 10 ? '...' : ''}`);
+			}
+		} catch {
+			// Ignore parsing errors
+		}
+	}
+
+	// Get file-specific context from filename
+	const fileName = path.basename(fileUri.fsPath);
+	const tags = fileName.replace('.md', '').split('.').filter(t => t);
+	if (tags.length > 0) {
+		context.push(`Instruction tags: ${tags.join(', ')}`);
+	}
+
+	return context.length > 0 ? context.join('\n') : "Project details unavailable";
 }
 
 // This method is called when your extension is deactivated

@@ -1,8 +1,8 @@
 {
 	"name": "vscode-magic-helix",
 	"displayName": "MagicAgentHelix Runner",
-	"description": "Advanced VS Code extension for running MagicAgentHelix CLI with command history, favorites, workspace configuration, and progress tracking.",
-	"version": "0.3.0",
+	"description": "Advanced VS Code extension for running MagicAgentHelix CLI with AI-powered refinement, command history, favorites, workspace configuration, and progress tracking.",
+	"version": "0.4.0",
 	"publisher": "el-j",
 	"repository": {
 		"type": "git",
@@ -100,6 +100,12 @@
 				"title": "Configure Workspace Settings",
 				"category": "MagicAgentHelix",
 				"icon": "$(settings-gear)"
+			},
+			{
+				"command": "magic-helix.refineWithAI",
+				"title": "Refine Instruction File with AI",
+				"category": "MagicAgentHelix",
+				"icon": "$(sparkle)"
 			}
 		],
 		"menus": {
@@ -147,6 +153,24 @@
 				{
 					"command": "magic-helix.configureWorkspace",
 					"when": "workspaceFolderCount > 0"
+				},
+				{
+					"command": "magic-helix.refineWithAI",
+					"when": "workspaceFolderCount > 0"
+				}
+			],
+			"explorer/context": [
+				{
+					"command": "magic-helix.refineWithAI",
+					"when": "resourcePath =~ /\\.github\\/instructions\\/.*\\.md$/",
+					"group": "magichelix@1"
+				}
+			],
+			"editor/context": [
+				{
+					"command": "magic-helix.refineWithAI",
+					"when": "resourcePath =~ /\\.github\\/instructions\\/.*\\.md$/",
+					"group": "magichelix@1"
 				}
 			]
 		},
