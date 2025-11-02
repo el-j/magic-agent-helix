@@ -83,6 +83,18 @@ When running `Run` or `Refresh` commands, you'll be presented with an interactiv
    - Use custom config file
    - Set custom output directory
 
+### 🔧 Available Commands
+
+The extension provides access to all MagicAgentHelix CLI commands:
+
+- **Run MagicAgentHelix** (`magic-helix.run`) - Generate AI instruction files
+- **Refresh MagicAgentHelix** (`magic-helix.refresh`) - Update existing instruction files  
+- **List Projects & Tags** (`magic-helix.list`) - Show detected projects and tags
+- **Validate Instruction Files** (`magic-helix.validate`) - Check instruction files integrity
+- **Clean Generated Files** (`magic-helix.clean`) - Remove all generated files
+- **Show Output** (`magic-helix.showOutput`) - Display the output channel
+- **Show Status Panel** (`magic-helix.showStatus`) - Display the status panel
+
 ## Usage
 
 ### Running MagicAgentHelix
