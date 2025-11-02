@@ -1,3 +1,9 @@
+## [1.3.0](https://github.com/el-j/magic-agent-helix/compare/v1.2.0...v1.3.0) (2025-11-02)
+
+### Features
+
+* enhance run command with CLI options and logging ([88df109](https://github.com/el-j/magic-agent-helix/commit/88df109438ac8d70357544dd16c6209187fe15cd))
+
 ## [0.3.0] - 2025-01-XX (Pending Release)
 
 ### 🎉 Major Features - VS Code Extension Improvements
