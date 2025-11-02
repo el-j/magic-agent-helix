@@ -1,3 +1,9 @@
+## [1.4.0-beta.1](https://github.com/el-j/magic-agent-helix/compare/v1.3.0...v1.4.0-beta.1) (2025-11-02)
+
+### Features
+
+* Add tag filters for release workflow ([#9](https://github.com/el-j/magic-agent-helix/issues/9)) ([1771a41](https://github.com/el-j/magic-agent-helix/commit/1771a412eeaa41b2ea5cde5f9f4511aee19336df)), closes [#6](https://github.com/el-j/magic-agent-helix/issues/6)
+
 ## [1.3.0](https://github.com/el-j/magic-agent-helix/compare/v1.2.0...v1.3.0) (2025-11-02)
 
 ### Features
