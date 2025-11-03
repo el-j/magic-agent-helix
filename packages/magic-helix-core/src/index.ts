@@ -34,5 +34,12 @@ export {
 	CodeOwnersPlugin
 } from "./plugins";
 
+// Plugin-based Analysis
+export {
+	analyzeWithPlugins,
+	registerBuiltInPlugins,
+	type PluginAnalysisResult
+} from "./plugin-analyzer";
+
 // Export the path to the built-in templates directory
 export const BUILT_IN_TEMPLATE_DIR = resolve(__dirname, "default_templates");
