@@ -15,20 +15,20 @@ The goal is for `magic-agent-helix` to be able to scan *any* modern software pro
 ### 1. 🏗️ Core: Plugin-Based Architecture
 The foundation for all new features. This involves refactoring the core analysis engine to use a plugin-based system, where each technology (e.g., Go, Docker, GitHub Actions) is a self-contained plugin.
 
-* `[ ]` **Define Plugin Interface:** Create a standard `DetectionPlugin` interface (e.g., `name`, `detect()`, `generateInstructions()`).
-* `[ ]` **Refactor Core Engine:** Update the main analysis service to load and execute all registered plugins.
-* `[ ]` **Create Detection Context:** Build a `DetectionContext` utility that plugins can use to access the file list and file content (e.g., `context.files`, `context.getTextFile()`).
+* `[x]` **Define Plugin Interface:** Create a standard `DetectionPlugin` interface (e.g., `name`, `detect()`, `generateInstructions()`).
+* `[~]` **Refactor Core Engine:** Update the main analysis service to load and execute all registered plugins.
+* `[x]` **Create Detection Context:** Build a `DetectionContext` utility that plugins can use to access the file list and file content (e.g., `context.files`, `context.getTextFile()`).
 
 ---
 
 ### 2. 🌍 Feature: Polyglot Ecosystem Detection
 Expand detection beyond the Node.js ecosystem.
 
-* `[ ]` **Go (Golang):**
-    * **Detection:** `go.mod`
+* `[x]` **Go (Golang):**
+    * **Detection:** `go.mod` ✅ (GolangPlugin implemented)
     * **Instructions:** `go.mod` usage, `go mod tidy`, idiomatic error handling.
-* `[ ]` **Python:**
-    * **Detection:** `pyproject.toml` (Poetry/PEP 621), `requirements.txt`.
+* `[x]` **Python:**
+    * **Detection:** `pyproject.toml` (Poetry/PEP 621), `requirements.txt` ✅ (PythonPlugin implemented)
     * **Instructions:** `poetry` vs. `pip` usage, virtual environments, common tools (black, ruff).
 * `[ ]` **Rust:**
     * **Detection:** `Cargo.toml`
@@ -48,8 +48,8 @@ Analyze the *workflows* that build and deploy the code.
 * `[ ]` **GitLab CI:**
     * **Detection:** `.gitlab-ci.yml`
     * **Instructions:** Parse YAML to identify `stages`, `cache` paths, and `rules/only` logic.
-* `[ ]` **Docker:**
-    * **Detection:** `Dockerfile`, `docker-compose.yml`
+* `[x]` **Docker:**
+    * **Detection:** `Dockerfile`, `docker-compose.yml` ✅ (DockerPlugin implemented)
     * **Instructions:** Multi-stage build best practices, local `docker compose` usage.
 
 ---
