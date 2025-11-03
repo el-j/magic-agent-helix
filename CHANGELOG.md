@@ -1,9 +1,10 @@
-## [1.3.0] - 2025-11-03 (Current Stable Release)
+## [1.3.0](https://github.com/el-j/magic-agent-helix/compare/v1.2.0...v1.3.0) (2025-11-02)
 
-### ✨ Version Alignment
-- Unified all package versions to 1.3.0 for consistency
-- Aligned monorepo, core, CLI, and VS Code extension versions
-- Prepared foundation for v2.0.0 polyglot architecture
+### Features
+
+* enhance run command with CLI options and logging ([88df109](https://github.com/el-j/magic-agent-helix/commit/88df109438ac8d70357544dd16c6209187fe15cd))
+
+## [0.3.0] - 2025-01-XX (Pending Release)
 
 ### 🎉 Major Features - VS Code Extension Improvements
 
@@ -34,7 +35,7 @@
 - Improved extension manifest with detailed metadata
 
 ### 📝 Documentation
-- Updated VS Code extension README with all features
+- Updated VS Code extension README with all v0.3.0 features
 - Added settings documentation with examples
 - Documented keyboard shortcuts and quick access menu
 - Added workspace configuration guide
