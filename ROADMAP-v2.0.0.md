@@ -16,7 +16,7 @@ The goal is for `magic-agent-helix` to be able to scan *any* modern software pro
 The foundation for all new features. This involves refactoring the core analysis engine to use a plugin-based system, where each technology (e.g., Go, Docker, GitHub Actions) is a self-contained plugin.
 
 * `[x]` **Define Plugin Interface:** Create a standard `DetectionPlugin` interface (e.g., `name`, `detect()`, `generateInstructions()`).
-* `[~]` **Refactor Core Engine:** Update the main analysis service to load and execute all registered plugins.
+* `[x]` **Refactor Core Engine:** Update the main analysis service to load and execute all registered plugins. ✅ (plugin-analyzer.ts)
 * `[x]` **Create Detection Context:** Build a `DetectionContext` utility that plugins can use to access the file list and file content (e.g., `context.files`, `context.getTextFile()`).
 
 ---
