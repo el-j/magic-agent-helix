@@ -22,7 +22,17 @@ export {
 } from "./plugin-system";
 
 // Built-in Plugins
-export { GolangPlugin, PythonPlugin, DockerPlugin } from "./plugins";
+export { 
+	GolangPlugin, 
+	PythonPlugin, 
+	RustPlugin, 
+	PHPPlugin,
+	DockerPlugin, 
+	GitHubActionsPlugin, 
+	GitLabCIPlugin,
+	MonorepoPlugin,
+	CodeOwnersPlugin
+} from "./plugins";
 
 // Export the path to the built-in templates directory
 export const BUILT_IN_TEMPLATE_DIR = resolve(__dirname, "default_templates");
