@@ -4,9 +4,13 @@ import {
   Instruction,
 } from './plugins/plugin.interface';
 import { GoPlugin } from './plugins/go.plugin.ts';
-// Import your future plugins here
-// import { DockerPlugin } from './plugins/docker.plugin.ts';
-// import { GitHubActionsPlugin } from './plugins/github-actions.plugin.ts';
+import { PythonPlugin } from './plugins/python.plugin.ts';
+import { RustPlugin } from './plugins/rust.plugin.ts';
+import { MonorepoPlugin } from './plugins/monorepo.plugin.ts'; // <-- Add this
+import { CodeownersPlugin } from './plugins/codeowners.plugin.ts
+import { DockerPlugin } from './plugins/docker.plugin.ts';
+import { GitHubActionsPlugin } from './plugins/github-actions.plugin.ts';
+
 
 export class AnalysisService {
   private plugins: DetectionPlugin[];
@@ -16,11 +20,14 @@ export class AnalysisService {
     // This is where you will add all your new plugins.
     this.plugins = [
       new GoPlugin(),
-      // new DockerPlugin(),
-      // new GitHubActionsPlugin(),
-    ];
-
-    // You can also add your existing TypeScript/Vue/etc.
+      new DockerPlugin(),
+      new GitHubActionsPlugin(),
+      new PythonPlugin(), // <-- Add this
+      new RustPlugin(),
+      new MonorepoPlugin(), // <-- Add this
+      new CodeownersPlugin(),
+     ]
+    // TODO: add existing TypeScript/Vue/etc.
     // logic by wrapping it in a plugin!
   }
 
