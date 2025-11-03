@@ -213,15 +213,24 @@ Releases are automated via semantic-release. Both `magic-helix-core` and `magic-
 
 ### Release Configuration
 
-See `.releaserc.json` for the semantic-release configuration. The workflow:
+This project uses automated releases with semantic-release. **Important:** Commits must follow [Conventional Commits](https://www.conventionalcommits.org/) format to trigger releases:
 
-1. Push commits with conventional commit messages
+- `feat:` - New feature (triggers MINOR version bump)
+- `fix:` - Bug fix (triggers PATCH version bump)
+- `feat!:` or `BREAKING CHANGE:` - Breaking change (triggers MAJOR version bump)
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed release guidelines.
+
+**Automated Release Workflow:**
+
+1. Push commits with conventional commit messages to `main` branch
 2. GitHub Actions runs tests and builds
-3. Semantic-release analyzes commits
-4. Bumps version numbers
-5. Publishes `magic-helix-core` to NPM
-6. Publishes `magic-agent-helix` to NPM
-7. Creates GitHub Release with changelog
+3. Semantic-release analyzes commits and determines version
+4. Bumps version numbers in package.json files
+5. Updates CHANGELOG.md
+6. Publishes `magic-helix-core` to NPM
+7. Publishes `magic-agent-helix` to NPM
+8. Creates GitHub Release with changelog and assets
 
 ### Manual Publishing (if needed)
 
