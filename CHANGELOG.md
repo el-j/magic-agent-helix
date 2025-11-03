@@ -1,4 +1,9 @@
-## [0.3.0] - 2025-01-XX (Pending Release)
+## [1.3.0] - 2025-11-03 (Current Stable Release)
+
+### ✨ Version Alignment
+- Unified all package versions to 1.3.0 for consistency
+- Aligned monorepo, core, CLI, and VS Code extension versions
+- Prepared foundation for v2.0.0 polyglot architecture
 
 ### 🎉 Major Features - VS Code Extension Improvements
 
@@ -29,7 +34,7 @@
 - Improved extension manifest with detailed metadata
 
 ### 📝 Documentation
-- Updated VS Code extension README with all v0.3.0 features
+- Updated VS Code extension README with all features
 - Added settings documentation with examples
 - Documented keyboard shortcuts and quick access menu
 - Added workspace configuration guide

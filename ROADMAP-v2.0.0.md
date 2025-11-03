@@ -15,26 +15,26 @@ The goal is for `magic-agent-helix` to be able to scan *any* modern software pro
 ### 1. 🏗️ Core: Plugin-Based Architecture
 The foundation for all new features. This involves refactoring the core analysis engine to use a plugin-based system, where each technology (e.g., Go, Docker, GitHub Actions) is a self-contained plugin.
 
-* `[ ]` **Define Plugin Interface:** Create a standard `DetectionPlugin` interface (e.g., `name`, `detect()`, `generateInstructions()`).
-* `[ ]` **Refactor Core Engine:** Update the main analysis service to load and execute all registered plugins.
-* `[ ]` **Create Detection Context:** Build a `DetectionContext` utility that plugins can use to access the file list and file content (e.g., `context.files`, `context.getTextFile()`).
+* `[x]` **Define Plugin Interface:** Create a standard `DetectionPlugin` interface (e.g., `name`, `detect()`, `generateInstructions()`).
+* `[x]` **Refactor Core Engine:** Update the main analysis service to load and execute all registered plugins. ✅ (plugin-analyzer.ts)
+* `[x]` **Create Detection Context:** Build a `DetectionContext` utility that plugins can use to access the file list and file content (e.g., `context.files`, `context.getTextFile()`).
 
 ---
 
 ### 2. 🌍 Feature: Polyglot Ecosystem Detection
 Expand detection beyond the Node.js ecosystem.
 
-* `[ ]` **Go (Golang):**
-    * **Detection:** `go.mod`
+* `[x]` **Go (Golang):**
+    * **Detection:** `go.mod` ✅ (GolangPlugin implemented)
     * **Instructions:** `go.mod` usage, `go mod tidy`, idiomatic error handling.
-* `[ ]` **Python:**
-    * **Detection:** `pyproject.toml` (Poetry/PEP 621), `requirements.txt`.
+* `[x]` **Python:**
+    * **Detection:** `pyproject.toml` (Poetry/PEP 621), `requirements.txt` ✅ (PythonPlugin implemented)
     * **Instructions:** `poetry` vs. `pip` usage, virtual environments, common tools (black, ruff).
-* `[ ]` **Rust:**
-    * **Detection:** `Cargo.toml`
+* `[x]` **Rust:**
+    * **Detection:** `Cargo.toml` ✅ (RustPlugin implemented)
     * **Instructions:** `cargo` commands (build, test, clippy), ownership/borrow checker concepts.
-* `[ ]` **PHP:**
-    * **Detection:** `composer.json`
+* `[x]` **PHP:**
+    * **Detection:** `composer.json` ✅ (PHPPlugin implemented)
     * **Instructions:** `composer` usage, `artisan` (if Laravel is detected).
 
 ---
@@ -42,14 +42,14 @@ Expand detection beyond the Node.js ecosystem.
 ### 3. ⚙️ Feature: DevOps & CI/CD Awareness
 Analyze the *workflows* that build and deploy the code.
 
-* `[ ]` **GitHub Actions:**
-    * **Detection:** `.github/workflows/*.yml`
+* `[x]` **GitHub Actions:**
+    * **Detection:** `.github/workflows/*.yml` ✅ (GitHubActionsPlugin implemented)
     * **Instructions:** Parse YAML to identify job names, triggers (push/pr), and `matrix` strategies.
-* `[ ]` **GitLab CI:**
-    * **Detection:** `.gitlab-ci.yml`
+* `[x]` **GitLab CI:**
+    * **Detection:** `.gitlab-ci.yml` ✅ (GitLabCIPlugin implemented)
     * **Instructions:** Parse YAML to identify `stages`, `cache` paths, and `rules/only` logic.
-* `[ ]` **Docker:**
-    * **Detection:** `Dockerfile`, `docker-compose.yml`
+* `[x]` **Docker:**
+    * **Detection:** `Dockerfile`, `docker-compose.yml` ✅ (DockerPlugin implemented)
     * **Instructions:** Multi-stage build best practices, local `docker compose` usage.
 
 ---
@@ -57,11 +57,11 @@ Analyze the *workflows* that build and deploy the code.
 ### 4. 🏛️ Feature: Architectural & Structural Awareness
 Detect high-level project patterns and "ways of working."
 
-* `[ ]` **Monorepo Structure:**
-    * **Detection:** `turbo.json`, `nx.json`, `pnpm-workspace.yaml`.
+* `[x]` **Monorepo Structure:**
+    * **Detection:** `turbo.json`, `nx.json`, `pnpm-workspace.yaml` ✅ (MonorepoPlugin implemented)
     * **Instructions:** Root-level commands (`turbo run build`), package locations.
-* `[ ]` **Code Ownership:**
-    * **Detection:** `.github/CODEOWNERS`
+* `[x]` **Code Ownership:**
+    * **Detection:** `.github/CODEOWNERS` ✅ (CodeOwnersPlugin implemented)
     * **Instructions:** Parse file to list key owners (e.g., "Changes to `packages/auth/` require review from @team-auth").
 * `[ ]` **Architectural Patterns (Heuristic):**
     * **Detection:** Folder names (`src/domain`, `src/application`, `src/infrastructure`).
