@@ -1,5 +1,40 @@
 ## [1.3.0] - 2025-11-03 (Current Stable Release)
 
+### ⚠️ BREAKING CHANGES
+
+#### Branch Naming Convention Change
+**The default development branch has been renamed from `development` to `develop`.**
+
+**Migration Guide:**
+If you have existing forks, local clones, or CI/CD pipelines that reference the `development` branch, you need to update them:
+
+1. **Update your local repository:**
+   ```bash
+   # Fetch the latest changes
+   git fetch origin
+   
+   # If you're on the old 'development' branch, switch to 'develop'
+   git checkout develop
+   
+   # Update your local branch to track the new remote branch
+   git branch -u origin/develop
+   
+   # (Optional) Delete the old local 'development' branch
+   git branch -d development
+   ```
+
+2. **Update CI/CD configurations:**
+   - Update any references to `development` branch in your workflows, scripts, or deployment pipelines to use `develop` instead.
+   - Check branch protection rules in your repository settings.
+   - Update any documentation or team guides that reference the branch name.
+
+3. **Update pull request base branches:**
+   - New pull requests should target the `develop` branch instead of `development`.
+   - Existing open pull requests targeting `development` should be updated to target `develop`.
+
+**Why this change?**
+The `develop` naming convention is more widely adopted in the industry and aligns with common Git workflow patterns (e.g., git-flow). This change improves consistency and reduces confusion for new contributors.
+
 ### ✨ Version Alignment
 - Unified all package versions to 1.3.0 for consistency
 - Aligned monorepo, core, CLI, and VS Code extension versions
@@ -44,6 +79,11 @@
 - Zero critical issues or TODOs in codebase
 - All builds passing successfully
 - Full test coverage maintained
+
+### ⚠️ Breaking Changes
+- **Workflow Branch Names**: Changed default development branch name from `development` to `develop` in CI/CD workflows
+  - If you have forked this repository and are using the `development` branch, please rename it to `develop` or update your workflow configurations accordingly
+  - Affected workflows: `.github/workflows/release.yml`, `.github/workflows/ci.yml`
 
 ---
 
