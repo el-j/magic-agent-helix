@@ -45,6 +45,11 @@
 - All builds passing successfully
 - Full test coverage maintained
 
+### ⚠️ Breaking Changes
+- **Workflow Branch Names**: Changed default development branch name from `development` to `develop` in CI/CD workflows
+  - If you have forked this repository and are using the `development` branch, please rename it to `develop` or update your workflow configurations accordingly
+  - Affected workflows: `.github/workflows/release.yml`, `.github/workflows/ci.yml`
+
 ---
 
 ## [1.1.0-beta.1](https://github.com/el-j/magic-agent-helix/compare/v1.0.0...v1.1.0-beta.1) (2025-10-29)
