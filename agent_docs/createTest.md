@@ -1,5 +1,17 @@
-AI Aligner - Test File Generation PromptGoal: Generate comprehensive vitest test files for the following source files to achieve ~99% test coverage.Key Requirements for All Tests:Mock all external dependencies: Use vi.mock() to mock modules like fs, path, inquirer, ora, glob, and commander.Mock all imports: In each *.test.ts file, mock all imported modules before importing the source file to be tested.Test all logic paths: Ensure tests cover if/else branches, try/catch blocks, and different user inputs.Use vi.fn(): Use vi.fn() for all mocked functions to allow for spying and assertions (e.g., expect(fs.writeFileSync).toHaveBeenCalledWith(...)).Reset mocks: Use beforeEach(() => { vi.clearAllMocks(); }) to ensure tests are isolated.Test async functions: Make sure to await all async functions, including the main command functions.File 1: /src/cli.ts (Source)#!/usr/bin/env node
+AI Aligner - Test File Generation Prompt
 
+Goal: Generate comprehensive vitest test files for the following source files to achieve ~99% test coverage.
+
+Key Requirements for All Tests:
+- Mock all external dependencies: Use vi.mock() to mock modules like fs, path, inquirer, ora, glob, and commander.
+- Mock all imports: In each *.test.ts file, mock all imported modules before importing the source file to be tested.
+- Test all logic paths: Ensure tests cover if/else branches, try/catch blocks, and different user inputs.
+- Use vi.fn(): Use vi.fn() for all mocked functions to allow for spying and assertions (e.g., expect(fs.writeFileSync).toHaveBeenCalledWith(...)).
+- Reset mocks: Use beforeEach(() => { vi.clearAllMocks(); }) to ensure tests are isolated.
+- Test async functions: Make sure to await all async functions, including the main command functions.
+
+File 1: /src/cli.ts (Source)
+#!/usr/bin/env node
 import { Command } from 'commander';
 import { run } from './commands/run';
 import { init } from './commands/init';
