@@ -2,9 +2,11 @@
 	"$schema": "https://biomejs.dev/schemas/stable/schema.json",
 	"files": {
 		"ignore": [
-			"**/dist/**",
-			"**/node_modules/**",
-			"**/.git/**"
+			"packages/magic-agent-helix/dist",
+			"packages/magic-helix-core/dist",
+			"packages/vscode-magic-helix/dist",
+			"dist",
+			"node_modules"
 		]
 	},
 	"organizeImports": {
