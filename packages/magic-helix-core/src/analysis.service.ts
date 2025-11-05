@@ -6,8 +6,8 @@ import {
 import { GoPlugin } from './plugins/go.plugin.ts';
 import { PythonPlugin } from './plugins/python.plugin.ts';
 import { RustPlugin } from './plugins/rust.plugin.ts';
-import { MonorepoPlugin } from './plugins/monorepo.plugin.ts'; // <-- Add this
-import { CodeownersPlugin } from './plugins/codeowners.plugin.ts
+import { MonorepoPlugin } from './plugins/monorepo.plugin.ts'; 
+import { CodeownersPlugin } from './plugins/codeowners.plugin.ts';
 import { DockerPlugin } from './plugins/docker.plugin.ts';
 import { GitHubActionsPlugin } from './plugins/github-actions.plugin.ts';
 
