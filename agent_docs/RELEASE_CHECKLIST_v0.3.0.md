@@ -256,15 +256,15 @@ Deep investigation of all packages, files, and implementation plans to ensure:
 - ✅ Check package.json dependencies (all dependencies verified and correct)
 - ✅ Update CHANGELOG.md (added comprehensive v0.3.0 release notes)
 - ✅ Cleanup unused imports and files (no unused imports, no TODO/FIXME comments, no temp files)
-- [ ] Tag release in git with "v1.1.0" as this is the version on github and npm coming now by semantic release in pipeline
+- [ ] Tag release in git with "v1.4.0" to match the release version documented in this checklist
 - [ ] Publish to npm (if applicable)
 - [ ] Publish to VS Code Marketplace (if applicable)
 
 ---
 
-## 🚀 NEXT RELEASE - v0.4.0 ROADMAP
+## 🚀 NEXT RELEASE - v1.5.0 ROADMAP
 
-### Potential Features for v0.4.0
+### Potential Features for v1.5.0
 
 #### **1. Testing & Quality Improvements** (High Priority)
 - [ ] Add unit tests for VS Code extension

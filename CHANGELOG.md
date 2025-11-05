@@ -41,7 +41,7 @@
 - Improved extension manifest with detailed metadata
 
 ### 📝 Documentation
-- Updated VS Code extension README with all v0.3.0 features
+- Updated VS Code extension README with all features
 - Added settings documentation with examples
 - Documented keyboard shortcuts and quick access menu
 - Added workspace configuration guide
@@ -51,6 +51,11 @@
 - Zero critical issues or TODOs in codebase
 - All builds passing successfully
 - Full test coverage maintained
+
+### ⚠️ Breaking Changes
+- **Workflow Branch Names**: Changed default development branch name from `development` to `develop` in CI/CD workflows
+  - If you have forked this repository and are using the `development` branch, please rename it to `develop` or update your workflow configurations accordingly
+  - Affected workflows: `.github/workflows/release.yml`, `.github/workflows/ci.yml`
 
 ---
 
