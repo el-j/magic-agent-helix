@@ -55,6 +55,7 @@ class ProjectDetectionContext implements DetectionContext {
 		// ** matches any number of directories
 		// * matches anything except /
 		const regexStr = pattern
+			.replace(/\\/g, "\\\\") // Escape backslashes first
 			.replace(/\*\*/g, "§DOUBLESTAR§")
 			.replace(/\*/g, "[^/]*")
 			.replace(/§DOUBLESTAR§/g, ".*")
