@@ -1,6 +1,6 @@
-import { ref } from "vue";
 import type { ProjectAnalysisData } from "magic-helix-core";
 import { analyzeProjectTags, mergeConfigs } from "magic-helix-core";
+import { ref } from "vue";
 
 /**
  * Composable for project analysis functionality
@@ -37,7 +37,7 @@ export function useProjectAnalysis() {
 		analysisResult.value = null;
 
 		try {
-			// @ts-ignore: File System Access API may not be in all TS libs
+			// @ts-expect-error: File System Access API may not be in all TS libs
 			const dirHandle = await window.showDirectoryPicker();
 
 			// Scan the directory
@@ -83,7 +83,7 @@ export function useProjectAnalysis() {
 		let dependencies: Record<string, string> = {};
 		const configFiles: string[] = [];
 		const projectFiles: string[] = [];
-		let projectName = dirHandle.name.replace(/@/g, "").replace(/\//g, "-");
+		const projectName = dirHandle.name.replace(/@/g, "").replace(/\//g, "-");
 
 		// Helper function to scan recursively
 		const recursiveScan = async (handle: any, currentPath: string) => {

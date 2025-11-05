@@ -1,8 +1,8 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { loadUserConfig, mergeConfigs } from "magic-helix-core";
 import ora from "ora";
 import pc from "picocolors";
-import { loadUserConfig, mergeConfigs } from "magic-helix-core";
 
 /**
  * The 'validate' command.
@@ -34,9 +34,7 @@ export async function validate() {
 	}
 
 	// Find all .md files
-	const files = fs
-		.readdirSync(targetDir)
-		.filter((f) => f.endsWith(".md"));
+	const files = fs.readdirSync(targetDir).filter((f) => f.endsWith(".md"));
 
 	if (files.length === 0) {
 		console.log(
@@ -94,7 +92,9 @@ export async function validate() {
 				.join("---")
 				.trim();
 			if (contentAfterFrontmatter.length < 10) {
-				issues.push(`${file}: File appears to have no content after frontmatter`);
+				issues.push(
+					`${file}: File appears to have no content after frontmatter`,
+				);
 				hasIssues = true;
 			}
 

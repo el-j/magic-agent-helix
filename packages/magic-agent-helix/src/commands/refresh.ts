@@ -1,20 +1,20 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import ora from "ora";
-import pc from "picocolors";
-import {
-	loadUserConfig,
-	mergeConfigs,
-	BUILT_IN_TEMPLATE_DIR,
-	getFormatter,
-	type AssistantTarget,
-} from "magic-helix-core";
 import type {
 	ConfigFileTagMap,
 	DependencyTagMap,
 	FileGlobTagMap,
 	TagTemplateMap,
 } from "magic-helix-core";
+import {
+	type AssistantTarget,
+	BUILT_IN_TEMPLATE_DIR,
+	getFormatter,
+	loadUserConfig,
+	mergeConfigs,
+} from "magic-helix-core";
+import ora from "ora";
+import pc from "picocolors";
 import { buildPreciseGlobPattern } from "../utils/file-extensions";
 
 // --- CONFIGURATION ---
@@ -27,8 +27,8 @@ interface Project {
 	tags: Set<string>;
 }
 
-import { getLogLevel, shouldLog } from "../utils/cli-options";
 import type { CliOptions } from "../utils/cli-options";
+import { getLogLevel, shouldLog } from "../utils/cli-options";
 
 /**
  * The 'refresh' command.
@@ -157,7 +157,11 @@ export async function refresh(options: CliOptions = {}) {
 
 				// Update header with new information
 				const header = formatter.getFrontmatter(globPattern, project.name);
-				const formattedContent = formatter.format(templateContent, globPattern, project.name);
+				const formattedContent = formatter.format(
+					templateContent,
+					globPattern,
+					project.name,
+				);
 				const fullContent = `${header}\n${formattedContent}`;
 
 				// Write updated file
@@ -173,12 +177,8 @@ export async function refresh(options: CliOptions = {}) {
 	}
 
 	console.log(`\n✨ Refresh complete!`);
-	console.log(
-		pc.green(`   Updated: ${updatedCount} files`),
-	);
-	console.log(
-		pc.gray(`   Skipped: ${skippedCount} projects`),
-	);
+	console.log(pc.green(`   Updated: ${updatedCount} files`));
+	console.log(pc.gray(`   Skipped: ${skippedCount} projects`));
 }
 
 // --- HELPER FUNCTIONS ---

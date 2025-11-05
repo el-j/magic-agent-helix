@@ -107,25 +107,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
-
-// Composables
-import { useProjectAnalysis } from "./composables/useProjectAnalysis";
-import { useGitLoader } from "./composables/useGitLoader";
-import { useFileManagement } from "./composables/useFileManagement";
-
-// Components
-import ProjectInfoCard from "./components/ProjectInfoCard.vue";
-import InstructionFileEditor from "./components/InstructionFileEditor.vue";
-
+import Accordion from "primevue/accordion";
+import AccordionTab from "primevue/accordiontab";
 // PrimeVue Components (local registration)
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import Message from "primevue/message";
-import ProgressSpinner from "primevue/progressspinner";
 import Panel from "primevue/panel";
-import Accordion from "primevue/accordion";
-import AccordionTab from "primevue/accordiontab";
+import ProgressSpinner from "primevue/progressspinner";
+import { ref, watch } from "vue";
+import InstructionFileEditor from "./components/InstructionFileEditor.vue";
+// Components
+import ProjectInfoCard from "./components/ProjectInfoCard.vue";
+import { useFileManagement } from "./composables/useFileManagement";
+import { useGitLoader } from "./composables/useGitLoader";
+// Composables
+import { useProjectAnalysis } from "./composables/useProjectAnalysis";
 
 // Use composables
 const { isLoading, error, currentFile, analysisResult, selectProject } =

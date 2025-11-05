@@ -1,20 +1,24 @@
-import {
-	describe,
-	it,
-	expect,
-	vi,
-	beforeEach,
-	afterEach,
-	type Mock,
-} from "vitest";
 import * as fs from "node:fs";
 import type * as path from "node:path";
-import inquirer from "inquirer";
 import { glob } from "glob";
+import inquirer from "inquirer";
+import {
+	BUILT_IN_CONFIG,
+	getFormatter,
+	loadUserConfig,
+	mergeConfigs,
+} from "magic-helix-core";
 import ora from "ora";
-import { loadUserConfig, mergeConfigs, getFormatter } from "magic-helix-core";
+import {
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	it,
+	type Mock,
+	vi,
+} from "vitest";
 import { run } from "./run";
-import { BUILT_IN_CONFIG } from "magic-helix-core";
 
 // Mock all external dependencies
 vi.mock("node:fs", () => ({
@@ -107,7 +111,7 @@ describe("Run Command (/src/commands/run.ts)", () => {
 		vi.mocked(getFormatter).mockReturnValue({
 			format: vi.fn((content) => content),
 			getFileExtension: vi.fn(() => ".md"),
-			getFrontmatter: vi.fn(() => "---\napplyTo: \"test\"\n---\n\n"),
+			getFrontmatter: vi.fn(() => '---\napplyTo: "test"\n---\n\n'),
 		});
 		vi.mocked(glob).mockImplementation(async (patterns: string | string[]) => {
 			if (
@@ -230,7 +234,9 @@ describe("Run Command (/src/commands/run.ts)", () => {
 		});
 
 		// Command line options should override wizard options
-		await expect(run({ wizard: true, target: "github-copilot" })).resolves.not.toThrow();
+		await expect(
+			run({ wizard: true, target: "github-copilot" }),
+		).resolves.not.toThrow();
 
 		expect(vi.mocked(inquirer.prompt)).toHaveBeenCalled();
 	});

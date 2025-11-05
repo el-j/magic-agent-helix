@@ -1,5 +1,9 @@
-import type { DetectionContext, DetectionPlugin, InstructionTemplate } from "./plugin-system";
 import type { ProjectAnalysisData } from "./analysis";
+import type {
+	DetectionContext,
+	DetectionPlugin,
+	InstructionTemplate,
+} from "./plugin-system";
 import { pluginRegistry } from "./plugin-system";
 
 /**
@@ -8,7 +12,7 @@ import { pluginRegistry } from "./plugin-system";
 class ProjectDetectionContext implements DetectionContext {
 	constructor(
 		private readonly analysisData: ProjectAnalysisData,
-		private readonly fileContentCache: Map<string, string> = new Map()
+		private readonly fileContentCache: Map<string, string> = new Map(),
 	) {}
 
 	get files(): string[] {
@@ -34,25 +38,27 @@ class ProjectDetectionContext implements DetectionContext {
 	}
 
 	hasFile(path: string): boolean {
-		return this.analysisData.projectFiles.includes(path) || 
-		       this.analysisData.configFiles.includes(path);
+		return (
+			this.analysisData.projectFiles.includes(path) ||
+			this.analysisData.configFiles.includes(path)
+		);
 	}
 
 	matchesPattern(pattern: string): boolean {
 		// Convert glob pattern to regex and test against files
 		const regex = this.globToRegex(pattern);
-		return this.analysisData.projectFiles.some(file => regex.test(file));
+		return this.analysisData.projectFiles.some((file) => regex.test(file));
 	}
 
 	private globToRegex(pattern: string): RegExp {
 		// Simple glob to regex conversion
 		// ** matches any number of directories
 		// * matches anything except /
-		let regexStr = pattern
-			.replace(/\*\*/g, '§DOUBLESTAR§')
-			.replace(/\*/g, '[^/]*')
-			.replace(/§DOUBLESTAR§/g, '.*')
-			.replace(/\./g, '\\.');
+		const regexStr = pattern
+			.replace(/\*\*/g, "§DOUBLESTAR§")
+			.replace(/\*/g, "[^/]*")
+			.replace(/§DOUBLESTAR§/g, ".*")
+			.replace(/\./g, "\\.");
 		return new RegExp(`^${regexStr}$`);
 	}
 }
@@ -74,7 +80,7 @@ export interface PluginAnalysisResult {
  */
 export async function analyzeWithPlugins(
 	analysisData: ProjectAnalysisData,
-	fileReader?: (path: string) => string | null
+	fileReader?: (path: string) => string | null,
 ): Promise<PluginAnalysisResult> {
 	const tags = new Set<string>();
 	const instructions: InstructionTemplate[] = [];
@@ -115,7 +121,9 @@ export async function analyzeWithPlugins(
 			if (result.detected) {
 				// Add tags
 				if (result.tags) {
-					result.tags.forEach(tag => tags.add(tag));
+					for (const tag of result.tags) {
+						tags.add(tag);
+					}
 				}
 
 				// Store metadata
@@ -125,7 +133,7 @@ export async function analyzeWithPlugins(
 
 				// Generate instructions
 				const pluginInstructions = await Promise.resolve(
-					plugin.generateInstructions(context, result.metadata)
+					plugin.generateInstructions(context, result.metadata),
 				);
 
 				instructions.push(...pluginInstructions);
@@ -139,7 +147,7 @@ export async function analyzeWithPlugins(
 	return {
 		tags,
 		instructions,
-		metadata
+		metadata,
 	};
 }
 
@@ -149,7 +157,7 @@ export async function analyzeWithPlugins(
 export function registerBuiltInPlugins(): void {
 	// Import and register all built-in plugins
 	// This is done lazily to avoid circular dependencies
-	import("./plugins").then(plugins => {
+	import("./plugins").then((plugins) => {
 		pluginRegistry.register(new plugins.GolangPlugin());
 		pluginRegistry.register(new plugins.PythonPlugin());
 		pluginRegistry.register(new plugins.RustPlugin());

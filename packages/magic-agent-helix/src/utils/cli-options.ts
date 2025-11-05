@@ -20,7 +20,9 @@ export interface CliOptions {
 /**
  * Log level based on options
  */
-export function getLogLevel(options: CliOptions): "verbose" | "normal" | "quiet" {
+export function getLogLevel(
+	options: CliOptions,
+): "verbose" | "normal" | "quiet" {
 	if (options.quiet) return "quiet";
 	if (options.verbose) return "verbose";
 	return "normal";

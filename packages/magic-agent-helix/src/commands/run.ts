@@ -3,24 +3,24 @@ import * as path from "node:path";
 import { glob } from "glob";
 import gradient from "gradient-string";
 import inquirer from "inquirer";
-import ora from "ora";
-import pc from "picocolors";
-import {
-	loadUserConfig,
-	mergeConfigs,
-	BUILT_IN_TEMPLATE_DIR,
-	getFormatter,
-	type AssistantTarget,
-} from "magic-helix-core";
 import type {
 	ConfigFileTagMap,
 	DependencyTagMap,
 	FileGlobTagMap,
 	TagTemplateMap,
 } from "magic-helix-core";
-import { buildPreciseGlobPattern } from "../utils/file-extensions";
+import {
+	type AssistantTarget,
+	BUILT_IN_TEMPLATE_DIR,
+	getFormatter,
+	loadUserConfig,
+	mergeConfigs,
+} from "magic-helix-core";
+import ora from "ora";
+import pc from "picocolors";
 import type { CliOptions } from "../utils/cli-options";
 import { getLogLevel, shouldLog } from "../utils/cli-options";
+import { buildPreciseGlobPattern } from "../utils/file-extensions";
 
 // --- CONFIGURATION ---
 const ROOT_PACKAGE_JSON = path.resolve(process.cwd(), "package.json");
@@ -36,7 +36,9 @@ interface Project {
  * Interactive wizard to guide users through configuration options
  */
 async function runWizard(): Promise<Partial<CliOptions>> {
-	console.log(gradient.pastel.multiline("🤖 MagicAgentHelix Interactive Setup Wizard"));
+	console.log(
+		gradient.pastel.multiline("🤖 MagicAgentHelix Interactive Setup Wizard"),
+	);
 	console.log("Let's configure your AI instruction generation...\n");
 
 	const answers = await inquirer.prompt([
@@ -55,7 +57,8 @@ async function runWizard(): Promise<Partial<CliOptions>> {
 		{
 			type: "confirm",
 			name: "dryRun",
-			message: "Would you like to preview what would be generated first (dry run)?",
+			message:
+				"Would you like to preview what would be generated first (dry run)?",
 			default: true,
 		},
 		{
@@ -125,7 +128,9 @@ export async function run(options: CliOptions = {}) {
 	const logLevel = getLogLevel(options);
 
 	if (shouldLog("normal", logLevel)) {
-		console.log(gradient.pastel.multiline("🤖 Running AI Convention Aligner..."));
+		console.log(
+			gradient.pastel.multiline("🤖 Running AI Convention Aligner..."),
+		);
 	}
 
 	if (options.dryRun && shouldLog("normal", logLevel)) {
@@ -210,15 +215,15 @@ export async function run(options: CliOptions = {}) {
 	// Apply template filtering if specified
 	let filteredTagTemplateMap = tagTemplateMap as TagTemplateMap;
 	if (options.template) {
-		const templatePatterns = options.template.split(',').map(p => p.trim());
+		const templatePatterns = options.template.split(",").map((p) => p.trim());
 		filteredTagTemplateMap = {} as TagTemplateMap;
 
 		for (const [tag, templates] of Object.entries(tagTemplateMap)) {
-			const filteredTemplates = templates.filter(template => {
-				return templatePatterns.some(pattern => {
+			const filteredTemplates = templates.filter((template) => {
+				return templatePatterns.some((pattern) => {
 					// Support wildcard matching
-					if (pattern.includes('*')) {
-						const regex = new RegExp(pattern.replace(/\*/g, '.*'));
+					if (pattern.includes("*")) {
+						const regex = new RegExp(pattern.replace(/\*/g, ".*"));
 						return regex.test(template.template) || regex.test(tag);
 					}
 					return template.template.includes(pattern) || tag.includes(pattern);
@@ -266,7 +271,11 @@ export async function run(options: CliOptions = {}) {
 			console.log(pc.gray(`    Tags: ${[...project.tags].join(", ")}`));
 		}
 
-		const globPattern = buildPreciseGlobPattern(project.path, project.tags, options.exclude);
+		const globPattern = buildPreciseGlobPattern(
+			project.path,
+			project.tags,
+			options.exclude,
+		);
 
 		for (const tag of project.tags) {
 			const templates = (filteredTagTemplateMap as TagTemplateMap)[tag];
@@ -289,7 +298,11 @@ export async function run(options: CliOptions = {}) {
 				}
 
 				const header = formatter.getFrontmatter(globPattern, project.name);
-				const formattedContent = formatter.format(templateContent, globPattern, project.name);
+				const formattedContent = formatter.format(
+					templateContent,
+					globPattern,
+					project.name,
+				);
 				const fullContent = `${header}\n${formattedContent}`;
 
 				const outputFilename = `${project.name}.${t.suffix}`;
@@ -300,7 +313,9 @@ export async function run(options: CliOptions = {}) {
 				if (options.dryRun) {
 					if (shouldLog("normal", logLevel)) {
 						console.log(
-							pc.cyan(`    📝 Would generate: ${pc.bold(outputFilename)} (from ${source})`),
+							pc.cyan(
+								`    📝 Would generate: ${pc.bold(outputFilename)} (from ${source})`,
+							),
 						);
 					}
 				} else {
@@ -317,7 +332,9 @@ export async function run(options: CliOptions = {}) {
 		}
 	}
 
-	generateSpinner.succeed(`Generated ${generatedFiles.length} files from ${totalTemplates} templates across ${processedProjects} projects`);
+	generateSpinner.succeed(
+		`Generated ${generatedFiles.length} files from ${totalTemplates} templates across ${processedProjects} projects`,
+	);
 
 	// 6. Pruning: Ask to remove old files
 	if (!options.dryRun && !options.skipPruning) {
@@ -330,13 +347,29 @@ export async function run(options: CliOptions = {}) {
 		console.log("\n" + "═".repeat(60));
 		if (options.dryRun) {
 			console.log(pc.cyan("✨ Dry run complete! No files were modified."));
-			console.log(pc.gray(`📋 Would have generated ${generatedFiles.length} instruction file(s)`));
-			console.log(pc.gray(`📊 From ${totalTemplates} template(s) across ${processedProjects} project(s)`));
+			console.log(
+				pc.gray(
+					`📋 Would have generated ${generatedFiles.length} instruction file(s)`,
+				),
+			);
+			console.log(
+				pc.gray(
+					`📊 From ${totalTemplates} template(s) across ${processedProjects} project(s)`,
+				),
+			);
 		} else {
 			console.log(pc.green("✨ AI instruction alignment complete!"));
-			console.log(pc.bold(`📁 Generated ${generatedFiles.length} instruction file(s)`));
-			console.log(pc.gray(`📊 From ${totalTemplates} template(s) across ${processedProjects} project(s)`));
-			console.log(pc.gray(`📂 Files are located in: ${pc.bold(config.outputDirectory)}`));
+			console.log(
+				pc.bold(`📁 Generated ${generatedFiles.length} instruction file(s)`),
+			);
+			console.log(
+				pc.gray(
+					`📊 From ${totalTemplates} template(s) across ${processedProjects} project(s)`,
+				),
+			);
+			console.log(
+				pc.gray(`📂 Files are located in: ${pc.bold(config.outputDirectory)}`),
+			);
 		}
 		console.log("═".repeat(60));
 	}
@@ -505,7 +538,11 @@ function readTemplate(dir: string, templateFile: string): string | null {
 	}
 }
 
-async function pruneOldFiles(targetDir: string, generatedFiles: string[], force = false) {
+async function pruneOldFiles(
+	targetDir: string,
+	generatedFiles: string[],
+	force = false,
+) {
 	const existingFiles = fs
 		.readdirSync(targetDir)
 		.filter((f) => f.endsWith(".md"));
@@ -523,7 +560,7 @@ async function pruneOldFiles(targetDir: string, generatedFiles: string[], force 
 		}
 
 		let prune = force;
-		
+
 		if (!force) {
 			const answer = await inquirer.prompt([
 				{
