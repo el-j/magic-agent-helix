@@ -1,10 +1,13 @@
 {
 	"branches": [
 		"main",
-		"development",
+		{
+			"name": "develop",
+			"prerelease": "beta"
+		},
 		{
 			"name": "feature/*",
-			"prerelease": "beta"
+			"prerelease": "alpha"
 		}
 	],
 	"plugins": [
