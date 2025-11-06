@@ -87,15 +87,11 @@ export const BUILT_IN_CONFIG: MergedConfig = {
 		"style-tailwind": [
 			{ template: "generic/style-tailwind.md", suffix: "style-tailwind.md" },
 		],
-		"style-mui": [
-			{ template: "generic/style-mui.md", suffix: "style-mui.md" },
-		],
+		"style-mui": [{ template: "generic/style-mui.md", suffix: "style-mui.md" }],
 		"test-vitest": [
 			{ template: "generic/test-vitest.md", suffix: "test-vitest.md" },
 		],
-		"test-jest": [
-			{ template: "generic/test-jest.md", suffix: "test-jest.md" },
-		],
+		"test-jest": [{ template: "generic/test-jest.md", suffix: "test-jest.md" }],
 		"test-cypress": [
 			{ template: "generic/test-cypress.md", suffix: "test-cypress.md" },
 		],
@@ -108,9 +104,7 @@ export const BUILT_IN_CONFIG: MergedConfig = {
 		"lang-python": [
 			{ template: "python/lang-python.md", suffix: "lang-python.md" },
 		],
-		"lang-go": [
-			{ template: "go/lang-go.md", suffix: "lang-go.md" },
-		],
+		"lang-go": [{ template: "go/lang-go.md", suffix: "lang-go.md" }],
 		"state-rxjs": [
 			{ template: "generic/state-rxjs.md", suffix: "state-rxjs.md" },
 		],

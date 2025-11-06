@@ -2,11 +2,11 @@
 
 import { Command } from "commander";
 import pc from "picocolors";
-import { init } from "./commands/init";
-import { run } from "./commands/run";
-import { refresh } from "./commands/refresh";
-import { list } from "./commands/list";
 import { clean } from "./commands/clean";
+import { init } from "./commands/init";
+import { list } from "./commands/list";
+import { refresh } from "./commands/refresh";
+import { run } from "./commands/run";
 import { validate } from "./commands/validate";
 
 // This is the main entry point for the CLI tool.
@@ -33,18 +33,30 @@ async function main() {
 			.description(
 				"Scan the monorepo and generate AI instruction files based on built-in and custom rules.",
 			)
-			.option("--dry-run", "Preview what would be generated without writing files")
+			.option(
+				"--dry-run",
+				"Preview what would be generated without writing files",
+			)
 			.option("--force", "Overwrite files and prune without prompting")
 			.option("--skip-pruning", "Don't ask to remove old files")
 			.option("--output-dir <path>", "Custom output directory")
 			.option("--config <path>", "Path to custom config file")
-			.option("--target <assistant>", "AI assistant target (github-copilot, claude, copilot-chat, generic)")
+			.option(
+				"--target <assistant>",
+				"AI assistant target (github-copilot, claude, copilot-chat, generic)",
+			)
 			.option("--verbose", "Show detailed output")
 			.option("--quiet", "Show minimal output")
 			.option("--project <name>", "Target a specific project only")
 			.option("--wizard", "Run in interactive wizard mode")
-			.option("--template <pattern>", "Filter templates by pattern (e.g., 'react,vue')")
-			.option("--exclude <pattern>", "Exclude files matching pattern (e.g., 'test/**,*.spec.ts')")
+			.option(
+				"--template <pattern>",
+				"Filter templates by pattern (e.g., 'react,vue')",
+			)
+			.option(
+				"--exclude <pattern>",
+				"Exclude files matching pattern (e.g., 'test/**,*.spec.ts')",
+			)
 			.action(run);
 
 		program
@@ -54,7 +66,10 @@ async function main() {
 			)
 			.alias("resync")
 			.option("--config <path>", "Path to custom config file")
-			.option("--target <assistant>", "AI assistant target (github-copilot, claude, copilot-chat, generic)")
+			.option(
+				"--target <assistant>",
+				"AI assistant target (github-copilot, claude, copilot-chat, generic)",
+			)
 			.option("--verbose", "Show detailed output")
 			.option("--quiet", "Show minimal output")
 			.option("--project <name>", "Target a specific project only")

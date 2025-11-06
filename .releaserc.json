@@ -59,7 +59,13 @@
 		[
 			"@semantic-release/git",
 			{
-				"assets": ["package.json", "packages/magic-helix-core/package.json", "packages/magic-agent-helix/package.json", "package-lock.json", "CHANGELOG.md"],
+				"assets": [
+					"package.json",
+					"packages/magic-helix-core/package.json",
+					"packages/magic-agent-helix/package.json",
+					"package-lock.json",
+					"CHANGELOG.md"
+				],
 				"message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
 			}
 		]

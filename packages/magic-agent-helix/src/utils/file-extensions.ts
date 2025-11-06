@@ -67,7 +67,16 @@ export const TAG_FILE_EXTENSIONS: Record<string, FileExtensionMapping> = {
 		description: "Vitest test files",
 	},
 	"test-jest": {
-		extensions: ["test.ts", "test.tsx", "test.js", "test.jsx", "spec.ts", "spec.tsx", "spec.js", "spec.jsx"],
+		extensions: [
+			"test.ts",
+			"test.tsx",
+			"test.js",
+			"test.jsx",
+			"spec.ts",
+			"spec.tsx",
+			"spec.js",
+			"spec.jsx",
+		],
 		description: "Jest test files",
 	},
 	"test-cypress": {
@@ -135,12 +144,12 @@ export function buildPreciseGlobPattern(
 	// Add exclude pattern if provided
 	if (excludePattern) {
 		// Convert exclude pattern to glob negation
-		const excludePatterns = excludePattern.split(',').map(p => p.trim());
+		const excludePatterns = excludePattern.split(",").map((p) => p.trim());
 		for (const exclude of excludePatterns) {
 			// Handle directory exclusions
-			if (exclude.endsWith('/**')) {
+			if (exclude.endsWith("/**")) {
 				pattern += ` !(${projectPath}/src/${exclude})`;
-			} else if (exclude.includes('*')) {
+			} else if (exclude.includes("*")) {
 				pattern += ` !(${projectPath}/src/${exclude})`;
 			} else {
 				// Exact file match
@@ -157,7 +166,7 @@ export function buildPreciseGlobPattern(
  */
 export function getApplyToDescription(tags: Set<string>): string {
 	const descriptions: string[] = [];
-	
+
 	for (const tag of tags) {
 		const mapping = TAG_FILE_EXTENSIONS[tag];
 		if (mapping) {
@@ -165,7 +174,5 @@ export function getApplyToDescription(tags: Set<string>): string {
 		}
 	}
 
-	return descriptions.length > 0
-		? descriptions.join(", ")
-		: "Source files";
+	return descriptions.length > 0 ? descriptions.join(", ") : "Source files";
 }

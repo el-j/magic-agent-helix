@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
+import type { ProjectAnalysisData } from "./analysis";
 import { analyzeWithPlugins, registerBuiltInPlugins } from "./plugin-analyzer";
 import { pluginRegistry } from "./plugin-system";
-import type { ProjectAnalysisData } from "./analysis";
-import { GolangPlugin, PythonPlugin, DockerPlugin } from "./plugins";
+import { DockerPlugin, GolangPlugin, PythonPlugin } from "./plugins";
 
 describe("Plugin Analyzer", () => {
 	beforeEach(() => {
@@ -17,7 +17,7 @@ describe("Plugin Analyzer", () => {
 		const analysisData: ProjectAnalysisData = {
 			dependencies: {},
 			configFiles: ["go.mod"],
-			projectFiles: ["main.go", "go.mod", "go.sum"]
+			projectFiles: ["main.go", "go.mod", "go.sum"],
 		};
 
 		const result = await analyzeWithPlugins(analysisData);
@@ -33,7 +33,7 @@ describe("Plugin Analyzer", () => {
 		const analysisData: ProjectAnalysisData = {
 			dependencies: {},
 			configFiles: ["pyproject.toml"],
-			projectFiles: ["main.py", "pyproject.toml", "src/app.py"]
+			projectFiles: ["main.py", "pyproject.toml", "src/app.py"],
 		};
 
 		const result = await analyzeWithPlugins(analysisData);
@@ -48,7 +48,7 @@ describe("Plugin Analyzer", () => {
 		const analysisData: ProjectAnalysisData = {
 			dependencies: {},
 			configFiles: [],
-			projectFiles: ["Dockerfile", "docker-compose.yml", "src/main.js"]
+			projectFiles: ["Dockerfile", "docker-compose.yml", "src/main.js"],
 		};
 
 		const result = await analyzeWithPlugins(analysisData);
@@ -64,7 +64,7 @@ describe("Plugin Analyzer", () => {
 		const analysisData: ProjectAnalysisData = {
 			dependencies: {},
 			configFiles: ["go.mod"],
-			projectFiles: ["main.go", "go.mod", "Dockerfile"]
+			projectFiles: ["main.go", "go.mod", "Dockerfile"],
 		};
 
 		const result = await analyzeWithPlugins(analysisData);
@@ -80,7 +80,7 @@ describe("Plugin Analyzer", () => {
 		const analysisData: ProjectAnalysisData = {
 			dependencies: {},
 			configFiles: [],
-			projectFiles: ["index.html", "style.css"]
+			projectFiles: ["index.html", "style.css"],
 		};
 
 		const result = await analyzeWithPlugins(analysisData);
@@ -95,7 +95,7 @@ describe("Plugin Analyzer", () => {
 		const analysisData: ProjectAnalysisData = {
 			dependencies: {},
 			configFiles: ["go.mod"],
-			projectFiles: ["main.go", "go.mod"]
+			projectFiles: ["main.go", "go.mod"],
 		};
 
 		const fileReader = (path: string): string | null => {
@@ -122,7 +122,7 @@ describe("Plugin Analyzer", () => {
 			detect: () => {
 				throw new Error("Test error");
 			},
-			generateInstructions: () => []
+			generateInstructions: () => [],
 		};
 
 		pluginRegistry.register(errorPlugin);
@@ -131,7 +131,7 @@ describe("Plugin Analyzer", () => {
 		const analysisData: ProjectAnalysisData = {
 			dependencies: {},
 			configFiles: ["go.mod"],
-			projectFiles: ["main.go", "go.mod"]
+			projectFiles: ["main.go", "go.mod"],
 		};
 
 		// Should not throw, should continue with other plugins
@@ -150,8 +150,8 @@ describe("Plugin Analyzer", () => {
 				"requirements.txt",
 				"src/app.py",
 				"src/utils/helper.py",
-				"tests/test_app.py"
-			]
+				"tests/test_app.py",
+			],
 		};
 
 		const result = await analyzeWithPlugins(analysisData);
