@@ -91,7 +91,7 @@ When a release is triggered:
 
 ### Manual Testing Before Release
 
-Before pushing commits to `main`:
+Before pushing commits to `develop` or `main`:
 
 1. Test locally:
    ```bash
@@ -119,7 +119,7 @@ Before pushing commits to `main`:
 
 Check if your commit follows the conventional commit format:
 - Does it start with `feat:`, `fix:`, or `perf:`?
-- Is it pushed to the `main` branch?
+- Is it pushed to `main`, `develop`, or a `feature/*` branch?
 - Check the GitHub Actions workflow logs
 
 #### Package version not updating?
@@ -132,16 +132,19 @@ Ensure the `NPM_TOKEN` secret is configured in GitHub repository settings with a
 
 ### Development Workflow
 
-1. Create a feature branch from `main`
+1. Create a feature branch from `develop` or `main`
 2. Make your changes
 3. Commit with conventional commit messages
-4. Create a PR to `main`
-5. After PR is merged, semantic-release automatically handles the release
+4. Create a PR:
+   - Feature branches (`feature/*`) automatically create **alpha** releases when pushed (e.g., `1.1.0-alpha.1`)
+   - Merging to `develop` automatically creates **beta** releases (e.g., `1.1.0-beta.1`)
+   - Merging `develop` to `main` creates a **stable release** (e.g., `1.1.0`)
+5. semantic-release automatically handles versioning and publishing
 
-### Testing Beta Releases
+### Testing Prerelease Versions
 
 For testing changes before merging to main, push to branches:
-- `development` - Creates development releases
-- `feature/*` - Creates beta releases
+- `develop` - Creates beta releases (e.g., `1.1.0-beta.1`)
+- `feature/*` - Creates alpha releases (e.g., `1.1.0-alpha.1`)
 
-These will publish with prerelease tags (e.g., `1.1.0-beta.1`).
+These prereleases allow you to test changes before they are merged to `main` and published as stable releases.
