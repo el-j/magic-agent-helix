@@ -1,6 +1,6 @@
-import { ref } from "vue";
 import type { ProjectAnalysisData } from "magic-helix-core";
 import { analyzeProjectTags, mergeConfigs } from "magic-helix-core";
+import { ref } from "vue";
 
 /**
  * Composable for loading projects from Git URLs
@@ -28,7 +28,9 @@ export function useGitLoader() {
 			// Parse the Git URL
 			const parsedUrl = parseGitUrl(gitUrl);
 			if (!parsedUrl) {
-				throw new Error("Invalid Git URL. Please provide a GitHub or GitLab URL.");
+				throw new Error(
+					"Invalid Git URL. Please provide a GitHub or GitLab URL.",
+				);
 			}
 
 			currentFile.value = "Fetching repository information...";
@@ -77,7 +79,7 @@ export function useGitLoader() {
 		// https://github.com/owner/repo
 		// https://github.com/owner/repo/tree/branch
 		const githubMatch = url.match(
-			/github\.com\/([^\/]+)\/([^\/]+?)(?:\/tree\/([^\/]+)|\/|$)/,
+			/github\.com\/([^/]+)\/([^/]+?)(?:\/tree\/([^/]+)|\/|$)/,
 		);
 		if (githubMatch) {
 			return {
@@ -93,7 +95,7 @@ export function useGitLoader() {
 		// https://gitlab.com/owner/repo
 		// https://gitlab.com/owner/repo/-/tree/branch
 		const gitlabMatch = url.match(
-			/gitlab\.com\/([^\/]+)\/([^\/]+?)(?:\/-\/tree\/([^\/]+)|\/|$)/,
+			/gitlab\.com\/([^/]+)\/([^/]+?)(?:\/-\/tree\/([^/]+)|\/|$)/,
 		);
 		if (gitlabMatch) {
 			return {
@@ -134,9 +136,13 @@ export function useGitLoader() {
 
 			if (!treeResponse.ok) {
 				if (treeResponse.status === 404) {
-					throw new Error(`Repository not found or branch '${parsedUrl.branch}' doesn't exist. Try 'main' or 'master'.`);
+					throw new Error(
+						`Repository not found or branch '${parsedUrl.branch}' doesn't exist. Try 'main' or 'master'.`,
+					);
 				}
-				throw new Error(`Failed to fetch repository: ${treeResponse.statusText}`);
+				throw new Error(
+					`Failed to fetch repository: ${treeResponse.statusText}`,
+				);
 			}
 
 			const treeData = await treeResponse.json();
@@ -195,7 +201,9 @@ export function useGitLoader() {
 			);
 
 			if (!treeResponse.ok) {
-				throw new Error(`Failed to fetch repository: ${treeResponse.statusText}`);
+				throw new Error(
+					`Failed to fetch repository: ${treeResponse.statusText}`,
+				);
 			}
 
 			const treeData = await treeResponse.json();

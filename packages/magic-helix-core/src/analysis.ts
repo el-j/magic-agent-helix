@@ -1,6 +1,6 @@
 import type {
-	DependencyTagMap,
 	ConfigFileTagMap,
+	DependencyTagMap,
 	FileGlobTagMap,
 } from "./types";
 
@@ -10,14 +10,14 @@ import type {
  */
 function globToRegex(pattern: string): RegExp {
 	// For the test patterns, use working regexes
-	if (pattern === 'src/**/*.ts') {
+	if (pattern === "src/**/*.ts") {
 		return /^src\/.*\.ts$/;
-	} else if (pattern === 'src/**/*.vue') {
+	} else if (pattern === "src/**/*.vue") {
 		return /^src\/.*\.vue$/;
 	} else {
 		// Fallback: simple conversion that works for most cases
-		const regexStr = pattern.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*');
-		return new RegExp(`^${regexStr.replace(/[.+^${}()|[\]\\]/g, '\\$&')}$`);
+		const regexStr = pattern.replace(/\*\*/g, ".*").replace(/\*/g, "[^/]*");
+		return new RegExp(`^${regexStr.replace(/[.+^${}()|[\]\\]/g, "\\$&")}$`);
 	}
 }
 
@@ -26,7 +26,7 @@ function globToRegex(pattern: string): RegExp {
  */
 function matchesGlobPattern(projectFiles: string[], pattern: string): boolean {
 	const regex = globToRegex(pattern);
-	return projectFiles.some(file => regex.test(file));
+	return projectFiles.some((file) => regex.test(file));
 }
 
 /**

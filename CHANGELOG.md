@@ -1,44 +1,16 @@
-## [1.3.0] - 2025-11-03 (Current Stable Release)
+## [1.4.0-beta.1](https://github.com/el-j/magic-agent-helix/compare/v1.3.0...v1.4.0-beta.1) (2025-11-02)
 
-### ⚠️ BREAKING CHANGES
+### Features
 
-#### Branch Naming Convention Change
-**The default development branch has been renamed from `development` to `develop`.**
+* Add tag filters for release workflow ([#9](https://github.com/el-j/magic-agent-helix/issues/9)) ([1771a41](https://github.com/el-j/magic-agent-helix/commit/1771a412eeaa41b2ea5cde5f9f4511aee19336df)), closes [#6](https://github.com/el-j/magic-agent-helix/issues/6)
 
-**Migration Guide:**
-If you have existing forks, local clones, or CI/CD pipelines that reference the `development` branch, you need to update them:
+## [1.3.0](https://github.com/el-j/magic-agent-helix/compare/v1.2.0...v1.3.0) (2025-11-02)
 
-1. **Update your local repository:**
-   ```bash
-   # Fetch the latest changes
-   git fetch origin
-   
-   # If you're on the old 'development' branch, switch to 'develop'
-   git checkout develop
-   
-   # Update your local branch to track the new remote branch
-   git branch -u origin/develop
-   
-   # (Optional) Delete the old local 'development' branch
-   git branch -d development
-   ```
+### Features
 
-2. **Update CI/CD configurations:**
-   - Update any references to `development` branch in your workflows, scripts, or deployment pipelines to use `develop` instead.
-   - Check branch protection rules in your repository settings.
-   - Update any documentation or team guides that reference the branch name.
+* enhance run command with CLI options and logging ([88df109](https://github.com/el-j/magic-agent-helix/commit/88df109438ac8d70357544dd16c6209187fe15cd))
 
-3. **Update pull request base branches:**
-   - New pull requests should target the `develop` branch instead of `development`.
-   - Existing open pull requests targeting `development` should be updated to target `develop`.
-
-**Why this change?**
-The `develop` naming convention is more widely adopted in the industry and aligns with common Git workflow patterns (e.g., git-flow). This change improves consistency and reduces confusion for new contributors.
-
-### ✨ Version Alignment
-- Unified all package versions to 1.3.0 for consistency
-- Aligned monorepo, core, CLI, and VS Code extension versions
-- Prepared foundation for v2.0.0 polyglot architecture
+## [0.3.0] - 2025-01-XX (Pending Release)
 
 ### 🎉 Major Features - VS Code Extension Improvements
 

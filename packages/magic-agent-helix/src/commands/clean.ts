@@ -1,9 +1,9 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import inquirer from "inquirer";
+import { loadUserConfig, mergeConfigs } from "magic-helix-core";
 import ora from "ora";
 import pc from "picocolors";
-import { loadUserConfig, mergeConfigs } from "magic-helix-core";
 
 /**
  * The 'clean' command.
@@ -35,9 +35,7 @@ export async function clean() {
 	}
 
 	// Find all .md files
-	const files = fs
-		.readdirSync(targetDir)
-		.filter((f) => f.endsWith(".md"));
+	const files = fs.readdirSync(targetDir).filter((f) => f.endsWith(".md"));
 
 	if (files.length === 0) {
 		console.log(pc.gray("No instruction files found. Nothing to clean."));

@@ -1,5 +1,9 @@
-import { describe, it, expect } from "vitest";
-import { getFormatter, GitHubCopilotFormatter, type AssistantTarget } from "./formatters";
+import { describe, expect, it } from "vitest";
+import {
+	type AssistantTarget,
+	GitHubCopilotFormatter,
+	getFormatter,
+} from "./formatters";
 
 describe("Formatters", () => {
 	const testContent = "- **ALWAYS** use TypeScript.\n- **NEVER** use any.";
@@ -11,7 +15,9 @@ describe("Formatters", () => {
 		const result = formatter.format(testContent, testFilePath, testProjectName);
 		expect(result).toBe(testContent);
 		expect(formatter.getFileExtension()).toBe(".md");
-		expect(formatter.getFrontmatter(testFilePath, testProjectName)).toContain('applyTo: "src/**/*.ts"');
+		expect(formatter.getFrontmatter(testFilePath, testProjectName)).toContain(
+			'applyTo: "src/**/*.ts"',
+		);
 	});
 
 	it("should format for Claude", () => {
@@ -19,7 +25,9 @@ describe("Formatters", () => {
 		const result = formatter.format(testContent, testFilePath, testProjectName);
 		expect(result).toContain("(important)");
 		expect(formatter.getFileExtension()).toBe(".md");
-		expect(formatter.getFrontmatter(testFilePath, testProjectName)).toContain('assistant: claude');
+		expect(formatter.getFrontmatter(testFilePath, testProjectName)).toContain(
+			"assistant: claude",
+		);
 	});
 
 	it("should format for Copilot Chat", () => {
@@ -28,7 +36,9 @@ describe("Formatters", () => {
 		expect(result).toContain("🔴");
 		expect(result).toContain("❌");
 		expect(formatter.getFileExtension()).toBe(".md");
-		expect(formatter.getFrontmatter(testFilePath, testProjectName)).toContain('context: chat');
+		expect(formatter.getFrontmatter(testFilePath, testProjectName)).toContain(
+			"context: chat",
+		);
 	});
 
 	it("should format for Generic assistant", () => {
@@ -36,7 +46,9 @@ describe("Formatters", () => {
 		const result = formatter.format(testContent, testFilePath, testProjectName);
 		expect(result).toBe(testContent);
 		expect(formatter.getFileExtension()).toBe(".md");
-		expect(formatter.getFrontmatter(testFilePath, testProjectName)).toContain('applyTo: "src/**/*.ts"');
+		expect(formatter.getFrontmatter(testFilePath, testProjectName)).toContain(
+			'applyTo: "src/**/*.ts"',
+		);
 	});
 
 	it("should default to GitHub Copilot for unknown target", () => {

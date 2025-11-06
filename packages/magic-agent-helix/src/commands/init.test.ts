@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import inquirer from "inquirer";
 import gradient from "gradient-string";
+import inquirer from "inquirer";
+import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import { init } from "./init"; // Import the function to test
 
 // Mock ora instance

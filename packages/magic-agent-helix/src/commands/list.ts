@@ -1,16 +1,13 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import ora from "ora";
-import pc from "picocolors";
-import {
-	loadUserConfig,
-	mergeConfigs,
-} from "magic-helix-core";
 import type {
 	ConfigFileTagMap,
 	DependencyTagMap,
 	FileGlobTagMap,
 } from "magic-helix-core";
+import { loadUserConfig, mergeConfigs } from "magic-helix-core";
+import ora from "ora";
+import pc from "picocolors";
 
 /**
  * The 'list' command.
@@ -33,9 +30,7 @@ export async function list() {
 	const projectSpinner = ora("Scanning for projects...").start();
 	const projects = await findProjects();
 	if (projects.length === 0) {
-		projectSpinner.warn(
-			pc.yellow('No projects found.'),
-		);
+		projectSpinner.warn(pc.yellow("No projects found."));
 		return;
 	}
 	projectSpinner.succeed(`Found ${projects.length} projects.`);
@@ -54,16 +49,16 @@ export async function list() {
 
 	// 4. Display results
 	console.log(pc.cyan(pc.bold("Projects & Tags:\n")));
-	
+
 	for (const project of projects) {
 		console.log(pc.bold(`📦 ${project.name}`));
 		console.log(pc.gray(`   Path: ${project.path}`));
-		
+
 		if (project.tags.size === 0) {
 			console.log(pc.yellow("   No tags detected"));
 		} else {
 			console.log(pc.green(`   Tags: ${[...project.tags].join(", ")}`));
-			
+
 			// Show which templates would be applied
 			const templates: string[] = [];
 			for (const tag of project.tags) {
@@ -74,7 +69,7 @@ export async function list() {
 					}
 				}
 			}
-			
+
 			if (templates.length > 0) {
 				console.log(pc.gray(`   Would generate: ${templates.join(", ")}`));
 			}

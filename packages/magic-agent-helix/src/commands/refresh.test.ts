@@ -1,19 +1,16 @@
-import {
-	describe,
-	it,
-	expect,
-	vi,
-	beforeEach,
-	type Mock,
-} from "vitest";
 import * as fs from "node:fs";
 import type * as path from "node:path";
-import inquirer from "inquirer";
 import { glob } from "glob";
+import inquirer from "inquirer";
+import {
+	BUILT_IN_CONFIG,
+	getFormatter,
+	loadUserConfig,
+	mergeConfigs,
+} from "magic-helix-core";
 import ora from "ora";
-import { loadUserConfig, mergeConfigs, getFormatter } from "magic-helix-core";
+import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import { refresh } from "./refresh";
-import { BUILT_IN_CONFIG } from "magic-helix-core";
 
 // Mock all external dependencies
 vi.mock("node:fs", () => ({
@@ -106,7 +103,7 @@ describe("Refresh Command (/src/commands/refresh.ts)", () => {
 		vi.mocked(getFormatter).mockReturnValue({
 			format: vi.fn((content) => content),
 			getFileExtension: vi.fn(() => ".md"),
-			getFrontmatter: vi.fn(() => "---\napplyTo: \"test\"\n---\n\n"),
+			getFrontmatter: vi.fn(() => '---\napplyTo: "test"\n---\n\n'),
 		});
 		vi.mocked(glob).mockImplementation(async (patterns: string | string[]) => {
 			if (
