@@ -52,6 +52,9 @@ jobs:
       - name: Build Package
         run: npm run build
 
+      - name: Package VS Code Extension
+        run: npm run package --workspace=vscode-magic-helix
+
       - name: Test & Coverage
         run: npm run test:coverage
 
