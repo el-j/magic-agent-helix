@@ -55,6 +55,10 @@
 					{
 						"path": "packages/magic-agent-helix/dist/**",
 						"label": "CLI Distribution"
+					},
+					{
+						"path": "packages/vscode-magic-helix/*.vsix",
+						"label": "VS Code Extension"
 					}
 				]
 			}

@@ -12,6 +12,7 @@ export default defineConfig({
 			external: [
 				"node:fs",
 				"node:path",
+				"node:url",
 				"commander",
 				"glob",
 				"gradient-string",
