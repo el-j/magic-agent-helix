@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { Command } from "commander";
-import { run } from "./commands/run";
-import { init } from "./commands/init";
+import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import { main } from "./cli";
+import { init } from "./commands/init";
+import { run } from "./commands/run";
 
 // Mock all imported modules
 const mockCommand = {
@@ -69,18 +69,54 @@ describe("CLI Main Entry Point (/src/cli.ts)", () => {
 		expect(mockCommand.description).toHaveBeenCalledWith(
 			"Scan the monorepo and generate AI instruction files based on built-in and custom rules.",
 		);
-		expect(mockCommand.option).toHaveBeenCalledWith("--dry-run", "Preview what would be generated without writing files");
-		expect(mockCommand.option).toHaveBeenCalledWith("--force", "Overwrite files and prune without prompting");
-		expect(mockCommand.option).toHaveBeenCalledWith("--skip-pruning", "Don't ask to remove old files");
-		expect(mockCommand.option).toHaveBeenCalledWith("--output-dir <path>", "Custom output directory");
-		expect(mockCommand.option).toHaveBeenCalledWith("--config <path>", "Path to custom config file");
-		expect(mockCommand.option).toHaveBeenCalledWith("--target <assistant>", "AI assistant target (github-copilot, claude, copilot-chat, generic)");
-		expect(mockCommand.option).toHaveBeenCalledWith("--verbose", "Show detailed output");
-		expect(mockCommand.option).toHaveBeenCalledWith("--quiet", "Show minimal output");
-		expect(mockCommand.option).toHaveBeenCalledWith("--project <name>", "Target a specific project only");
-		expect(mockCommand.option).toHaveBeenCalledWith("--wizard", "Run in interactive wizard mode");
-		expect(mockCommand.option).toHaveBeenCalledWith("--template <pattern>", "Filter templates by pattern (e.g., 'react,vue')");
-		expect(mockCommand.option).toHaveBeenCalledWith("--exclude <pattern>", "Exclude files matching pattern (e.g., 'test/**,*.spec.ts')");
+		expect(mockCommand.option).toHaveBeenCalledWith(
+			"--dry-run",
+			"Preview what would be generated without writing files",
+		);
+		expect(mockCommand.option).toHaveBeenCalledWith(
+			"--force",
+			"Overwrite files and prune without prompting",
+		);
+		expect(mockCommand.option).toHaveBeenCalledWith(
+			"--skip-pruning",
+			"Don't ask to remove old files",
+		);
+		expect(mockCommand.option).toHaveBeenCalledWith(
+			"--output-dir <path>",
+			"Custom output directory",
+		);
+		expect(mockCommand.option).toHaveBeenCalledWith(
+			"--config <path>",
+			"Path to custom config file",
+		);
+		expect(mockCommand.option).toHaveBeenCalledWith(
+			"--target <assistant>",
+			"AI assistant target (github-copilot, claude, copilot-chat, generic)",
+		);
+		expect(mockCommand.option).toHaveBeenCalledWith(
+			"--verbose",
+			"Show detailed output",
+		);
+		expect(mockCommand.option).toHaveBeenCalledWith(
+			"--quiet",
+			"Show minimal output",
+		);
+		expect(mockCommand.option).toHaveBeenCalledWith(
+			"--project <name>",
+			"Target a specific project only",
+		);
+		expect(mockCommand.option).toHaveBeenCalledWith(
+			"--wizard",
+			"Run in interactive wizard mode",
+		);
+		expect(mockCommand.option).toHaveBeenCalledWith(
+			"--template <pattern>",
+			"Filter templates by pattern (e.g., 'react,vue')",
+		);
+		expect(mockCommand.option).toHaveBeenCalledWith(
+			"--exclude <pattern>",
+			"Exclude files matching pattern (e.g., 'test/**,*.spec.ts')",
+		);
 		expect(mockCommand.action).toHaveBeenCalledWith(run);
 	});
 

@@ -2,7 +2,7 @@
 	"name": "vscode-magic-helix",
 	"displayName": "MagicAgentHelix Runner",
 	"description": "Advanced VS Code extension for running MagicAgentHelix CLI with AI-powered refinement, command history, favorites, workspace configuration, and progress tracking.",
-	"version": "0.4.0",
+	"version": "1.3.0",
 	"publisher": "el-j",
 	"repository": {
 		"type": "git",
@@ -197,7 +197,12 @@
 				"type": "string",
 				"default": "run",
 				"description": "Default command to run when using the run command",
-				"enum": ["run", "init", "validate", "list"],
+				"enum": [
+					"run",
+					"init",
+					"validate",
+					"list"
+				],
 				"enumDescriptions": [
 					"Run the main MagicAgentHelix process",
 					"Initialize configuration files",
@@ -211,7 +216,12 @@
 				"description": "Default CLI options to use for all commands",
 				"items": {
 					"type": "string",
-					"enum": ["--verbose", "--quiet", "--force", "--dry-run"],
+					"enum": [
+						"--verbose",
+						"--quiet",
+						"--force",
+						"--dry-run"
+					],
 					"enumDescriptions": [
 						"Enable verbose output",
 						"Suppress non-error output",

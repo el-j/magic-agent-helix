@@ -1,9 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
-	TAG_FILE_EXTENSIONS,
-	getFileExtensionsForTag,
 	buildPreciseGlobPattern,
 	getApplyToDescription,
+	getFileExtensionsForTag,
+	TAG_FILE_EXTENSIONS,
 } from "./file-extensions";
 
 describe("File Extensions Utils", () => {
@@ -84,7 +84,9 @@ describe("File Extensions Utils", () => {
 
 		it("should return combined descriptions for multiple tags", () => {
 			const tags = new Set(["framework-vue", "lang-typescript"]);
-			expect(getApplyToDescription(tags)).toBe("Vue components, TypeScript files");
+			expect(getApplyToDescription(tags)).toBe(
+				"Vue components, TypeScript files",
+			);
 		});
 
 		it("should return default description for unknown tags", () => {

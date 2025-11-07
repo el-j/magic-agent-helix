@@ -1,11 +1,14 @@
-import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import * as fs from "node:fs";
 import type * as path from "node:path";
 import { glob } from "glob";
+import {
+	BUILT_IN_CONFIG,
+	loadUserConfig,
+	mergeConfigs,
+} from "magic-helix-core";
 import ora from "ora";
-import { loadUserConfig, mergeConfigs } from "magic-helix-core";
+import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import { list } from "./list";
-import { BUILT_IN_CONFIG } from "magic-helix-core";
 
 // Mock all external dependencies
 vi.mock("node:fs", () => ({
@@ -141,10 +144,7 @@ describe("List Command (/src/commands/list.ts)", () => {
 				typeof patterns === "string" &&
 				patterns.includes("src/**/*.{ts,js,vue,tsx,jsx,go,py}")
 			) {
-				return [
-					"packages/app-vue/src/main.ts",
-					"packages/app-vue/src/App.vue",
-				];
+				return ["packages/app-vue/src/main.ts", "packages/app-vue/src/App.vue"];
 			}
 			return [];
 		});

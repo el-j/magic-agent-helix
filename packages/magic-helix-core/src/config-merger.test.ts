@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { BUILT_IN_CONFIG } from "./built-in-config";
-import type { Config, MergedConfig } from "./types";
 import { mergeConfigs } from "./config-merger";
+import type { Config, MergedConfig } from "./types";
 
 describe("mergeConfigs", () => {
 	it("should return the base config if user config is empty", () => {

@@ -1,5 +1,14 @@
 {
 	"$schema": "https://biomejs.dev/schemas/stable/schema.json",
+	"files": {
+		"ignore": [
+			"packages/magic-agent-helix/dist",
+			"packages/magic-helix-core/dist",
+			"packages/vscode-magic-helix/dist",
+			"dist",
+			"node_modules"
+		]
+	},
 	"organizeImports": {
 		"enabled": true
 	},
@@ -9,6 +18,9 @@
 			"recommended": true,
 			"suspicious": {
 				"noAny": "off"
+			},
+			"style": {
+				"useNodejsImportProtocol": "off"
 			}
 		}
 	},
@@ -28,6 +40,7 @@
 	"vcs": {
 		"enabled": true,
 		"clientKind": "git",
+		"useIgnoreFile": true,
 		"defaultBranch": "main"
 	}
 }

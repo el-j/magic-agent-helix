@@ -3,7 +3,11 @@
  * Each AI assistant may have different requirements for instruction formatting.
  */
 
-export type AssistantTarget = "github-copilot" | "claude" | "copilot-chat" | "generic";
+export type AssistantTarget =
+	| "github-copilot"
+	| "claude"
+	| "copilot-chat"
+	| "generic";
 
 export interface InstructionFormatter {
 	/**
@@ -49,10 +53,7 @@ applyTo: "${_filePath}"
 export class ClaudeFormatter implements InstructionFormatter {
 	format(content: string, _filePath: string, _projectName: string): string {
 		// Claude prefers more structured, conversational instructions
-		return content.replace(
-			/- \*\*([^*]+)\*\*/g,
-			"- **$1** (important)"
-		);
+		return content.replace(/- \*\*([^*]+)\*\*/g, "- **$1** (important)");
 	}
 
 	getFileExtension(): string {
@@ -74,13 +75,9 @@ assistant: claude
 export class CopilotChatFormatter implements InstructionFormatter {
 	format(content: string, _filePath: string, _projectName: string): string {
 		// Copilot Chat works better with more concise, actionable instructions
-		return content.replace(
-			/- \*\*ALWAYS\*\*/g,
-			"- 🔴"
-		).replace(
-			/- \*\*NEVER\*\*/g,
-			"- ❌"
-		);
+		return content
+			.replace(/- \*\*ALWAYS\*\*/g, "- 🔴")
+			.replace(/- \*\*NEVER\*\*/g, "- ❌");
 	}
 
 	getFileExtension(): string {

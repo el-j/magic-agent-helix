@@ -1,12 +1,12 @@
-import { ref, computed } from "vue";
 import type { TagTemplateMap } from "magic-helix-core";
 import { BUILT_IN_CONFIG } from "magic-helix-core";
-import { mockTemplates, generateFileHeader } from "./useMockData";
+import { computed, ref } from "vue";
 import {
+	downloadAsZip,
 	downloadFile,
 	downloadMultipleFiles,
-	downloadAsZip,
 } from "../utils/fileHelpers";
+import { generateFileHeader, mockTemplates } from "./useMockData";
 
 /**
  * Composable for file management functionality

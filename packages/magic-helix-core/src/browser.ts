@@ -1,11 +1,12 @@
 // Browser-safe exports for MagicAgentHelix (no Node.js filesystem APIs)
-export * from "./types";
-export { BUILT_IN_CONFIG } from "./built-in-config";
-export { analyzeProjectTags, type ProjectAnalysisData } from "./analysis";
 
+export { analyzeProjectTags, type ProjectAnalysisData } from "./analysis";
+export { BUILT_IN_CONFIG } from "./built-in-config";
+export * from "./types";
+
+import { BUILT_IN_CONFIG } from "./built-in-config";
 // Browser-compatible version of mergeConfigs that doesn't load from filesystem
 import type { Config, MergedConfig } from "./types";
-import { BUILT_IN_CONFIG } from "./built-in-config";
 
 /**
  * Merge user config with built-in config (browser version - no filesystem access)
