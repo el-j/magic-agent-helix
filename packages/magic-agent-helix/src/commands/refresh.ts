@@ -28,14 +28,14 @@ interface Project {
 }
 
 import type { CliOptions } from "../utils/cli-options";
-import { getLogLevel, shouldLog } from "../utils/cli-options";
+import { getLogLevel, } from "../utils/cli-options";
 
 /**
  * The 'refresh' command.
  * Rescans the project and updates existing instruction files with new information.
  */
 export async function refresh(options: CliOptions = {}) {
-	const logLevel = getLogLevel(options);
+	const _logLevel = getLogLevel(options);
 
 	const mainSpinner = ora("Loading configurations...").start();
 

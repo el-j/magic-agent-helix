@@ -59,7 +59,7 @@ export class DockerPlugin implements DetectionPlugin {
 	}
 
 	generateInstructions(
-		context: DetectionContext,
+		_context: DetectionContext,
 		metadata?: Record<string, unknown>,
 	): InstructionTemplate[] {
 		const instructions: InstructionTemplate[] = [];

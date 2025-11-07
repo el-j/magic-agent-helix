@@ -17,8 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import Card from "primevue/card";
-import Tag from "primevue/tag";
+
 
 interface Props {
 	projectName: string;

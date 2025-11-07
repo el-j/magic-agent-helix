@@ -21,11 +21,11 @@ export type FileGlobTagMap = Record<string, string>;
  * Defines the structure for mapping a tag to its templates.
  */
 export type TagTemplateMap = Record<
-	string,
-	{
-		template: string; // The filename in the user's template directory
-		suffix: string; // The suffix to append to the generated filename
-	}[]
+  string,
+  {
+    template: string; // The filename in the user's template directory
+    suffix: string; // The suffix to append to the generated filename
+  }[]
 >;
 
 /**
@@ -33,51 +33,51 @@ export type TagTemplateMap = Record<
  * This file is OPTIONAL and is used to *extend* the built-in conventions.
  */
 export interface Config {
-	/**
-	 * The AI agent target. Supported targets:
-	 * - 'github-copilot': GitHub Copilot (default)
-	 * - 'claude': Anthropic Claude/Cursor
-	 * - 'copilot-chat': GitHub Copilot Chat
-	 * - 'generic': Generic assistant format
-	 */
-	target: "github-copilot" | "claude" | "copilot-chat" | "generic";
+  /**
+   * The AI agent target. Supported targets:
+   * - 'github-copilot': GitHub Copilot (default)
+   * - 'claude': Anthropic Claude/Cursor
+   * - 'copilot-chat': GitHub Copilot Chat
+   * - 'generic': Generic assistant format
+   */
+  target: 'github-copilot' | 'claude' | 'copilot-chat' | 'generic';
 
-	/**
-	 * The *user's* local directory where their .md templates are stored
-	 * for their *custom* rules.
-	 * @default "ai_templates"
-	 */
-	templateDirectory?: string;
+  /**
+   * The *user's* local directory where their .md templates are stored
+   * for their *custom* rules.
+   * @default "ai_templates"
+   */
+  templateDirectory?: string;
 
-	/**
-	 * The output directory for the generated instruction files.
-	 * @default ".github/instructions"
-	 */
-	outputDirectory?: string;
+  /**
+   * The output directory for the generated instruction files.
+   * @default ".github/instructions"
+   */
+  outputDirectory?: string;
 
-	/**
-	 * Maps npm dependency names to "tags".
-	 * These are *merged* with the built-in rules.
-	 */
-	dependencyTagMap?: DependencyTagMap;
+  /**
+   * Maps npm dependency names to "tags".
+   * These are *merged* with the built-in rules.
+   */
+  dependencyTagMap?: DependencyTagMap;
 
-	/**
-	 * Maps key config files (relative to project root) to tags.
-	 * These are *merged* with the built-in rules.
-	 */
-	configFileTagMap?: ConfigFileTagMap;
+  /**
+   * Maps key config files (relative to project root) to tags.
+   * These are *merged* with the built-in rules.
+   */
+  configFileTagMap?: ConfigFileTagMap;
 
-	/**
-	 * Maps file glob patterns (relative to project root) to tags.
-	 * These are *merged* with the built-in rules.
-	 */
-	fileGlobTagMap?: FileGlobTagMap;
+  /**
+   * Maps file glob patterns (relative to project root) to tags.
+   * These are *merged* with the built-in rules.
+   */
+  fileGlobTagMap?: FileGlobTagMap;
 
-	/**
-	 * A map of "tags" to the template files that should be applied.
-	 * These are *merged* with the built-in rules.
-	 */
-	tagTemplateMap?: TagTemplateMap;
+  /**
+   * A map of "tags" to the template files that should be applied.
+   * These are *merged* with the built-in rules.
+   */
+  tagTemplateMap?: TagTemplateMap;
 }
 
 /**

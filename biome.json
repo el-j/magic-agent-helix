@@ -1,0 +1,46 @@
+{
+  "$schema": "https://biomejs.dev/schemas/stable/schema.json",
+  "files": {
+    "includes": [
+      "packages/magic-agent-helix/src/*",
+      "packages/magic-helix-core/src/*",
+      "packages/vscode-magic-helix/src/*"
+    ]
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+  "linter": {
+    "enabled": true,
+
+    "rules": {
+      "recommended": true,
+      "suspicious": {},
+      "style": {
+        "useNodejsImportProtocol": "off"
+      }
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 80
+  },
+  "javascript": {
+    "formatter": {
+      "semicolons": "always",
+      "quoteStyle": "single"
+    }
+  },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "defaultBranch": "main"
+  }
+}

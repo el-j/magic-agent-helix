@@ -78,8 +78,8 @@ export class CodeOwnersPlugin implements DetectionPlugin {
 	}
 
 	generateInstructions(
-		context: DetectionContext,
-		metadata?: Record<string, unknown>,
+		_context: DetectionContext,
+		_metadata?: Record<string, unknown>,
 	): InstructionTemplate[] {
 		return [
 			{

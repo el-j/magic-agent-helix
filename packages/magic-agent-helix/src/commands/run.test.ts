@@ -10,7 +10,6 @@ import {
 } from "magic-helix-core";
 import ora from "ora";
 import {
-	afterEach,
 	beforeEach,
 	describe,
 	expect,

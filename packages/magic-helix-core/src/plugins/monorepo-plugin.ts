@@ -23,7 +23,7 @@ export class MonorepoPlugin implements DetectionPlugin {
 		const hasYarnWorkspaces =
 			context.hasFile("package.json") &&
 			context.getTextFile("package.json")?.includes('"workspaces"');
-		const hasNpmWorkspaces =
+		const _hasNpmWorkspaces =
 			context.hasFile("package.json") &&
 			context.getTextFile("package.json")?.includes('"workspaces"');
 
@@ -80,7 +80,7 @@ export class MonorepoPlugin implements DetectionPlugin {
 	}
 
 	generateInstructions(
-		context: DetectionContext,
+		_context: DetectionContext,
 		metadata?: Record<string, unknown>,
 	): InstructionTemplate[] {
 		const instructions: InstructionTemplate[] = [

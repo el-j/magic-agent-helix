@@ -37,7 +37,7 @@ export class MonorepoPlugin implements DetectionPlugin {
 	}
 
 	async generateInstructions(
-		context: DetectionContext,
+		_context: DetectionContext,
 	): Promise<Instruction[]> {
 		let content = `**Project Context: ${this.tool} Monorepo**\n\n`;
 		content +=

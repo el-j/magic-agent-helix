@@ -13,7 +13,7 @@ export class RustPlugin implements DetectionPlugin {
 	}
 
 	async generateInstructions(
-		context: DetectionContext,
+		_context: DetectionContext,
 	): Promise<Instruction[]> {
 		const content = `
 **Project Context: Rust (Cargo)**

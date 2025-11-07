@@ -107,18 +107,8 @@
 </template>
 
 <script setup lang="ts">
-import Accordion from "primevue/accordion";
-import AccordionTab from "primevue/accordiontab";
-// PrimeVue Components (local registration)
-import Button from "primevue/button";
-import InputText from "primevue/inputtext";
-import Message from "primevue/message";
-import Panel from "primevue/panel";
-import ProgressSpinner from "primevue/progressspinner";
+
 import { ref, watch } from "vue";
-import InstructionFileEditor from "./components/InstructionFileEditor.vue";
-// Components
-import ProjectInfoCard from "./components/ProjectInfoCard.vue";
 import { useFileManagement } from "./composables/useFileManagement";
 import { useGitLoader } from "./composables/useGitLoader";
 // Composables
@@ -172,29 +162,29 @@ watch([isLoading, isLoadingGit, currentFile, currentFileGit], () => {
 });
 
 // Event handlers
-const handleSelectProject = async () => {
+const _handleSelectProject = async () => {
 	await selectProject();
 };
 
-const handleLoadFromGit = async () => {
+const _handleLoadFromGit = async () => {
 	if (gitUrl.value) {
 		await loadFromGitUrl(gitUrl.value);
 	}
 };
 
-const handleDownloadFile = (file: { name: string; content: string }) => {
+const _handleDownloadFile = (file: { name: string; content: string }) => {
 	downloadSingleFile(file);
 };
 
-const handleDownloadAll = () => {
+const _handleDownloadAll = () => {
 	downloadAllFiles();
 };
 
-const handleDownloadZip = () => {
+const _handleDownloadZip = () => {
 	downloadAsZipArchive();
 };
 
-const handleResetFile = (index: number) => {
+const _handleResetFile = (index: number) => {
 	if (analysisResult.value) {
 		resetFileContent(
 			index,

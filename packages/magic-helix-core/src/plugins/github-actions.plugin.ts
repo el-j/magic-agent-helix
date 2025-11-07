@@ -62,7 +62,7 @@ export class GitHubActionsPlugin implements DetectionPlugin {
 					content += `    * \`${workflow.on}\`\n`;
 				} else if (Array.isArray(workflow.on)) {
 					content +=
-						workflow.on.map((on) => `    * \`${on}\``).join("\n") + "\n";
+						`${workflow.on.map((on) => `    * \`${on}\``).join("\n")}\n`;
 				} else if (typeof workflow.on === "object") {
 					if (workflow.on.push) {
 						const branches = workflow.on.push.branches
