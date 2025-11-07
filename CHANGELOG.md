@@ -1,3 +1,23 @@
+## [2.0.0-beta.1](https://github.com/el-j/magic-agent-helix/compare/v1.3.0...v2.0.0-beta.1) (2025-11-07)
+
+### ⚠ BREAKING CHANGES
+
+* 1.4.0 release (#24)
+
+### Features
+
+* align forward to version 2 0 0 ([#12](https://github.com/el-j/magic-agent-helix/issues/12)) ([96d6934](https://github.com/el-j/magic-agent-helix/commit/96d69349b8531b09d70995c91f231d2a01f38e6d))
+* Copilot/align version 2 0 0 ([#13](https://github.com/el-j/magic-agent-helix/issues/13)) ([a965ea3](https://github.com/el-j/magic-agent-helix/commit/a965ea3938dcaef932ad1a37625d372293a2a168))
+* semantic-release branch configuration for alpha/beta prerelease workflow ([#21](https://github.com/el-j/magic-agent-helix/issues/21)) ([9e76d7d](https://github.com/el-j/magic-agent-helix/commit/9e76d7dd5afb92c63b06a40f553a284f28c45561))
+
+### Bug Fixes
+
+* 1.4.0 release ([#24](https://github.com/el-j/magic-agent-helix/issues/24)) ([6b051c8](https://github.com/el-j/magic-agent-helix/commit/6b051c80720c8dcd8197c1162ef6857f8717fb6b)), closes [#2](https://github.com/el-j/magic-agent-helix/issues/2)
+* Biome lint errors and add lint enforcement to CI ([#19](https://github.com/el-j/magic-agent-helix/issues/19)) ([c401976](https://github.com/el-j/magic-agent-helix/commit/c401976afbeaa1b6ab6d6a1c20635830a3df9e13))
+* CLI symlink execution and add VS Code extension to releases ([#25](https://github.com/el-j/magic-agent-helix/issues/25)) ([b97ac13](https://github.com/el-j/magic-agent-helix/commit/b97ac130921ae30db2422e9db4a101af2f45ca50))
+* dev back to 2.0.0 pre branch ([#17](https://github.com/el-j/magic-agent-helix/issues/17)) ([#20](https://github.com/el-j/magic-agent-helix/issues/20)) ([ca724a0](https://github.com/el-j/magic-agent-helix/commit/ca724a0b68c029b9a56e87fc8f6ed764808361ee)), closes [#13](https://github.com/el-j/magic-agent-helix/issues/13)
+* remove tsconfig.tsbuildinfo from git tracking ([#26](https://github.com/el-j/magic-agent-helix/issues/26)) ([a085781](https://github.com/el-j/magic-agent-helix/commit/a085781baebd1e5e9d6bcf05f47b41c48037f01c))
+
 ## [1.4.0](https://github.com/el-j/magic-agent-helix/compare/v1.3.0...v1.4.0) (2025-11-07)
 
 ### Features
