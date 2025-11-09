@@ -1,6 +1,8 @@
 import Aura from "@primeuix/themes/aura";
 import Accordion from "primevue/accordion";
-import AccordionTab from "primevue/accordiontab";
+import AccordionContent from "primevue/accordioncontent";
+import AccordionHeader from "primevue/accordionheader";
+import AccordionPanel from "primevue/accordionpanel";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import Chip from "primevue/chip";
@@ -34,7 +36,9 @@ export function registerPrimeVueComponents(app: any) {
 	app.component("Tag", Tag);
 	app.component("Message", Message);
 	app.component("Accordion", Accordion);
-	app.component("AccordionTab", AccordionTab);
+	app.component("AccordionPanel", AccordionPanel);
+	app.component("AccordionHeader", AccordionHeader);
+	app.component("AccordionContent", AccordionContent);
 	app.component("ScrollPanel", ScrollPanel);
 	app.component("Panel", Panel);
 }
