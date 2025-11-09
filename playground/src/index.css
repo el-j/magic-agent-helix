@@ -1,2 +1,4 @@
 /* This file is referenced in main.ts */
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
