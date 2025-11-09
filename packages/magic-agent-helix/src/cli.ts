@@ -1,13 +1,16 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander';
-import pc from 'picocolors';
-import { clean } from './commands/clean';
-import { init } from './commands/init';
-import { list } from './commands/list';
-import { refresh } from './commands/refresh';
-import { run } from './commands/run';
-import { validate } from './commands/validate';
+import { Command } from "commander";
+import { realpathSync } from "node:fs";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import pc from "picocolors";
+import { clean } from "./commands/clean";
+import { init } from "./commands/init";
+import { list } from "./commands/list";
+import { refresh } from "./commands/refresh";
+import { run } from "./commands/run";
+import { validate } from "./commands/validate";
 
 // This is the main entry point for the CLI tool.
 // It uses 'commander' to set up sub-commands: 'init' and 'run'.
@@ -106,8 +109,13 @@ async function main() {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
-  main();
+// Check if this module is being run directly
+// Works correctly even when executed via npm bin symlinks
+const modulePath = fileURLToPath(import.meta.url);
+const scriptPath = process.argv[1] ? realpathSync(resolve(process.argv[1])) : null;
+
+if (scriptPath && modulePath === scriptPath) {
+	main();
 }
 
 // Export main for testing

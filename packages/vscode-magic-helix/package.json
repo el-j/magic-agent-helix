@@ -276,13 +276,15 @@
 		}
 	},
 	"scripts": {
-		"build": "tsc --build"
+		"build": "tsc --build",
+		"package": "vsce package --no-yarn"
 	},
 	"dependencies": {
 		"@types/node": "^20.11.0"
 	},
 	"devDependencies": {
 		"@types/vscode": "^1.85.0",
+		"@vscode/vsce": "^3.2.1",
 		"typescript": "^5.0.0"
 	}
 }
