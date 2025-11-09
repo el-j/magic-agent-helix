@@ -5,6 +5,7 @@ import Button from "primevue/button";
 import Card from "primevue/card";
 import Chip from "primevue/chip";
 import Divider from "primevue/divider";
+import InputText from "primevue/inputtext";
 import Message from "primevue/message";
 import Panel from "primevue/panel";
 import ProgressSpinner from "primevue/progressspinner";
@@ -28,6 +29,7 @@ export function registerPrimeVueComponents(app: any) {
 	app.component("Card", Card);
 	app.component("Chip", Chip);
 	app.component("Divider", Divider);
+	app.component("InputText", InputText);
 	app.component("ProgressSpinner", ProgressSpinner);
 	app.component("Tag", Tag);
 	app.component("Message", Message);

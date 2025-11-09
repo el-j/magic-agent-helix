@@ -109,6 +109,8 @@
 <script setup lang="ts">
 
 import { ref, watch } from "vue";
+import InstructionFileEditor from "./components/InstructionFileEditor.vue";
+import ProjectInfoCard from "./components/ProjectInfoCard.vue";
 import { useFileManagement } from "./composables/useFileManagement";
 import { useGitLoader } from "./composables/useGitLoader";
 // Composables
@@ -162,11 +164,11 @@ watch([isLoading, isLoadingGit, currentFile, currentFileGit], () => {
 });
 
 // Event handlers
-const _handleSelectProject = async () => {
+const handleSelectProject = async () => {
 	await selectProject();
 };
 
-const _handleLoadFromGit = async () => {
+const handleLoadFromGit = async () => {
 	if (gitUrl.value) {
 		await loadFromGitUrl(gitUrl.value);
 	}
