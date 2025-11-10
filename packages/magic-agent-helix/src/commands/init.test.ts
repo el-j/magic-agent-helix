@@ -1,6 +1,5 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import gradient from "gradient-string";
 import inquirer from "inquirer";
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import { init } from "./init"; // Import the function to test

@@ -27,8 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import Button from "primevue/button";
-import Textarea from "primevue/textarea";
+
 
 interface Props {
 	file: { name: string; content: string };

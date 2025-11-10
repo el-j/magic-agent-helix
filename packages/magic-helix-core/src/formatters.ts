@@ -4,26 +4,26 @@
  */
 
 export type AssistantTarget =
-	| "github-copilot"
-	| "claude"
-	| "copilot-chat"
-	| "generic";
+  | 'github-copilot'
+  | 'claude'
+  | 'copilot-chat'
+  | 'generic';
 
 export interface InstructionFormatter {
-	/**
-	 * Format the instruction content for a specific assistant
-	 */
-	format(content: string, filePath: string, projectName: string): string;
+  /**
+   * Format the instruction content for a specific assistant
+   */
+  format(content: string, filePath: string, projectName: string): string;
 
-	/**
-	 * Get the file extension for instructions
-	 */
-	getFileExtension(): string;
+  /**
+   * Get the file extension for instructions
+   */
+  getFileExtension(): string;
 
-	/**
-	 * Get any special frontmatter or metadata required
-	 */
-	getFrontmatter(filePath: string, projectName: string): string;
+  /**
+   * Get any special frontmatter or metadata required
+   */
+  getFrontmatter(filePath: string, projectName: string): string;
 }
 
 /**
@@ -31,19 +31,19 @@ export interface InstructionFormatter {
  * Uses .md files in .github/instructions/ directory
  */
 export class GitHubCopilotFormatter implements InstructionFormatter {
-	format(content: string, _filePath: string, _projectName: string): string {
-		return content;
-	}
+  format(content: string, _filePath: string, _projectName: string): string {
+    return content;
+  }
 
-	getFileExtension(): string {
-		return ".md";
-	}
+  getFileExtension(): string {
+    return '.md';
+  }
 
-	getFrontmatter(_filePath: string, _projectName: string): string {
-		return `---
+  getFrontmatter(_filePath: string, _projectName: string): string {
+    return `---
 applyTo: "${_filePath}"
 ---\n\n`;
-	}
+  }
 }
 
 /**
@@ -51,21 +51,21 @@ applyTo: "${_filePath}"
  * Uses .md files with Claude-specific formatting
  */
 export class ClaudeFormatter implements InstructionFormatter {
-	format(content: string, _filePath: string, _projectName: string): string {
-		// Claude prefers more structured, conversational instructions
-		return content.replace(/- \*\*([^*]+)\*\*/g, "- **$1** (important)");
-	}
+  format(content: string, _filePath: string, _projectName: string): string {
+    // Claude prefers more structured, conversational instructions
+    return content.replace(/- \*\*([^*]+)\*\*/g, '- **$1** (important)');
+  }
 
-	getFileExtension(): string {
-		return ".md";
-	}
+  getFileExtension(): string {
+    return '.md';
+  }
 
-	getFrontmatter(_filePath: string, _projectName: string): string {
-		return `---
+  getFrontmatter(_filePath: string, _projectName: string): string {
+    return `---
 applyTo: "${_filePath}"
 assistant: claude
 ---\n\n`;
-	}
+  }
 }
 
 /**
@@ -73,23 +73,23 @@ assistant: claude
  * Uses .md files optimized for chat interactions
  */
 export class CopilotChatFormatter implements InstructionFormatter {
-	format(content: string, _filePath: string, _projectName: string): string {
-		// Copilot Chat works better with more concise, actionable instructions
-		return content
-			.replace(/- \*\*ALWAYS\*\*/g, "- 🔴")
-			.replace(/- \*\*NEVER\*\*/g, "- ❌");
-	}
+  format(content: string, _filePath: string, _projectName: string): string {
+    // Copilot Chat works better with more concise, actionable instructions
+    return content
+      .replace(/- \*\*ALWAYS\*\*/g, '- 🔴')
+      .replace(/- \*\*NEVER\*\*/g, '- ❌');
+  }
 
-	getFileExtension(): string {
-		return ".md";
-	}
+  getFileExtension(): string {
+    return '.md';
+  }
 
-	getFrontmatter(_filePath: string, _projectName: string): string {
-		return `---
+  getFrontmatter(_filePath: string, _projectName: string): string {
+    return `---
 applyTo: "${_filePath}"
 context: chat
 ---\n\n`;
-	}
+  }
 }
 
 /**
@@ -97,35 +97,35 @@ context: chat
  * Uses .md files with minimal formatting
  */
 export class GenericFormatter implements InstructionFormatter {
-	format(content: string, _filePath: string, _projectName: string): string {
-		return content;
-	}
+  format(content: string, _filePath: string, _projectName: string): string {
+    return content;
+  }
 
-	getFileExtension(): string {
-		return ".md";
-	}
+  getFileExtension(): string {
+    return '.md';
+  }
 
-	getFrontmatter(_filePath: string, _projectName: string): string {
-		return `---
+  getFrontmatter(_filePath: string, _projectName: string): string {
+    return `---
 applyTo: "${_filePath}"
 ---\n\n`;
-	}
+  }
 }
 
 /**
  * Factory function to get the appropriate formatter for an assistant
  */
 export function getFormatter(target: AssistantTarget): InstructionFormatter {
-	switch (target) {
-		case "github-copilot":
-			return new GitHubCopilotFormatter();
-		case "claude":
-			return new ClaudeFormatter();
-		case "copilot-chat":
-			return new CopilotChatFormatter();
-		case "generic":
-			return new GenericFormatter();
-		default:
-			return new GitHubCopilotFormatter();
-	}
+  switch (target) {
+    case 'github-copilot':
+      return new GitHubCopilotFormatter();
+    case 'claude':
+      return new ClaudeFormatter();
+    case 'copilot-chat':
+      return new CopilotChatFormatter();
+    case 'generic':
+      return new GenericFormatter();
+    default:
+      return new GitHubCopilotFormatter();
+  }
 }

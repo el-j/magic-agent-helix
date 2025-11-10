@@ -344,7 +344,7 @@ export async function run(options: CliOptions = {}) {
 	}
 
 	if (shouldLog("normal", logLevel)) {
-		console.log("\n" + "═".repeat(60));
+		console.log(`\n${"═".repeat(60)}`);
 		if (options.dryRun) {
 			console.log(pc.cyan("✨ Dry run complete! No files were modified."));
 			console.log(

@@ -50,7 +50,7 @@ export class PythonPlugin implements DetectionPlugin {
 	}
 
 	async generateInstructions(
-		context: DetectionContext,
+		_context: DetectionContext,
 	): Promise<Instruction[]> {
 		let content = "**Project Context: Python**\n\n";
 

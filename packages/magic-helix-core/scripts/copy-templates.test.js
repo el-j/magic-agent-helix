@@ -1,7 +1,7 @@
 // Note: This is a .js test file for a .js script
 const { describe, it, expect, vi, beforeEach } = require("vitest");
 const fs = require("node:fs");
-const path = require("node:path");
+const _path = require("node:path");
 
 // Mock fs and path
 vi.mock("node:fs");
