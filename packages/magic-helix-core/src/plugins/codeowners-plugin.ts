@@ -54,17 +54,17 @@ export class CodeOwnersPlugin implements DetectionPlugin {
 
       // Extract unique owners
       const owners = new Set<string>();
-      rules.forEach((rule) => {
+      for (const rule of rules) {
         // CODEOWNERS format: pattern owner1 @owner2 @team
         const parts = rule.trim().split(/\s+/);
         if (parts.length > 1) {
-          parts.slice(1).forEach((owner) => {
+          for (const owner of parts.slice(1)) {
             if (owner.startsWith('@')) {
               owners.add(owner);
             }
-          });
+          }
         }
-      });
+      }
 
       metadata.ownerCount = owners.size;
       metadata.owners = Array.from(owners).slice(0, 10); // First 10 for metadata

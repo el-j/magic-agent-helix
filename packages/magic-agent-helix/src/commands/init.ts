@@ -111,7 +111,7 @@ export async function init() {
       '\n✨ Success! Your project is ready for custom rules. ✨',
     ),
   );
-  console.log(pc.cyan(`\nNext steps:`));
+  console.log(pc.cyan('\nNext steps:'));
   console.log(
     `  1. Edit ${pc.bold(CONFIG_FILENAME)} to define your team's "tags".`,
   );

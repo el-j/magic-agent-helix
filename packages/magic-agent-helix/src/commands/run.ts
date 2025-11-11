@@ -119,13 +119,14 @@ async function runWizard(): Promise<Partial<CliOptions>> {
  */
 export async function run(options: CliOptions = {}) {
   // Run interactive wizard if requested
+  let effectiveOptions = options;
   if (options.wizard) {
     const wizardOptions = await runWizard();
     // Merge wizard options with command line options (CLI options take precedence)
-    options = { ...wizardOptions, ...options };
+    effectiveOptions = { ...wizardOptions, ...options };
   }
 
-  const logLevel = getLogLevel(options);
+  const logLevel = getLogLevel(effectiveOptions);
 
   if (shouldLog('normal', logLevel)) {
     console.log(
@@ -133,24 +134,24 @@ export async function run(options: CliOptions = {}) {
     );
   }
 
-  if (options.dryRun && shouldLog('normal', logLevel)) {
+  if (effectiveOptions.dryRun && shouldLog('normal', logLevel)) {
     console.log(pc.yellow('🔍 DRY RUN MODE - No files will be written\n'));
   }
 
   const mainSpinner = ora('Loading configurations...').start();
 
   // 1. Load Configs (Built-in + Optional User)
-  const userConfig = loadUserConfig(options.config);
+  const userConfig = loadUserConfig(effectiveOptions.config);
   const config = mergeConfigs(userConfig);
 
   // Override output directory if specified
-  if (options.outputDir) {
-    config.outputDirectory = options.outputDir;
+  if (effectiveOptions.outputDir) {
+    config.outputDirectory = effectiveOptions.outputDir;
   }
 
   // Override target if specified
-  if (options.target) {
-    config.target = options.target;
+  if (effectiveOptions.target) {
+    config.target = effectiveOptions.target;
   }
 
   mainSpinner.succeed('Configuration loaded.');
@@ -188,7 +189,7 @@ export async function run(options: CliOptions = {}) {
   let totalTags = 0;
   for (const project of projects) {
     // Skip if specific project requested and this isn't it
-    if (options.project && project.name !== options.project) {
+    if (effectiveOptions.project && project.name !== effectiveOptions.project) {
       if (shouldLog('verbose', logLevel)) {
         console.log(pc.gray(`Skipping ${project.name} (not target project)`));
       }
@@ -206,7 +207,7 @@ export async function run(options: CliOptions = {}) {
   analyzeSpinner.succeed(`Project analysis complete. Found ${totalTags} tags.`);
 
   // 4. Ensure target directory exists
-  if (!options.dryRun) {
+  if (!effectiveOptions.dryRun) {
     ensureTargetDir(targetDir);
   } else if (shouldLog('verbose', logLevel)) {
     console.log(pc.gray(`Would ensure directory: ${targetDir}`));
@@ -214,8 +215,8 @@ export async function run(options: CliOptions = {}) {
 
   // Apply template filtering if specified
   let filteredTagTemplateMap = tagTemplateMap as TagTemplateMap;
-  if (options.template) {
-    const templatePatterns = options.template.split(',').map((p) => p.trim());
+  if (effectiveOptions.template) {
+    const templatePatterns = effectiveOptions.template.split(',').map((p) => p.trim());
     filteredTagTemplateMap = {} as TagTemplateMap;
 
     for (const [tag, templates] of Object.entries(tagTemplateMap)) {
@@ -236,7 +237,7 @@ export async function run(options: CliOptions = {}) {
     }
 
     if (shouldLog('verbose', logLevel)) {
-      console.log(pc.gray(`Template filter applied: ${options.template}`));
+      console.log(pc.gray(`Template filter applied: ${effectiveOptions.template}`));
     }
   }
 
@@ -252,7 +253,7 @@ export async function run(options: CliOptions = {}) {
   let totalTemplates = 0;
   for (const project of projects) {
     // Skip if specific project requested and this isn't it
-    if (options.project && project.name !== options.project) {
+    if (effectiveOptions.project && project.name !== effectiveOptions.project) {
       continue;
     }
 
@@ -274,7 +275,7 @@ export async function run(options: CliOptions = {}) {
     const globPattern = buildPreciseGlobPattern(
       project.path,
       project.tags,
-      options.exclude,
+      effectiveOptions.exclude,
     );
 
     for (const tag of project.tags) {
@@ -310,7 +311,7 @@ export async function run(options: CliOptions = {}) {
 
         generatedFiles.push(outputFilename);
 
-        if (options.dryRun) {
+        if (effectiveOptions.dryRun) {
           if (shouldLog('normal', logLevel)) {
             console.log(
               pc.cyan(
@@ -337,15 +338,15 @@ export async function run(options: CliOptions = {}) {
   );
 
   // 6. Pruning: Ask to remove old files
-  if (!options.dryRun && !options.skipPruning) {
-    await pruneOldFiles(targetDir, generatedFiles, options.force);
-  } else if (options.dryRun && shouldLog('verbose', logLevel)) {
+  if (!effectiveOptions.dryRun && !effectiveOptions.skipPruning) {
+    await pruneOldFiles(targetDir, generatedFiles, effectiveOptions.force);
+  } else if (effectiveOptions.dryRun && shouldLog('verbose', logLevel)) {
     console.log(pc.gray('\nWould check for old files to prune...'));
   }
 
   if (shouldLog('normal', logLevel)) {
     console.log(`\n${'═'.repeat(60)}`);
-    if (options.dryRun) {
+    if (effectiveOptions.dryRun) {
       console.log(pc.cyan('✨ Dry run complete! No files were modified.'));
       console.log(
         pc.gray(

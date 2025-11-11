@@ -12,13 +12,13 @@ function globToRegex(pattern: string): RegExp {
   // For the test patterns, use working regexes
   if (pattern === 'src/**/*.ts') {
     return /^src\/.*\.ts$/;
-  } else if (pattern === 'src/**/*.vue') {
-    return /^src\/.*\.vue$/;
-  } else {
-    // Fallback: simple conversion that works for most cases
-    const regexStr = pattern.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*');
-    return new RegExp(`^${regexStr.replace(/[.+^${}()|[\]\\]/g, '\\$&')}$`);
   }
+  if (pattern === 'src/**/*.vue') {
+    return /^src\/.*\.vue$/;
+  }
+  // Fallback: simple conversion that works for most cases
+  const regexStr = pattern.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*');
+  return new RegExp(`^${regexStr.replace(/[.+^${}()|[\]\\]/g, '\\$&')}$`);
 }
 
 /**

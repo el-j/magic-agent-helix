@@ -40,10 +40,7 @@ export class MonorepoPlugin implements DetectionPlugin {
     _context: DetectionContext,
   ): Promise<Instruction[]> {
     let content = `**Project Context: ${this.tool} Monorepo**\n\n`;
-    content +=
-      '* This is a monorepo. All packages/apps are likely in `packages/` or `apps/`.\n' +
-      `* **CRITICAL:** Always run commands from the project root. Do NOT run \`${this.packageManager} install\` in a sub-package.\n` +
-      `* Install all dependencies from the root: \`${this.packageManager} install\`\n`;
+    content += `* This is a monorepo. All packages/apps are likely in \`packages/\` or \`apps/\`.\n* **CRITICAL:** Always run commands from the project root. Do NOT run \`${this.packageManager} install\` in a sub-package.\n* Install all dependencies from the root: \`${this.packageManager} install\`\n`;
 
     switch (this.tool) {
       case 'Turborepo':

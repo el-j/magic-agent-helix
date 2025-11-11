@@ -176,7 +176,7 @@ export async function refresh(options: CliOptions = {}) {
     }
   }
 
-  console.log(`\n✨ Refresh complete!`);
+  console.log('\n✨ Refresh complete!');
   console.log(pc.green(`   Updated: ${updatedCount} files`));
   console.log(pc.gray(`   Skipped: ${skippedCount} projects`));
 }

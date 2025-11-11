@@ -13,7 +13,7 @@ export interface DetectionContext {
    * Asynchronously reads and parses a JSON file.
    * Returns null if the file doesn't exist or is invalid JSON.
    */
-  getJsonFile: (filename: string) => Promise<any | null>;
+  getJsonFile: (filename: string) => Promise<unknown | null>;
 
   /**
    * Asynchronously reads a file as raw text.
