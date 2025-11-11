@@ -1,19 +1,33 @@
 #!/usr/bin/env node
 
-import { Command } from "commander";
-import { realpathSync } from "node:fs";
-import { resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-import pc from "picocolors";
-import { clean } from "./commands/clean";
-import { init } from "./commands/init";
-import { list } from "./commands/list";
-import { refresh } from "./commands/refresh";
-import { run } from "./commands/run";
-import { validate } from "./commands/validate";
+import { Command } from 'commander';
+import { readFileSync } from 'node:fs';
+import { realpathSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import pc from 'picocolors';
+import { clean } from './commands/clean';
+import { init } from './commands/init';
+import { list } from './commands/list';
+import { refresh } from './commands/refresh';
+import { run } from './commands/run';
+import { validate } from './commands/validate';
 
 // This is the main entry point for the CLI tool.
 // It uses 'commander' to set up sub-commands: 'init' and 'run'.
+
+// Read version from package.json
+function getVersion(): string {
+  try {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+    const packageJsonPath = join(__dirname, '..', 'package.json');
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+    return packageJson.version;
+  } catch (error) {
+    return '2.0.0-beta.1'; // Fallback version
+  }
+}
 
 async function main() {
   try {
@@ -22,7 +36,7 @@ async function main() {
     program
       .name('ai-aligner')
       .description('A CLI to align AI instructions in your monorepo.')
-      .version('0.2.0'); // This should match package.json
+      .version(getVersion());
 
     program
       .command('init')
@@ -112,10 +126,12 @@ async function main() {
 // Check if this module is being run directly
 // Works correctly even when executed via npm bin symlinks
 const modulePath = fileURLToPath(import.meta.url);
-const scriptPath = process.argv[1] ? realpathSync(resolve(process.argv[1])) : null;
+const scriptPath = process.argv[1]
+  ? realpathSync(resolve(process.argv[1]))
+  : null;
 
 if (scriptPath && modulePath === scriptPath) {
-	main();
+  main();
 }
 
 // Export main for testing

@@ -346,7 +346,7 @@ async function showCustomOptionsUI(
 
 async function runMagicHelix(
   context: vscode.ExtensionContext,
-  command: string = 'run',
+  command = 'run',
   cliOptions: string[] = [],
 ) {
   // Check for open workspace
@@ -407,7 +407,7 @@ async function runMagicHelix(
       path.resolve(workspaceRoot, 'packages/magic-agent-helix/dist/cli.mjs'),
     );
 
-    let commandStr: string = '';
+    let commandStr = '';
     const cwd = workspaceRoot;
     let foundCliPath: string | null = null;
 
@@ -418,9 +418,8 @@ async function runMagicHelix(
         foundCliPath = cliPath;
         outputChannel.appendLine(`✓ Found CLI at: ${cliPath}`);
         break;
-      } else {
-        outputChannel.appendLine(`✗ Not found`);
       }
+      outputChannel.appendLine('✗ Not found');
     }
 
     if (foundCliPath) {
@@ -624,14 +623,14 @@ function updateStatusBar(update: ProgressUpdate) {
 
   switch (update.type) {
     case 'info':
-      icon = update.progress !== undefined ? `$(loading~spin)` : `$(info)`;
+      icon = update.progress !== undefined ? '$(loading~spin)' : '$(info)';
       text =
         update.progress !== undefined
           ? `Magic Helix: ${update.stage} (${update.progress}%)`
           : `Magic Helix: ${update.stage}`;
       break;
     case 'success':
-      icon = `$(check)`;
+      icon = '$(check)';
       text = `Magic Helix: ${update.stage}`;
       // Reset to default after 5 seconds for success
       setTimeout(() => {
@@ -642,7 +641,7 @@ function updateStatusBar(update: ProgressUpdate) {
       }, 5000);
       break;
     case 'error':
-      icon = `$(error)`;
+      icon = '$(error)';
       text = `Magic Helix: ${update.stage}`;
       // Reset to default after 10 seconds for errors
       setTimeout(() => {
@@ -653,11 +652,11 @@ function updateStatusBar(update: ProgressUpdate) {
       }, 10000);
       break;
     case 'warning':
-      icon = `$(warning)`;
+      icon = '$(warning)';
       text = `Magic Helix: ${update.stage}`;
       break;
     default:
-      icon = `$(wand)`;
+      icon = '$(wand)';
       text = `Magic Helix: ${update.stage}`;
   }
 
@@ -1205,13 +1204,13 @@ async function showQuickAccessMenu(context: vscode.ExtensionContext) {
       kind: vscode.QuickPickItemKind.Separator,
     });
 
-    history.slice(0, 3).forEach((item: CommandHistoryItem) => {
+    for (const item of history.slice(0, 3)) {
       menuItems.push({
         label: `$(history) ${item.label}`,
         description: item.command,
         detail: `Options: ${item.options.join(' ')}`,
       });
-    });
+    }
   }
 
   // Add favorites if available
@@ -1221,13 +1220,13 @@ async function showQuickAccessMenu(context: vscode.ExtensionContext) {
       kind: vscode.QuickPickItemKind.Separator,
     });
 
-    favorites.forEach((fav: FavoriteConfig) => {
+    for (const fav of favorites) {
       menuItems.push({
         label: `$(star) ${fav.name}`,
         description: fav.command,
         detail: `Options: ${fav.options.join(' ')}`,
       });
-    });
+    }
   }
 
   const selectedCommand = await vscode.window.showQuickPick(menuItems, {
