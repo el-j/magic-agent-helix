@@ -1,3 +1,13 @@
+## [2.0.0](https://github.com/el-j/magic-agent-helix/compare/v1.4.0...v2.0.0) (2025-11-12)
+
+### ⚠ BREAKING CHANGES
+
+* Release 2.0.0 (#30)
+
+### Bug Fixes
+
+* Release 2.0.0 ([#30](https://github.com/el-j/magic-agent-helix/issues/30)) ([2dd46ef](https://github.com/el-j/magic-agent-helix/commit/2dd46ef46fce12469cf914a10d593cfdeb7a6a5a)), closes [#24](https://github.com/el-j/magic-agent-helix/issues/24) [#2](https://github.com/el-j/magic-agent-helix/issues/2)
+
 ## [2.0.0-alpha.1](https://github.com/el-j/magic-agent-helix/compare/v1.4.0...v2.0.0-alpha.1) (2025-11-12)
 
 ### ⚠ BREAKING CHANGES
