@@ -2,7 +2,7 @@
 
 A powerful tool that inspects your project and generates granular, path-specific AI instructions for agents like GitHub Copilot.
 
-**Current Version: 1.3.0** | **Roadmap: [v2.0.0 Polyglot](ROADMAP-v2.0.0.md)** | **Plugin System: [Documentation](PLUGIN-SYSTEM.md)**
+**Current Version: 2.0.0-beta.1** | **Roadmap: [v2.0.0 Polyglot](ROADMAP-v2.0.0.md)** | **Plugin System: [Documentation](PLUGIN-SYSTEM.md)**
 
 ## 📦 Packages
 
