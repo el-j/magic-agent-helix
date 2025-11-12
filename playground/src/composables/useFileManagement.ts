@@ -1,4 +1,4 @@
-import type { TagTemplateMap } from "magic-helix-core";
+
 import { BUILT_IN_CONFIG } from "magic-helix-core";
 import { computed, ref } from "vue";
 import {
@@ -36,7 +36,7 @@ export function useFileManagement() {
 
 					files.push({
 						name: `${projectName}.${template.suffix}`,
-						content: header + "\n" + content,
+						content: `${header}\n${content}`,
 					});
 				}
 			}
@@ -97,7 +97,7 @@ export function useFileManagement() {
 			`# Mock Content for ${template.template}`;
 		const header = generateFileHeader(projectName, template.template);
 
-		generatedFiles.value[index].content = header + "\n" + content;
+		generatedFiles.value[index].content = `${header}\n${content}`;
 	};
 
 	/**

@@ -1,21 +1,21 @@
 import type {
-	DetectionContext,
-	DetectionPlugin,
-	Instruction,
-} from "./plugin.interface";
+  DetectionContext,
+  DetectionPlugin,
+  Instruction,
+} from './plugin.interface';
 
 export class RustPlugin implements DetectionPlugin {
-	name = "Rust (Cargo)";
+  name = 'Rust (Cargo)';
 
-	async detect(context: DetectionContext): Promise<boolean> {
-		// Rust projects are defined by the presence of Cargo.toml
-		return context.files.includes("Cargo.toml");
-	}
+  async detect(context: DetectionContext): Promise<boolean> {
+    // Rust projects are defined by the presence of Cargo.toml
+    return context.files.includes('Cargo.toml');
+  }
 
-	async generateInstructions(
-		context: DetectionContext,
-	): Promise<Instruction[]> {
-		const content = `
+  async generateInstructions(
+    _context: DetectionContext,
+  ): Promise<Instruction[]> {
+    const content = `
 **Project Context: Rust (Cargo)**
 
 * This is a Rust project managed by **Cargo**. The \`Cargo.toml\` file defines project metadata and dependencies.
@@ -36,14 +36,14 @@ export class RustPlugin implements DetectionPlugin {
 * \`cargo add <crate-name>\`: Add a new dependency to \`Cargo.toml\`.
 * \`cargo update\`: Update all dependencies to their latest compatible versions.
     `
-			.trim()
-			.replace(/^\s+/gm, ""); // Cleans up leading whitespace
+      .trim()
+      .replace(/^\s+/gm, ''); // Cleans up leading whitespace
 
-		return [
-			{
-				filename: "rust-cargo.md",
-				content: content,
-			},
-		];
-	}
+    return [
+      {
+        filename: 'rust-cargo.md',
+        content: content,
+      },
+    ];
+  }
 }
