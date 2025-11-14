@@ -608,8 +608,14 @@ function sendProgressUpdate(
   panel: vscode.WebviewPanel,
   update: ProgressUpdate,
 ) {
+  // Add timestamp to the update
+  const updateWithTimestamp = {
+    ...update,
+    timestamp: new Date().toLocaleTimeString(),
+  };
+  
   // Update webview
-  panel.webview.postMessage(update);
+  panel.webview.postMessage(updateWithTimestamp);
 
   // Update status bar based on progress
   updateStatusBar(update);
@@ -821,7 +827,7 @@ function getWebviewContent(): string {
 				<div class="log-container">
 					\${logs.map(log => \`
 						<div class="log-entry \${log.type}">
-							<span class="timestamp">\${new Date().toLocaleTimeString()}</span>
+							<span class="timestamp">\${log.timestamp || ''}</span>
 							<strong>[\${log.stage}]</strong> \${log.message}
 						</div>
 					\`).join('')}
@@ -1375,15 +1381,15 @@ async function refineInstructionFileWithAI(uri?: vscode.Uri) {
         const fileName = path.basename(fileUri.fsPath);
         const projectContext = await getProjectContext(fileUri);
 
-        const prompt = `You are an expert at writing clear, actionable AI instructions for GitHub Copilot and other AI coding assistants.
+        const prompt = `You are an expert at writing clear, actionable AI instructions for GitHub Copilot and other AI coding assistants across all programming languages and frameworks.
 
 I have an instruction file for my project that needs refinement. Please analyze it and improve it by:
 
-1. **Clarity**: Make instructions more specific and actionable
-2. **Completeness**: Add missing context or important patterns
+1. **Clarity**: Make instructions more specific and actionable for the detected language/framework
+2. **Completeness**: Add missing context, patterns, and idioms specific to this technology stack
 3. **Structure**: Improve organization and readability
-4. **Relevance**: Ensure instructions match the project context
-5. **Best Practices**: Include coding standards and conventions
+4. **Relevance**: Ensure instructions match the project's language, framework, and dependencies
+5. **Best Practices**: Include language-specific coding standards, conventions, and common patterns
 
 **File**: ${fileName}
 **Project Context**: 
@@ -1394,7 +1400,15 @@ ${projectContext}
 ${currentContent}
 \`\`\`
 
-Please provide an improved version of this instruction file. Keep the same general structure and purpose, but make it more effective. Return ONLY the improved markdown content, no explanations.`;
+**Instructions**:
+- Tailor your improvements to the detected language/framework shown in the project context
+- If no specific language is detected, keep the instructions general and applicable across languages
+- Maintain the file's original purpose and scope
+- Add language-specific examples, patterns, or conventions where appropriate
+- If the project uses specific frameworks or libraries, reference their best practices
+- Keep the tone clear, direct, and actionable
+
+Please provide an improved version of this instruction file. Return ONLY the improved markdown content, no explanations or meta-commentary.`;
 
         const messages = [vscode.LanguageModelChatMessage.User(prompt)];
 
@@ -1514,6 +1528,334 @@ Please provide an improved version of this instruction file. Keep the same gener
 }
 
 /**
+ * Detect project language and read manifest files
+ */
+interface ProjectMetadata {
+  language: string;
+  name?: string;
+  description?: string;
+  dependencies?: string[];
+  manifestFile?: string;
+}
+
+async function detectProjectLanguage(
+  workspacePath: string,
+): Promise<ProjectMetadata> {
+  const rootPath = workspacePath;
+
+  // Node.js / JavaScript / TypeScript
+  const packageJsonPath = path.join(rootPath, 'package.json');
+  if (fs.existsSync(packageJsonPath)) {
+    try {
+      const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+      const deps = [
+        ...Object.keys(pkg.dependencies || {}),
+        ...Object.keys(pkg.devDependencies || {}),
+      ];
+      return {
+        language: 'JavaScript/TypeScript (Node.js)',
+        name: pkg.name,
+        description: pkg.description,
+        dependencies: deps.slice(0, 10),
+        manifestFile: 'package.json',
+      };
+    } catch {
+      return {
+        language: 'JavaScript/TypeScript (Node.js)',
+        manifestFile: 'package.json',
+      };
+    }
+  }
+
+  // Python
+  const pyprojectPath = path.join(rootPath, 'pyproject.toml');
+  const requirementsPath = path.join(rootPath, 'requirements.txt');
+  const setupPyPath = path.join(rootPath, 'setup.py');
+
+  if (fs.existsSync(pyprojectPath)) {
+    try {
+      const content = fs.readFileSync(pyprojectPath, 'utf-8');
+      const nameMatch = content.match(/name\s*=\s*["']([^"']+)["']/);
+      const descMatch = content.match(/description\s*=\s*["']([^"']+)["']/);
+      const deps: string[] = [];
+      const depsSection = content.match(/\[tool\.poetry\.dependencies\]([\s\S]*?)(?:\n\[|$)/);
+      if (depsSection) {
+        const lines = depsSection[1].split('\n');
+        for (const line of lines) {
+          const depMatch = line.match(/^([a-zA-Z0-9_-]+)\s*=/);
+          if (depMatch && depMatch[1] !== 'python') {
+            deps.push(depMatch[1]);
+          }
+        }
+      }
+      return {
+        language: 'Python',
+        name: nameMatch?.[1],
+        description: descMatch?.[1],
+        dependencies: deps.slice(0, 10),
+        manifestFile: 'pyproject.toml',
+      };
+    } catch {
+      return { language: 'Python', manifestFile: 'pyproject.toml' };
+    }
+  }
+
+  if (fs.existsSync(requirementsPath)) {
+    try {
+      const content = fs.readFileSync(requirementsPath, 'utf-8');
+      const deps = content
+        .split('\n')
+        .filter((line) => line.trim() && !line.startsWith('#'))
+        .map((line) => line.split(/[=<>]/)[0].trim())
+        .slice(0, 10);
+      return {
+        language: 'Python',
+        dependencies: deps,
+        manifestFile: 'requirements.txt',
+      };
+    } catch {
+      return { language: 'Python', manifestFile: 'requirements.txt' };
+    }
+  }
+
+  if (fs.existsSync(setupPyPath)) {
+    return { language: 'Python', manifestFile: 'setup.py' };
+  }
+
+  // Go
+  const goModPath = path.join(rootPath, 'go.mod');
+  if (fs.existsSync(goModPath)) {
+    try {
+      const content = fs.readFileSync(goModPath, 'utf-8');
+      const moduleMatch = content.match(/module\s+([^\s\n]+)/);
+      const deps: string[] = [];
+      const lines = content.split('\n');
+      let inRequire = false;
+      for (const line of lines) {
+        if (line.trim().startsWith('require (')) {
+          inRequire = true;
+          continue;
+        }
+        if (inRequire) {
+          if (line.trim() === ')') break;
+          const depMatch = line.match(/^\s*([^\s]+)/);
+          if (depMatch) deps.push(depMatch[1]);
+        } else if (line.trim().startsWith('require ')) {
+          const depMatch = line.match(/require\s+([^\s]+)/);
+          if (depMatch) deps.push(depMatch[1]);
+        }
+      }
+      return {
+        language: 'Go',
+        name: moduleMatch?.[1],
+        dependencies: deps.slice(0, 10),
+        manifestFile: 'go.mod',
+      };
+    } catch {
+      return { language: 'Go', manifestFile: 'go.mod' };
+    }
+  }
+
+  // Rust
+  const cargoTomlPath = path.join(rootPath, 'Cargo.toml');
+  if (fs.existsSync(cargoTomlPath)) {
+    try {
+      const content = fs.readFileSync(cargoTomlPath, 'utf-8');
+      const nameMatch = content.match(/\[package\][\s\S]*?name\s*=\s*"([^"]+)"/);
+      const descMatch = content.match(/\[package\][\s\S]*?description\s*=\s*"([^"]+)"/);
+      const deps: string[] = [];
+      const depsSection = content.match(/\[dependencies\]([\s\S]*?)(?:\n\[|$)/);
+      if (depsSection) {
+        const lines = depsSection[1].split('\n');
+        for (const line of lines) {
+          const depMatch = line.match(/^([a-zA-Z0-9_-]+)\s*=/);
+          if (depMatch) deps.push(depMatch[1]);
+        }
+      }
+      return {
+        language: 'Rust',
+        name: nameMatch?.[1],
+        description: descMatch?.[1],
+        dependencies: deps.slice(0, 10),
+        manifestFile: 'Cargo.toml',
+      };
+    } catch {
+      return { language: 'Rust', manifestFile: 'Cargo.toml' };
+    }
+  }
+
+  // Java (Maven)
+  const pomXmlPath = path.join(rootPath, 'pom.xml');
+  if (fs.existsSync(pomXmlPath)) {
+    try {
+      const content = fs.readFileSync(pomXmlPath, 'utf-8');
+      const nameMatch = content.match(/<artifactId>([^<]+)<\/artifactId>/);
+      const descMatch = content.match(/<description>([^<]+)<\/description>/);
+      const deps: string[] = [];
+      const depMatches = content.matchAll(/<dependency>[\s\S]*?<artifactId>([^<]+)<\/artifactId>/g);
+      for (const match of depMatches) {
+        deps.push(match[1]);
+        if (deps.length >= 10) break;
+      }
+      return {
+        language: 'Java (Maven)',
+        name: nameMatch?.[1],
+        description: descMatch?.[1],
+        dependencies: deps,
+        manifestFile: 'pom.xml',
+      };
+    } catch {
+      return { language: 'Java (Maven)', manifestFile: 'pom.xml' };
+    }
+  }
+
+  // Java (Gradle)
+  const buildGradlePath = path.join(rootPath, 'build.gradle');
+  const buildGradleKtsPath = path.join(rootPath, 'build.gradle.kts');
+  if (fs.existsSync(buildGradlePath) || fs.existsSync(buildGradleKtsPath)) {
+    const gradleFile = fs.existsSync(buildGradlePath)
+      ? buildGradlePath
+      : buildGradleKtsPath;
+    try {
+      const content = fs.readFileSync(gradleFile, 'utf-8');
+      const deps: string[] = [];
+      const depMatches = content.matchAll(/(?:implementation|api|testImplementation)\s*['"]([^:'"]+):([^:'"]+)/g);
+      for (const match of depMatches) {
+        deps.push(`${match[1]}:${match[2]}`);
+        if (deps.length >= 10) break;
+      }
+      return {
+        language: 'Java/Kotlin (Gradle)',
+        dependencies: deps,
+        manifestFile: path.basename(gradleFile),
+      };
+    } catch {
+      return {
+        language: 'Java/Kotlin (Gradle)',
+        manifestFile: path.basename(gradleFile),
+      };
+    }
+  }
+
+  // Ruby
+  const gemfilePath = path.join(rootPath, 'Gemfile');
+  if (fs.existsSync(gemfilePath)) {
+    try {
+      const content = fs.readFileSync(gemfilePath, 'utf-8');
+      const deps: string[] = [];
+      const gemMatches = content.matchAll(/gem\s+['"]([^'"]+)['"]/g);
+      for (const match of gemMatches) {
+        deps.push(match[1]);
+        if (deps.length >= 10) break;
+      }
+      return {
+        language: 'Ruby',
+        dependencies: deps,
+        manifestFile: 'Gemfile',
+      };
+    } catch {
+      return { language: 'Ruby', manifestFile: 'Gemfile' };
+    }
+  }
+
+  // PHP
+  const composerJsonPath = path.join(rootPath, 'composer.json');
+  if (fs.existsSync(composerJsonPath)) {
+    try {
+      const composer = JSON.parse(fs.readFileSync(composerJsonPath, 'utf-8'));
+      const deps = [
+        ...Object.keys(composer.require || {}),
+        ...Object.keys(composer['require-dev'] || {}),
+      ];
+      return {
+        language: 'PHP',
+        name: composer.name,
+        description: composer.description,
+        dependencies: deps.slice(0, 10),
+        manifestFile: 'composer.json',
+      };
+    } catch {
+      return { language: 'PHP', manifestFile: 'composer.json' };
+    }
+  }
+
+  // C# (.NET)
+  const csprojFiles = fs.readdirSync(rootPath).filter((f) => f.endsWith('.csproj'));
+  if (csprojFiles.length > 0) {
+    try {
+      const content = fs.readFileSync(
+        path.join(rootPath, csprojFiles[0]),
+        'utf-8',
+      );
+      const deps: string[] = [];
+      const depMatches = content.matchAll(/<PackageReference\s+Include="([^"]+)"/g);
+      for (const match of depMatches) {
+        deps.push(match[1]);
+        if (deps.length >= 10) break;
+      }
+      return {
+        language: 'C# (.NET)',
+        dependencies: deps,
+        manifestFile: csprojFiles[0],
+      };
+    } catch {
+      return { language: 'C# (.NET)', manifestFile: csprojFiles[0] };
+    }
+  }
+
+  // Fallback: detect by file extensions
+  try {
+    const files = fs.readdirSync(rootPath);
+    const extensions = new Set(
+      files
+        .filter((f) => f.includes('.'))
+        .map((f) => f.split('.').pop())
+        .filter(Boolean),
+    );
+
+    if (extensions.has('go')) return { language: 'Go' };
+    if (extensions.has('py')) return { language: 'Python' };
+    if (extensions.has('rs')) return { language: 'Rust' };
+    if (extensions.has('java')) return { language: 'Java' };
+    if (extensions.has('rb')) return { language: 'Ruby' };
+    if (extensions.has('php')) return { language: 'PHP' };
+    if (extensions.has('cs')) return { language: 'C#' };
+    if (extensions.has('cpp') || extensions.has('cc') || extensions.has('cxx'))
+      return { language: 'C++' };
+    if (extensions.has('c') || extensions.has('h'))
+      return { language: 'C' };
+    if (extensions.has('swift')) return { language: 'Swift' };
+    if (extensions.has('kt') || extensions.has('kts'))
+      return { language: 'Kotlin' };
+    if (extensions.has('scala')) return { language: 'Scala' };
+    if (extensions.has('ex') || extensions.has('exs'))
+      return { language: 'Elixir' };
+    if (extensions.has('erl') || extensions.has('hrl'))
+      return { language: 'Erlang' };
+    if (extensions.has('clj') || extensions.has('cljs'))
+      return { language: 'Clojure' };
+    if (extensions.has('hs')) return { language: 'Haskell' };
+    if (extensions.has('ml') || extensions.has('mli'))
+      return { language: 'OCaml' };
+    if (extensions.has('dart')) return { language: 'Dart' };
+    if (extensions.has('lua')) return { language: 'Lua' };
+    if (extensions.has('r') || extensions.has('R'))
+      return { language: 'R' };
+    if (extensions.has('jl')) return { language: 'Julia' };
+    if (extensions.has('ts') || extensions.has('tsx'))
+      return { language: 'TypeScript' };
+    if (extensions.has('js') || extensions.has('jsx'))
+      return { language: 'JavaScript' };
+    if (extensions.has('vue')) return { language: 'Vue.js' };
+    if (extensions.has('html')) return { language: 'HTML/Web' };
+  } catch {
+    // Ignore errors
+  }
+
+  return { language: 'Unknown' };
+}
+
+/**
  * Get project context for AI refinement
  */
 async function getProjectContext(fileUri: vscode.Uri): Promise<string> {
@@ -1523,29 +1865,30 @@ async function getProjectContext(fileUri: vscode.Uri): Promise<string> {
   }
 
   const context: string[] = [];
+  const projectMeta = await detectProjectLanguage(workspaceFolder.uri.fsPath);
 
-  // Try to read package.json
-  const packageJsonPath = path.join(workspaceFolder.uri.fsPath, 'package.json');
-  if (fs.existsSync(packageJsonPath)) {
-    try {
-      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-      if (packageJson.name) {
-        context.push(`Project: ${packageJson.name}`);
-      }
-      if (packageJson.description) {
-        context.push(`Description: ${packageJson.description}`);
-      }
-      if (packageJson.dependencies) {
-        const deps = Object.keys(packageJson.dependencies)
-          .slice(0, 10)
-          .join(', ');
-        context.push(
-          `Dependencies: ${deps}${Object.keys(packageJson.dependencies).length > 10 ? '...' : ''}`,
-        );
-      }
-    } catch {
-      // Ignore parsing errors
-    }
+  // Add language information
+  context.push(`Language/Framework: ${projectMeta.language}`);
+
+  // Add manifest file info
+  if (projectMeta.manifestFile) {
+    context.push(`Manifest File: ${projectMeta.manifestFile}`);
+  }
+
+  // Add project details
+  if (projectMeta.name) {
+    context.push(`Project: ${projectMeta.name}`);
+  }
+  if (projectMeta.description) {
+    context.push(`Description: ${projectMeta.description}`);
+  }
+
+  // Add dependencies
+  if (projectMeta.dependencies && projectMeta.dependencies.length > 0) {
+    const depsStr = projectMeta.dependencies.join(', ');
+    const suffix =
+      projectMeta.dependencies.length === 10 ? ' (and more...)' : '';
+    context.push(`Key Dependencies: ${depsStr}${suffix}`);
   }
 
   // Get file-specific context from filename
@@ -1555,7 +1898,7 @@ async function getProjectContext(fileUri: vscode.Uri): Promise<string> {
     .split('.')
     .filter((t) => t);
   if (tags.length > 0) {
-    context.push(`Instruction tags: ${tags.join(', ')}`);
+    context.push(`Instruction Tags: ${tags.join(', ')}`);
   }
 
   return context.length > 0

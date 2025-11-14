@@ -27,7 +27,7 @@ export {
   type DetectionPlugin,
   type DetectionResult,
   type InstructionTemplate,
-  PluginRegistry,
+  PluginRegistry as PluginRegistryOld,
   pluginRegistry,
 } from './plugin-system';
 
@@ -43,6 +43,16 @@ export {
   PythonPlugin,
   RustPlugin,
 } from './plugins';
+
+// New Plugin System (v3.0.0 - Phase 1)
+export { PluginLoader, type PluginLoadResult, type PluginLoadError } from './plugin-loader';
+export {
+  PluginRegistry,
+  getRegistry,
+  initializeRegistry,
+} from './plugin-registry';
+export { TemplateLoader } from './template-loader';
+
 export * from './types';
 
 // Export the path to the built-in templates directory

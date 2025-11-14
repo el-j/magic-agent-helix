@@ -9,6 +9,7 @@ import pc from 'picocolors';
 import { clean } from './commands/clean';
 import { init } from './commands/init';
 import { list } from './commands/list';
+import { pluginsCommand } from './commands/plugins';
 import { refresh } from './commands/refresh';
 import { run } from './commands/run';
 import { validate } from './commands/validate';
@@ -108,6 +109,12 @@ async function main() {
       .command('clean')
       .description('Remove all generated instruction files.')
       .action(clean);
+
+    program
+      .command('plugins')
+      .description('List available language detection plugins and their status.')
+      .option('--verbose', 'Show detailed plugin information')
+      .action((options) => pluginsCommand(options));
 
     // Set 'run' as the default command if no other command is specified
     if (process.argv.length < 3) {

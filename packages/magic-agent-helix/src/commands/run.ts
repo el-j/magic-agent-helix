@@ -15,15 +15,14 @@ import {
   getFormatter,
   loadUserConfig,
   mergeConfigs,
+  PluginRegistry,
+  type ProjectMetadata,
 } from 'magic-helix-core';
 import ora from 'ora';
 import pc from 'picocolors';
 import type { CliOptions } from '../utils/cli-options';
 import { getLogLevel, shouldLog } from '../utils/cli-options';
 import { buildPreciseGlobPattern } from '../utils/file-extensions';
-
-// --- CONFIGURATION ---
-const ROOT_PACKAGE_JSON = path.resolve(process.cwd(), 'package.json');
 
 // --- TYPES ---
 interface Project {
@@ -415,44 +414,24 @@ function ensureTargetDir(targetDir: string) {
 
 async function findProjects(): Promise<Project[]> {
   const projects: Project[] = [];
+  const rootPath = process.cwd();
 
-  if (!fs.existsSync(ROOT_PACKAGE_JSON)) {
-    throw new Error('No root package.json found. Cannot find projects.');
+  // Initialize plugin registry and detect projects
+  const registry = PluginRegistry.getInstance();
+  await registry.initialize();
+  const detectedProjects = await registry.detectAllProjects(rootPath);
+  
+  if (detectedProjects.length === 0) {
+    throw new Error('No projects found. Ensure your project has a manifest file (package.json, go.mod, Cargo.toml, etc.).');
   }
 
-  const rootPkg = JSON.parse(fs.readFileSync(ROOT_PACKAGE_JSON, 'utf-8'));
-  const workspaces = rootPkg.workspaces?.packages || rootPkg.workspaces || [];
-
-  // 1. Add root project
-  projects.push({
-    name: rootPkg.name
-      ? rootPkg.name.replace(/@/g, '').replace(/\//g, '-')
-      : 'root-project',
-    path: '.',
-    tags: new Set<string>(),
-  });
-
-  if (workspaces.length === 0) {
-    console.log('No workspaces found. Analyzing root project only.');
-    return projects;
-  }
-
-  // 2. Add workspace projects
-  const packageJsonPaths = await glob(
-    workspaces.map((w: string) => `${w}/package.json`),
-  );
-
-  for (const pkgPath of packageJsonPaths) {
-    try {
-      const pkgContent = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
-      projects.push({
-        name: pkgContent.name.replace(/@/g, '').replace(/\//g, '-'), // e.g., @scope/my-app -> scope-my-app
-        path: path.dirname(pkgPath),
-        tags: new Set<string>(),
-      });
-    } catch (_e) {
-      console.warn(pc.yellow(`⚠️  Skipping invalid package.json: ${pkgPath}`));
-    }
+  for (const result of detectedProjects) {
+    const relativePath = path.relative(rootPath, result.metadata.projectPath);
+    projects.push({
+      name: result.metadata.name || path.basename(result.metadata.projectPath),
+      path: relativePath || '.',
+      tags: new Set<string>(),
+    });
   }
 
   return projects;
@@ -466,26 +445,30 @@ async function analyzeProject(
 ) {
   const projectRoot = path.resolve(process.cwd(), project.path);
 
-  // Strategy 1: Analyze package.json dependencies
+  // Strategy 1: Analyze dependencies from any manifest file
   try {
-    const pkgPath = path.join(projectRoot, 'package.json');
-    if (fs.existsSync(pkgPath)) {
-      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
-      const allDeps = {
-        ...(pkg.dependencies || {}),
-        ...(pkg.devDependencies || {}),
-      };
-
-      for (const dep in allDeps) {
+    const registry = PluginRegistry.getInstance();
+    const detectedProjects = await registry.detectAllProjects(projectRoot);
+    if (detectedProjects.length > 0) {
+      const projectMetadata = detectedProjects[0].metadata; // Use first match
+      
+      for (const dep in projectMetadata.dependencies) {
+        // Check both the full dependency name and the package/module name
         if (depMap[dep]) {
           project.tags.add(depMap[dep]);
+        }
+        
+        // For scoped packages like @scope/pkg or group:artifact, try the base name too
+        const baseName = dep.split(/[@/:]/g).pop();
+        if (baseName && depMap[baseName]) {
+          project.tags.add(depMap[baseName]);
         }
       }
     }
   } catch (e) {
     console.warn(
       pc.yellow(
-        `⚠️  Could not parse package.json for ${project.name}: ${(e as Error).message}`,
+        `⚠️  Could not analyze dependencies for ${project.name}: ${(e as Error).message}`,
       ),
     );
   }
