@@ -79,15 +79,18 @@
                 :disabled="!generatedFiles.length"
               />
             </div>
-            <Accordion :activeIndex="0">
-              <AccordionTab v-for="(file, index) in generatedFiles" :key="index" :header="file.name">
-                <InstructionFileEditor
-                  :file="file"
-                  :index="index"
-                  @download="handleDownloadFile"
-                  @reset="handleResetFile"
-                />
-              </AccordionTab>
+            <Accordion value="0">
+              <AccordionPanel v-for="(file, index) in generatedFiles" :key="index" :value="String(index)">
+                <AccordionHeader>{{ file.name }}</AccordionHeader>
+                <AccordionContent>
+                  <InstructionFileEditor
+                    :file="file"
+                    :index="index"
+                    @download="handleDownloadFile"
+                    @reset="handleResetFile"
+                  />
+                </AccordionContent>
+              </AccordionPanel>
             </Accordion>
             <div v-if="!generatedFiles.length" class="p-4 text-center text-gray-400">
               No instruction files were generated.
@@ -109,6 +112,8 @@
 <script setup lang="ts">
 
 import { ref, watch } from "vue";
+import InstructionFileEditor from "./components/InstructionFileEditor.vue";
+import ProjectInfoCard from "./components/ProjectInfoCard.vue";
 import { useFileManagement } from "./composables/useFileManagement";
 import { useGitLoader } from "./composables/useGitLoader";
 // Composables

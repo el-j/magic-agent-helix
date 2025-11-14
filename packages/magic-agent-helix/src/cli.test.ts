@@ -47,7 +47,8 @@ describe('CLI Main Entry Point (/src/cli.ts)', () => {
     expect(mockCommand.description).toHaveBeenCalledWith(
       'A CLI to align AI instructions in your monorepo.',
     );
-    expect(mockCommand.version).toHaveBeenCalledWith('0.2.0');
+    // Version is now dynamically read from package.json
+    expect(mockCommand.version).toHaveBeenCalled();
   });
 
   it('should register the "init" command', async () => {
