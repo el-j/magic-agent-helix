@@ -101,6 +101,9 @@ export interface ProjectMetadata {
   manifestFile?: string;               // e.g., "package.json", "go.mod"
   projectPath: string;                 // Absolute path to project root
   workspaceMembers?: string[];         // For monorepo support
+  tags?: string[];                     // Optional semantic tags detected by plugin
+  keywords?: string[];                 // Optional keywords/categories from manifest
+  categories?: string[];               // Optional categories for registry filtering
 }
 
 /**

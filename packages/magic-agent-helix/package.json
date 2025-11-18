@@ -1,5 +1,5 @@
 {
-	"name": "magic-agent-helix",
+	"name": "@magic-helix/agent",
 	"version": "2.0.0",
 	"type": "module",
 	"description": "A CLI to inspect a project and generate granular, path-specific AI instructions for agents like GitHub Copilot.",
@@ -35,7 +35,7 @@
 	},
 	"dependencies": {
 		"commander": "^12.1.0",
-		"magic-helix-core": "*"
+		"@magic-helix/core": "*"
 	},
 	"devDependencies": {
 		"vite": "^5.3.5"

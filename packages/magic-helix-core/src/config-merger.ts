@@ -4,19 +4,37 @@ import pc from 'picocolors';
 import { BUILT_IN_CONFIG } from './built-in-config';
 import type { Config, MergedConfig } from './types';
 
-export const CONFIG_FILENAME = 'ai-aligner.config.json';
+export const CONFIG_FILENAME = 'magic-helix.config.json';
+const LEGACY_CONFIG_FILENAMES = ['ai-aligner.config.json'];
 
 /**
  * Loads the user's optional config file.
- * @param configPath Optional path to config file. Defaults to ai-aligner.config.json in cwd.
+ * @param configPath Optional path to config file. Defaults to magic-helix.config.json in cwd (legacy ai-aligner config is still supported).
  * @returns A partial Config object or an empty object.
  */
 export function loadUserConfig(configPath?: string): Partial<Config> {
-  const resolvedPath = configPath
-    ? path.resolve(process.cwd(), configPath)
-    : path.resolve(process.cwd(), CONFIG_FILENAME);
+  const searchPaths = configPath
+    ? [path.resolve(process.cwd(), configPath)]
+    : [
+        path.resolve(process.cwd(), CONFIG_FILENAME),
+        ...LEGACY_CONFIG_FILENAMES.map((filename) =>
+          path.resolve(process.cwd(), filename),
+        ),
+      ];
 
-  if (!fs.existsSync(resolvedPath)) {
+  const resolvedPath = searchPaths.find((candidate, index) => {
+    const exists = fs.existsSync(candidate);
+    if (!configPath && exists && index > 0) {
+      console.warn(
+        pc.yellow(
+          `  Detected legacy config file ${path.basename(candidate)}. Please rename it to ${CONFIG_FILENAME}.`,
+        ),
+      );
+    }
+    return exists;
+  });
+
+  if (!resolvedPath) {
     console.log(
       pc.gray('  No user config file found. Using built-in conventions only.'),
     );

@@ -8,7 +8,7 @@ import type {
   DependencyTagMap,
   FileGlobTagMap,
   TagTemplateMap,
-} from 'magic-helix-core';
+} from '@magic-helix/core';
 import {
   type AssistantTarget,
   BUILT_IN_TEMPLATE_DIR,
@@ -17,7 +17,7 @@ import {
   mergeConfigs,
   PluginRegistry,
   type ProjectMetadata,
-} from 'magic-helix-core';
+} from '@magic-helix/core';
 import ora from 'ora';
 import pc from 'picocolors';
 import type { CliOptions } from '../utils/cli-options';
@@ -422,7 +422,7 @@ async function findProjects(): Promise<Project[]> {
   const detectedProjects = await registry.detectAllProjects(rootPath);
   
   if (detectedProjects.length === 0) {
-    throw new Error('No projects found. Ensure your project has a manifest file (package.json, go.mod, Cargo.toml, etc.).');
+    return [];
   }
 
   for (const result of detectedProjects) {
@@ -451,6 +451,12 @@ async function analyzeProject(
     const detectedProjects = await registry.detectAllProjects(projectRoot);
     if (detectedProjects.length > 0) {
       const projectMetadata = detectedProjects[0].metadata; // Use first match
+
+      if (projectMetadata.tags?.length) {
+        for (const tag of projectMetadata.tags) {
+          project.tags.add(tag);
+        }
+      }
       
       for (const dep in projectMetadata.dependencies) {
         // Check both the full dependency name and the package/module name

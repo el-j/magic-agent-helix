@@ -10,7 +10,7 @@ import {
   type LanguagePlugin,
   type ProjectMetadata,
   type TemplateDefinition,
-} from 'magic-helix-core';
+} from '@magic-helix/core';
 
 /**
  * Example 1: Basic plugin usage
@@ -161,7 +161,7 @@ async function example5_ConfigFromFile() {
   console.log('\n=== Example 5: Configuration from File ===\n');
 
   // Load configuration from workspace and global locations
-  const { PluginRegistry } = await import('magic-helix-core');
+  const { PluginRegistry } = await import('@magic-helix/core');
   const config = await PluginRegistry.loadConfig(process.cwd());
   
   console.log('Loaded configuration:');

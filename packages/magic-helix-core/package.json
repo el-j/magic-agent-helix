@@ -1,5 +1,5 @@
 {
-	"name": "magic-helix-core",
+	"name": "@magic-helix/core",
 	"version": "2.0.0",
 	"type": "module",
 	"main": "./dist/index.cjs",
@@ -39,6 +39,7 @@
 		"gradient-string": "^3.0.0",
 		"inquirer": "^12.11.0",
 		"js-yaml": "^4.1.0",
+		"@iarna/toml": "^3.0.0",
 		"ora": "^9.0.0",
 		"picocolors": "^1.0.1"
 	},

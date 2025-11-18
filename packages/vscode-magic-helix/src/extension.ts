@@ -179,6 +179,21 @@ export function activate(context: vscode.ExtensionContext) {
     },
   );
 
+  // Register plugin management commands
+  const pluginsCommand = vscode.commands.registerCommand(
+    'magic-helix.plugins',
+    async () => {
+      await runMagicHelix(context, 'plugins');
+    },
+  );
+
+  const pluginStatusCommand = vscode.commands.registerCommand(
+    'magic-helix.pluginStatus',
+    async () => {
+      await showPluginStatusPanel(context);
+    },
+  );
+
   context.subscriptions.push(
     disposable,
     initCommand,
@@ -192,6 +207,8 @@ export function activate(context: vscode.ExtensionContext) {
     saveFavoriteCommand,
     configureWorkspaceCommand,
     refineWithAICommand,
+    pluginsCommand,
+    pluginStatusCommand,
   );
 }
 
@@ -435,7 +452,7 @@ async function runMagicHelix(
       });
     } else {
       // Production mode: use npx
-      commandStr = `npx magic-agent-helix ${command} ${mergedOptions.join(' ')}`;
+      commandStr = `npx @magic-helix/agent ${command} ${mergedOptions.join(' ')}`;
       outputChannel.appendLine('Mode: Production (using npx)');
       outputChannel.appendLine('⚠️ Local CLI not found. Using npx instead.');
       outputChannel.appendLine(
@@ -443,7 +460,7 @@ async function runMagicHelix(
       );
       sendProgressUpdate(panel, {
         stage: 'Configuration',
-        message: 'Using npx to run magic-agent-helix',
+        message: 'Using npx to run @magic-helix/agent',
         progress: 10,
         type: 'warning',
       });
@@ -668,6 +685,105 @@ function updateStatusBar(update: ProgressUpdate) {
 
   statusBarItem.text = `${icon} ${text}`;
   statusBarItem.tooltip = update.message;
+}
+
+async function showPluginStatusPanel(context: vscode.ExtensionContext): Promise<void> {
+  try {
+    // Import PluginRegistry dynamically
+    const { PluginRegistry } = await import('@magic-helix/core');
+    
+    const registry = PluginRegistry.getInstance();
+    await registry.initialize();
+    
+    const plugins = await registry.getAllPlugins();
+    const stats = registry.getStatistics();
+    const errors = await registry.getLoadErrors();
+
+    // Create panel
+    const panel = vscode.window.createWebviewPanel(
+      'magicHelixPlugins',
+      'MagicAgentHelix Plugin Status',
+      vscode.ViewColumn.Beside,
+      {
+        enableScripts: true,
+        retainContextWhenHidden: true,
+      },
+    );
+
+    // Generate HTML content
+    const pluginCards = await Promise.all(
+      plugins
+        .sort((a, b) => b.priority - a.priority)
+        .map(async plugin => {
+          const templates = await Promise.resolve(plugin.getTemplates());
+          const tagMap = plugin.getDependencyTagMap?.() || {};
+          
+          return `
+            <div class="plugin-card">
+              <div class="plugin-header">
+                <h3>${plugin.displayName}</h3>
+                <span class="plugin-priority priority-${Math.floor(plugin.priority / 10)}">Priority: ${plugin.priority}</span>
+              </div>
+              <div class="plugin-details">
+                <p><strong>Name:</strong> ${plugin.name}</p>
+                <p><strong>Version:</strong> ${plugin.version}</p>
+                <p><strong>Templates:</strong> ${templates.length > 0 ? templates.map((t: {name: string}) => t.name).join(', ') : 'None'}</p>
+                <p><strong>Detects:</strong> ${Object.keys(tagMap).length > 0 ? Object.keys(tagMap).slice(0, 5).join(', ') : 'None'}</p>
+              </div>
+            </div>
+          `;
+        })
+    );
+    const pluginsHtml = pluginCards.join('');
+
+    const errorsHtml = errors.length > 0 
+      ? `<div class="errors-section">
+           <h2>Load Errors (${errors.length})</h2>
+           ${errors.map(err => `<div class="error-item">${err.source}: ${err.error}</div>`).join('')}
+         </div>`
+      : '';
+
+    panel.webview.html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; }
+            .stats { background: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+            .plugin-card { border: 1px solid #e1e4e8; border-radius: 6px; padding: 15px; margin-bottom: 15px; }
+            .plugin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+            .plugin-header h3 { margin: 0; }
+            .plugin-priority { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+            .priority-10 { background: #28a745; color: white; }
+            .priority-9 { background: #28a745; color: white; }
+            .priority-8 { background: #ffc107; color: black; }
+            .priority-7 { background: #ffc107; color: black; }
+            .priority-6 { background: #17a2b8; color: white; }
+            .plugin-details p { margin: 5px 0; }
+            .errors-section { background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; padding: 15px; margin-top: 20px; }
+            .error-item { margin: 5px 0; font-family: monospace; }
+          </style>
+        </head>
+        <body>
+          <h1>MagicAgentHelix Plugin System</h1>
+          <div class="stats">
+            <h2>Statistics</h2>
+            <p><strong>Total Plugins:</strong> ${stats.totalLoaded}</p>
+            <p><strong>Average Load Time:</strong> ${stats.averageLoadTime.toFixed(1)}ms</p>
+            <p><strong>Load Errors:</strong> ${stats.totalErrors}</p>
+          </div>
+          <h2>Loaded Plugins (${plugins.length})</h2>
+          ${pluginsHtml}
+          ${errorsHtml}
+        </body>
+      </html>
+    `;
+
+  } catch (error) {
+    vscode.window.showErrorMessage(
+      `Failed to load plugin status: ${(error as Error).message}`
+    );
+  }
 }
 
 function getWebviewContent(): string {
@@ -1160,7 +1276,7 @@ async function showQuickAccessMenu(context: vscode.ExtensionContext) {
     {
       label: '$(file-add) Initialize Config',
       description: 'Create custom configuration',
-      detail: 'Set up ai-aligner.config.json for custom rules',
+      detail: 'Set up the Magic Helix config (ai-aligner.config.json) for custom rules',
     },
     {
       label: '$(sync) Refresh Instructions',
@@ -1181,6 +1297,16 @@ async function showQuickAccessMenu(context: vscode.ExtensionContext) {
       label: '$(trash) Clean Files',
       description: 'Remove generated files',
       detail: 'Delete all generated instruction files',
+    },
+    {
+      label: '$(extensions) List Language Plugins',
+      description: 'View loaded plugins',
+      detail: 'Show all available language detection plugins',
+    },
+    {
+      label: '$(info) Plugin Status',
+      description: 'View plugin details',
+      detail: 'Show detailed plugin status and statistics',
     },
     {
       label: '$(output) Show Output',
@@ -1251,6 +1377,8 @@ async function showQuickAccessMenu(context: vscode.ExtensionContext) {
       '$(list-tree) List Projects & Tags': 'magic-helix.list',
       '$(checklist) Validate Files': 'magic-helix.validate',
       '$(trash) Clean Files': 'magic-helix.clean',
+      '$(extensions) List Language Plugins': 'magic-helix.plugins',
+      '$(info) Plugin Status': 'magic-helix.pluginStatus',
       '$(output) Show Output': 'magic-helix.showOutput',
       '$(graph) Show Status': 'magic-helix.showStatus',
       '$(sparkle) Refine with AI': 'magic-helix.refineWithAI',

@@ -43,9 +43,9 @@ describe('CLI Main Entry Point (/src/cli.ts)', () => {
     await runCli();
 
     expect(Command).toHaveBeenCalled();
-    expect(mockCommand.name).toHaveBeenCalledWith('ai-aligner');
+    expect(mockCommand.name).toHaveBeenCalledWith('magic-helix');
     expect(mockCommand.description).toHaveBeenCalledWith(
-      'A CLI to align AI instructions in your monorepo.',
+      'Magic Helix CLI for aligning AI instructions in your monorepo.',
     );
     // Version is now dynamically read from package.json
     expect(mockCommand.version).toHaveBeenCalled();
@@ -57,7 +57,7 @@ describe('CLI Main Entry Point (/src/cli.ts)', () => {
 
     expect(mockCommand.command).toHaveBeenCalledWith('init');
     expect(mockCommand.description).toHaveBeenCalledWith(
-      'Initialize a custom ai-aligner.config.json to extend the built-in rules.',
+      'Initialize a custom magic-helix.config.json to extend the built-in rules.',
     );
     expect(mockCommand.action).toHaveBeenCalledWith(init);
   });

@@ -4,7 +4,7 @@
  * Detects C# projects via .csproj files
  */
 
-import type { ProjectMetadata, TemplateDefinition } from 'magic-helix-core';
+import type { ProjectMetadata, TemplateDefinition } from '@magic-helix/core';
 import { BasePlugin } from '../base/BasePlugin';
 
 export class CSharpPlugin extends BasePlugin {

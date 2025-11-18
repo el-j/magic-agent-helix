@@ -6,7 +6,7 @@
  */
 
 import * as path from 'node:path';
-import type { ProjectMetadata, TemplateDefinition } from 'magic-helix-core';
+import type { ProjectMetadata, TemplateDefinition } from '@magic-helix/core';
 import { BasePlugin } from '../base/BasePlugin';
 
 interface PackageJson {

@@ -70,7 +70,7 @@ describe('Init Command (/src/commands/init.ts)', () => {
     await init();
 
     expect(mockSpinner.start).toHaveBeenCalledWith(
-      'Initializing AI Aligner for custom rules...',
+      'Initializing Magic Helix for custom rules...',
     );
     expect(mockSpinner.start).toHaveBeenCalledWith(
       'Creating templates directory...',
@@ -78,7 +78,7 @@ describe('Init Command (/src/commands/init.ts)', () => {
     expect(fs.writeFileSync).toHaveBeenCalledTimes(2);
     // 1. Config file
     expect(fs.writeFileSync).toHaveBeenCalledWith(
-      expect.stringContaining('ai-aligner.config.json'),
+      expect.stringContaining('magic-helix.config.json'),
       expect.stringContaining('"target": "github-copilot"'),
       'utf-8',
     );
@@ -93,7 +93,7 @@ describe('Init Command (/src/commands/init.ts)', () => {
       { recursive: true },
     );
     expect(mockSpinner.succeed).toHaveBeenCalledWith(
-      'Created minimal config file: ai-aligner.config.json',
+      'Created minimal config file: magic-helix.config.json',
     );
     expect(mockSpinner.succeed).toHaveBeenCalledWith(
       'Created templates directory and example file: ai_templates',
@@ -135,12 +135,12 @@ describe('Init Command (/src/commands/init.ts)', () => {
     );
     expect(fs.writeFileSync).toHaveBeenCalledTimes(2); // Config + example template
     expect(fs.writeFileSync).toHaveBeenCalledWith(
-      expect.stringContaining('ai-aligner.config.json'),
+      expect.stringContaining('magic-helix.config.json'),
       expect.stringContaining('"target": "github-copilot"'),
       'utf-8',
     );
     expect(mockSpinner.succeed).toHaveBeenCalledWith(
-      'Created minimal config file: ai-aligner.config.json',
+      'Created minimal config file: magic-helix.config.json',
     );
   });
 
@@ -167,7 +167,7 @@ describe('Init Command (/src/commands/init.ts)', () => {
 
     expect(fs.writeFileSync).toHaveBeenCalledTimes(1); // Only config file
     expect(fs.writeFileSync).toHaveBeenCalledWith(
-      expect.stringContaining('ai-aligner.config.json'),
+      expect.stringContaining('magic-helix.config.json'),
       expect.anything(),
       'utf-8',
     );

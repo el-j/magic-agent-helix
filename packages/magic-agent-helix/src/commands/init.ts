@@ -2,12 +2,12 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import gradient from 'gradient-string';
 import inquirer from 'inquirer';
-import type { Config } from 'magic-helix-core';
+import type { Config } from '@magic-helix/core';
 import ora from 'ora';
 import pc from 'picocolors';
 
 // --- CONFIGURATION ---
-const CONFIG_FILENAME = 'ai-aligner.config.json';
+const CONFIG_FILENAME = 'magic-helix.config.json';
 const DEFAULT_TEMPLATE_DIR = 'ai_templates';
 
 // This is the *minimal* config file 'init' will create.
@@ -39,7 +39,7 @@ const MINIMAL_USER_CONFIG: Config = {
  */
 export async function init() {
   const spinner = ora(
-    pc.bold('Initializing AI Aligner for custom rules...'),
+    pc.bold('Initializing Magic Helix for custom rules...'),
   ).start();
 
   const configPath = path.resolve(process.cwd(), CONFIG_FILENAME);
@@ -119,6 +119,6 @@ export async function init() {
     `  2. Add your custom .md instruction files to ${pc.bold(DEFAULT_TEMPLATE_DIR)}.`,
   );
   console.log(
-    `  3. Run ${pc.bold('npx ai-aligner run')} to generate your files.`,
+    `  3. Run ${pc.bold('npx @magic-helix/agent run')} to generate your files.`,
   );
 }

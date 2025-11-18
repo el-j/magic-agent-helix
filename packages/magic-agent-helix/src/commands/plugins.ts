@@ -1,5 +1,5 @@
 import pc from 'picocolors';
-import { PluginRegistry } from 'magic-helix-core';
+import { PluginRegistry } from '@magic-helix/core';
 
 interface PluginsOptions {
   verbose?: boolean;

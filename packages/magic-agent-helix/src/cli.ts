@@ -35,14 +35,14 @@ async function main() {
     const program = new Command();
 
     program
-      .name('ai-aligner')
-      .description('A CLI to align AI instructions in your monorepo.')
+      .name('magic-helix')
+      .description('Magic Helix CLI for aligning AI instructions in your monorepo.')
       .version(getVersion());
 
     program
       .command('init')
       .description(
-        'Initialize a custom ai-aligner.config.json to extend the built-in rules.',
+        'Initialize a custom magic-helix.config.json to extend the built-in rules.',
       )
       .action(init);
 

@@ -9,7 +9,7 @@ export default defineConfig({
 	base: process.env.NODE_ENV === "production" ? "/magic-agent-helix/" : "/",
 	resolve: {
 		alias: {
-			"magic-helix-core": path.resolve(
+			"@magic-helix/core": path.resolve(
 				__dirname,
 				"../packages/magic-helix-core/src/browser.ts",
 			),
