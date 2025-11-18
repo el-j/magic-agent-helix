@@ -52,7 +52,7 @@ The extension provides access to all MagicAgentHelix CLI commands with **full op
   - Custom project targeting
   - Custom config file path
   - Custom output directory
-- **Initialize Config** (`magic-helix.init`) - Create the Magic Helix config file (`ai-aligner.config.json`)
+- **Initialize Config** (`magic-helix.init`) - Create the Magic Helix config file (`magic-helix.config.json`)
 - **Refresh MagicAgentHelix** (`magic-helix.refresh`) - Update existing instruction files
   - Interactive options selector for --verbose, --quiet
   - Custom project targeting
@@ -106,7 +106,7 @@ The extension provides access to all MagicAgentHelix CLI commands:
    - Type "MagicAgentHelix" and select from the available commands:
      - "Quick Access Menu" - Fast command launcher with history and favorites
      - "Run MagicAgentHelix" - Generate new instruction files (with options)
-    - "Initialize Config" - Create the Magic Helix config file (`ai-aligner.config.json`)
+    - "Initialize Config" - Create the Magic Helix config file (`magic-helix.config.json`)
      - "Refresh MagicAgentHelix" - Update existing instruction files (with options)
      - "List Projects & Tags" - Show project information
      - "Validate Instruction Files" - Check file integrity
@@ -117,7 +117,7 @@ The extension provides access to all MagicAgentHelix CLI commands:
 ### Interactive Workflow
 
 #### First Time Setup
-1. Run **"Initialize Config"** to create the Magic Helix config file (`ai-aligner.config.json`)
+1. Run **"Initialize Config"** to create the Magic Helix config file (`magic-helix.config.json`)
 2. Optionally run **"Configure Workspace"** to create `.magic-helix.json` for workspace-specific settings
 3. Edit the config files to customize your setup
 4. Run **"Run MagicAgentHelix"** to generate instruction files

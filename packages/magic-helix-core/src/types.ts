@@ -29,7 +29,7 @@ export type TagTemplateMap = Record<
 >;
 
 /**
- * The structure of the ai-aligner.config.json file.
+ * The structure of the magic-helix.config.json file (legacy: ai-aligner.config.json).
  * This file is OPTIONAL and is used to *extend* the built-in conventions.
  */
 export interface Config {
@@ -78,6 +78,56 @@ export interface Config {
    * These are *merged* with the built-in rules.
    */
   tagTemplateMap?: TagTemplateMap;
+
+  /**
+   * AI instruction refinement settings (Phase 3: Universal AI Platform Roadmap)
+   * Controls how instruction files are optimized for the target AI agent.
+   */
+  aiRefinement?: {
+    /**
+     * Quality level for generated instructions.
+     * - 'basic': Minimal instructions, fastest generation
+     * - 'standard': Balanced detail and conciseness (default)
+     * - 'comprehensive': Maximum detail, longer generation time
+     */
+    quality?: 'basic' | 'standard' | 'comprehensive';
+
+    /**
+     * Context level for instructions.
+     * - 'minimal': Only essential information
+     * - 'balanced': Standard context (default)
+     * - 'extensive': Maximum background and examples
+     */
+    contextLevel?: 'minimal' | 'balanced' | 'extensive';
+
+    /**
+     * Output format optimization.
+     * - 'markdown': Standard Markdown (default)
+     * - 'structured': Section headers + bullet points
+     * - 'conversational': Natural language prose
+     * - 'code-focused': Emphasis on code examples
+     */
+    outputFormat?: 'markdown' | 'structured' | 'conversational' | 'code-focused';
+
+    /**
+     * Token budget hint (approximate max tokens per instruction file).
+     * Used to trim excessive content.
+     * @default 4000
+     */
+    tokenBudget?: number;
+
+    /**
+     * Include code examples in instructions.
+     * @default true
+     */
+    includeExamples?: boolean;
+
+    /**
+     * Include best practices sections.
+     * @default true
+     */
+    includeBestPractices?: boolean;
+  };
 }
 
 /**

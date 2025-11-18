@@ -96,7 +96,7 @@ Merges user configuration with built-in defaults.
 Loads user configuration from a file.
 
 **Parameters:**
-- `configPath?: string` - Optional path to config file (defaults to `ai-aligner.config.json`)
+- `configPath?: string` - Optional path to config file (defaults to `magic-helix.config.json`, with legacy support for `ai-aligner.config.json`)
 
 **Returns:** `Partial<Config>` - Loaded user configuration or empty object
 

@@ -141,7 +141,7 @@ magic-helix init
 ```
 
 Creates:
-- `ai-aligner.config.json` - Configuration file
+- `magic-helix.config.json` - Configuration file (legacy: `ai-aligner.config.json` still supported)
 - `ai_templates/` - Directory for custom templates
 
 ## ⚙️ Configuration
@@ -167,7 +167,7 @@ MagicAgentHelix automatically detects:
 
 ### Custom Configuration
 
-Create `ai-aligner.config.json` to extend or override:
+Create `magic-helix.config.json` to extend or override:
 
 ```json
 {

@@ -1276,7 +1276,7 @@ async function showQuickAccessMenu(context: vscode.ExtensionContext) {
     {
       label: '$(file-add) Initialize Config',
       description: 'Create custom configuration',
-      detail: 'Set up the Magic Helix config (ai-aligner.config.json) for custom rules',
+      detail: 'Set up the Magic Helix config (magic-helix.config.json) for custom rules',
     },
     {
       label: '$(sync) Refresh Instructions',

@@ -8,7 +8,11 @@ export { DockerPlugin } from './docker-plugin';
 export { GitHubActionsPlugin } from './github-actions-plugin';
 export { GitLabCIPlugin } from './gitlab-ci-plugin';
 // Language Plugins
+export { DotNetPlugin } from './dotnet-plugin';
 export { GolangPlugin } from './golang-plugin';
+export { JavaKotlinPlugin } from './java-kotlin-plugin';
+export { RubyPlugin } from './ruby-plugin';
+export { SwiftPlugin } from './swift-plugin';
 // Architecture Plugins
 export { MonorepoPlugin } from './monorepo-plugin';
 export { PHPPlugin } from './php-plugin';

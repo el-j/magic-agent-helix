@@ -1,15 +1,15 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { loadUserConfig, mergeConfigs } from '@magic-helix/core';
+import { loadUserConfig, mergeConfigs, validateInstructions, formatValidationReport } from '@magic-helix/core';
 import ora from 'ora';
 import pc from 'picocolors';
 
 /**
  * The 'validate' command.
- * Checks instruction files for common issues.
+ * Checks instruction files for quality based on awesome-ai-system-prompts best practices.
  */
 export async function validate() {
-  console.log(pc.cyan('🔍 Validating instruction files...\n'));
+  console.log(pc.cyan('🔍 Validating instruction files with quality scoring...\n'));
 
   const spinner = ora('Loading configuration...').start();
 
@@ -45,96 +45,68 @@ export async function validate() {
 
   console.log(pc.gray(`Checking ${files.length} instruction file(s)...\n`));
 
-  let validCount = 0;
-  let errorCount = 0;
-  const issues: string[] = [];
+  let passCount = 0;
+  let failCount = 0;
+  const results: Array<{ file: string; score: number; grade: string }> = [];
 
   for (const file of files) {
     const filePath = path.join(targetDir, file);
-    let hasIssues = false;
 
     try {
       const content = fs.readFileSync(filePath, 'utf-8');
 
-      // Check 1: Has frontmatter
-      if (!content.startsWith('---')) {
-        issues.push(`${file}: Missing frontmatter delimiter`);
-        hasIssues = true;
-      }
-
-      // Check 2: Has applyTo field
-      if (!content.includes('applyTo:')) {
-        issues.push(`${file}: Missing 'applyTo' field in frontmatter`);
-        hasIssues = true;
-      }
-
-      // Check 3: Frontmatter is properly closed
-      const lines = content.split('\n');
-      let frontmatterClosed = false;
-      let lineCount = 0;
-      for (let i = 1; i < lines.length; i++) {
-        lineCount++;
-        if (lines[i].trim() === '---') {
-          frontmatterClosed = true;
-          break;
-        }
-        if (lineCount > 50) break; // Safety limit
-      }
-      if (!frontmatterClosed) {
-        issues.push(`${file}: Frontmatter not properly closed with '---'`);
-        hasIssues = true;
-      }
-
-      // Check 4: Has content after frontmatter
-      const contentAfterFrontmatter = content
-        .split('---')
-        .slice(2)
-        .join('---')
-        .trim();
-      if (contentAfterFrontmatter.length < 10) {
-        issues.push(
-          `${file}: File appears to have no content after frontmatter`,
-        );
-        hasIssues = true;
-      }
-
-      // Check 5: applyTo pattern looks valid
-      const applyToMatch = content.match(/applyTo:\s*"([^"]+)"/);
-      if (applyToMatch) {
-        const pattern = applyToMatch[1];
-        if (!pattern.includes('/**/*') && !pattern.includes('*')) {
-          issues.push(
-            `${file}: applyTo pattern '${pattern}' may not be a valid glob`,
-          );
-          hasIssues = true;
-        }
-      }
-
-      if (hasIssues) {
-        errorCount++;
+      // Run quality validation
+      const quality = validateInstructions(content);
+      const grade = getQualityGrade(quality.overallScore);
+      
+      results.push({ file, score: quality.overallScore, grade });
+      
+      if (quality.overallScore >= 70) {
+        passCount++;
       } else {
-        validCount++;
+        failCount++;
       }
+      
+      // Display individual file results
+      const scoreColor = quality.overallScore >= 90 ? pc.green 
+        : quality.overallScore >= 70 ? pc.blue 
+        : pc.yellow;
+      
+      console.log(scoreColor(`${grade} ${quality.overallScore}/100`) + pc.gray(` - ${file}`));
+      
+      if (quality.missingElements.length > 0) {
+        console.log(pc.red(`     Missing: ${quality.missingElements.join(', ')}`));
+      }
+      
+      if (quality.recommendations.length > 0 && quality.overallScore < 90) {
+        console.log(pc.gray(`     Tip: ${quality.recommendations[0]}`));
+      }
+      
     } catch (e) {
-      issues.push(`${file}: Error reading file - ${(e as Error).message}`);
-      errorCount++;
+      failCount++;
+      console.log(pc.red(`ERROR - ${file}: ${(e as Error).message}`));
     }
   }
 
-  // Display results
-  console.log(pc.bold('Validation Results:\n'));
-  console.log(pc.green(`✅ Valid files: ${validCount}`));
-  console.log(pc.red(`❌ Files with issues: ${errorCount}`));
+  // Display summary
+  console.log(pc.bold('\n=== Validation Summary ===\n'));
+  console.log(pc.green(`✅ Passed (≥70): ${passCount}`));
+  console.log(pc.red(`❌ Failed (<70): ${failCount}`));
+  
+  const avgScore = results.reduce((sum, r) => sum + r.score, 0) / results.length;
+  console.log(pc.cyan(`📊 Average Score: ${Math.round(avgScore)}/100`));
 
-  if (issues.length > 0) {
-    console.log(pc.yellow('\nIssues found:\n'));
-    for (const issue of issues) {
-      console.log(pc.yellow(`  - ${issue}`));
-    }
-    console.log(
-      pc.gray("\nRun 'magic-helix refresh' to regenerate files with issues."),
-    );
-  } else {
-    console.log(pc.green('\n✨ All instruction files are valid!'));
+  if (failCount === 0 && avgScore >= 80) {
+    console.log(pc.green('\n✨ All instruction files meet quality standards!'));
+  } else if (failCount > 0) {
+    console.log(pc.yellow(`\n⚠️  ${failCount} file(s) need improvement. Run with --verbose for details.`));
   }
+}
+
+function getQualityGrade(score: number): string {
+  if (score >= 90) return 'A';
+  if (score >= 80) return 'B';
+  if (score >= 70) return 'C';
+  if (score >= 60) return 'D';
+  return 'F';
 }
