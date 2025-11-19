@@ -1,6 +1,6 @@
 /**
  * Base Plugin Class
- * 
+ *
  * Abstract base class providing common functionality for all language plugins.
  * Plugins should extend this class and implement the abstract methods.
  */
@@ -8,12 +8,12 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type {
+  ConfigFileTagMap,
+  DependencyTagMap,
+  FileGlobTagMap,
   LanguagePlugin,
   ProjectMetadata,
   TemplateDefinition,
-  DependencyTagMap,
-  ConfigFileTagMap,
-  FileGlobTagMap,
 } from '../../types';
 
 export abstract class BasePlugin implements LanguagePlugin {
@@ -124,9 +124,8 @@ export abstract class BasePlugin implements LanguagePlugin {
     return {
       name,
       tags,
-      content: typeof contentOrPath === 'string'
-        ? contentOrPath
-        : contentOrPath,
+      content:
+        typeof contentOrPath === 'string' ? contentOrPath : contentOrPath,
       ...options,
     };
   }

@@ -10,16 +10,18 @@ import type {
  */
 export class JavaKotlinPlugin implements DetectionPlugin {
   readonly name = 'java-kotlin';
-  readonly description = 'Detects Java and Kotlin projects via Maven, Gradle, and framework identification';
+  readonly description =
+    'Detects Java and Kotlin projects via Maven, Gradle, and framework identification';
   readonly version = '1.0.0';
 
   detect(context: DetectionContext): DetectionResult {
     // Check for Maven (pom.xml)
     const hasMaven = context.hasFile('pom.xml');
-    
+
     // Check for Gradle (build.gradle, build.gradle.kts)
-    const hasGradle = context.hasFile('build.gradle') || context.hasFile('build.gradle.kts');
-    
+    const hasGradle =
+      context.hasFile('build.gradle') || context.hasFile('build.gradle.kts');
+
     // Check for .java and .kt files
     const hasJavaFiles = context.matchesPattern('**/*.java');
     const hasKotlinFiles = context.matchesPattern('**/*.kt');
@@ -51,18 +53,22 @@ export class JavaKotlinPlugin implements DetectionPlugin {
       metadata.buildTool = 'maven-gradle';
     } else if (hasMaven) {
       metadata.buildTool = 'maven';
-      
+
       // Parse pom.xml for additional metadata
       const pomContent = context.getTextFile('pom.xml');
       if (pomContent) {
         // Extract project groupId and artifactId (not from parent or dependencies)
-        const projectGroupMatch = pomContent.match(/<parent>[\s\S]*?<\/parent>[\s\S]*?<groupId>([^<]+)<\/groupId>/);
-        const projectArtifactMatch = pomContent.match(/<parent>[\s\S]*?<\/parent>[\s\S]*?<artifactId>([^<]+)<\/artifactId>/);
-        
+        const projectGroupMatch = pomContent.match(
+          /<parent>[\s\S]*?<\/parent>[\s\S]*?<groupId>([^<]+)<\/groupId>/,
+        );
+        const projectArtifactMatch = pomContent.match(
+          /<parent>[\s\S]*?<\/parent>[\s\S]*?<artifactId>([^<]+)<\/artifactId>/,
+        );
+
         if (projectGroupMatch && projectArtifactMatch) {
           metadata.artifact = `${projectGroupMatch[1]}:${projectArtifactMatch[1]}`;
         }
-        
+
         // Detect Spring Boot
         if (pomContent.includes('spring-boot-starter')) {
           metadata.framework = 'spring-boot';
@@ -70,15 +76,17 @@ export class JavaKotlinPlugin implements DetectionPlugin {
       }
     } else if (hasGradle) {
       metadata.buildTool = 'gradle';
-      
+
       // Check both .gradle and .gradle.kts
-      const gradleContent = context.getTextFile('build.gradle') || context.getTextFile('build.gradle.kts');
+      const gradleContent =
+        context.getTextFile('build.gradle') ||
+        context.getTextFile('build.gradle.kts');
       if (gradleContent) {
         // Detect Spring Boot
         if (gradleContent.includes('org.springframework.boot')) {
           metadata.framework = 'spring-boot';
         }
-        
+
         // Detect Kotlin usage in Gradle
         if (gradleContent.includes('kotlin')) {
           metadata.hasKotlinPlugin = true;
@@ -91,18 +99,20 @@ export class JavaKotlinPlugin implements DetectionPlugin {
     if (metadata.framework === 'spring-boot') {
       frameworks.push('spring-boot');
     }
-    
+
     // Check for Micronaut
-    const hasMicronaut = context.hasFile('micronaut-cli.yml') || 
-                         (context.getTextFile('pom.xml')?.includes('micronaut') ?? false) ||
-                         (context.getTextFile('build.gradle')?.includes('micronaut') ?? false);
+    const hasMicronaut =
+      context.hasFile('micronaut-cli.yml') ||
+      (context.getTextFile('pom.xml')?.includes('micronaut') ?? false) ||
+      (context.getTextFile('build.gradle')?.includes('micronaut') ?? false);
     if (hasMicronaut) {
       frameworks.push('micronaut');
     }
-    
+
     // Check for Quarkus
-    const hasQuarkus = (context.getTextFile('pom.xml')?.includes('quarkus') ?? false) ||
-                       (context.getTextFile('build.gradle')?.includes('quarkus') ?? false);
+    const hasQuarkus =
+      (context.getTextFile('pom.xml')?.includes('quarkus') ?? false) ||
+      (context.getTextFile('build.gradle')?.includes('quarkus') ?? false);
     if (hasQuarkus) {
       frameworks.push('quarkus');
     }
@@ -146,8 +156,11 @@ export class JavaKotlinPlugin implements DetectionPlugin {
     }
 
     // Add Spring Boot specific instructions
-    if (metadata?.framework === 'spring-boot' || 
-        (Array.isArray(metadata?.frameworks) && metadata.frameworks.includes('spring-boot'))) {
+    if (
+      metadata?.framework === 'spring-boot' ||
+      (Array.isArray(metadata?.frameworks) &&
+        metadata.frameworks.includes('spring-boot'))
+    ) {
       instructions.push({
         template: 'java/framework-spring-boot.md',
         suffix: 'framework-spring-boot.md',
@@ -156,7 +169,11 @@ export class JavaKotlinPlugin implements DetectionPlugin {
     }
 
     // Add Kotlin specific instructions if detected
-    if (metadata?.language === 'kotlin' || metadata?.language === 'java-kotlin' || metadata?.hasKotlinPlugin) {
+    if (
+      metadata?.language === 'kotlin' ||
+      metadata?.language === 'java-kotlin' ||
+      metadata?.hasKotlinPlugin
+    ) {
       instructions.push({
         template: 'java/lang-kotlin.md',
         suffix: 'lang-kotlin.md',

@@ -1,6 +1,6 @@
 /**
  * Go Language Plugin
- * 
+ *
  * Detects Go projects via go.mod file
  * Parses module dependencies from go.mod
  */

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander';
 import { readFileSync } from 'node:fs';
 import { realpathSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { Command } from 'commander';
 import pc from 'picocolors';
 import { clean } from './commands/clean';
 import { init } from './commands/init';
@@ -36,7 +36,9 @@ async function main() {
 
     program
       .name('magic-helix')
-      .description('Magic Helix CLI for aligning AI instructions in your monorepo.')
+      .description(
+        'Magic Helix CLI for aligning AI instructions in your monorepo.',
+      )
       .version(getVersion());
 
     program
@@ -112,7 +114,9 @@ async function main() {
 
     program
       .command('plugins')
-      .description('List available language detection plugins and their status.')
+      .description(
+        'List available language detection plugins and their status.',
+      )
       .option('--verbose', 'Show detailed plugin information')
       .action((options) => pluginsCommand(options));
 

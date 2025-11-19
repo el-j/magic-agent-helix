@@ -10,16 +10,17 @@ import type {
  */
 export class DotNetPlugin implements DetectionPlugin {
   readonly name = 'dotnet';
-  readonly description = 'Detects C# and .NET projects via .csproj, .sln, and framework identification';
+  readonly description =
+    'Detects C# and .NET projects via .csproj, .sln, and framework identification';
   readonly version = '1.0.0';
 
   detect(context: DetectionContext): DetectionResult {
     // Check for .csproj files (project files)
     const hasCsproj = context.matchesPattern('**/*.csproj');
-    
+
     // Check for .sln files (solution files)
     const hasSln = context.matchesPattern('**/*.sln');
-    
+
     // Check for .cs files
     const hasCsFiles = context.matchesPattern('**/*.cs');
 
@@ -36,28 +37,34 @@ export class DotNetPlugin implements DetectionPlugin {
     };
 
     // Try to parse .csproj for framework detection
-    const csprojFiles = context.files.filter(f => f.endsWith('.csproj'));
+    const csprojFiles = context.files.filter((f) => f.endsWith('.csproj'));
     if (csprojFiles.length > 0) {
       const csprojContent = context.getTextFile(csprojFiles[0]);
       if (csprojContent) {
         // Detect target framework
-        const tfmMatch = csprojContent.match(/<TargetFramework>([^<]+)<\/TargetFramework>/);
+        const tfmMatch = csprojContent.match(
+          /<TargetFramework>([^<]+)<\/TargetFramework>/,
+        );
         if (tfmMatch) {
           metadata.targetFramework = tfmMatch[1];
         }
-        
+
         // Detect ASP.NET Core
         if (csprojContent.includes('Microsoft.AspNetCore')) {
           metadata.framework = 'aspnetcore';
         }
-        
+
         // Detect Blazor
-        if (csprojContent.includes('Microsoft.AspNetCore.Components.WebAssembly')) {
+        if (
+          csprojContent.includes('Microsoft.AspNetCore.Components.WebAssembly')
+        ) {
           metadata.framework = 'blazor-wasm';
-        } else if (csprojContent.includes('Microsoft.AspNetCore.Components.Server')) {
+        } else if (
+          csprojContent.includes('Microsoft.AspNetCore.Components.Server')
+        ) {
           metadata.framework = 'blazor-server';
         }
-        
+
         // Detect .NET MAUI
         if (csprojContent.includes('Microsoft.Maui')) {
           metadata.framework = 'maui';
@@ -94,7 +101,10 @@ export class DotNetPlugin implements DetectionPlugin {
     }
 
     // Add Blazor specific instructions
-    if (metadata?.framework === 'blazor-wasm' || metadata?.framework === 'blazor-server') {
+    if (
+      metadata?.framework === 'blazor-wasm' ||
+      metadata?.framework === 'blazor-server'
+    ) {
       instructions.push({
         template: 'dotnet/framework-blazor.md',
         suffix: 'framework-blazor.md',

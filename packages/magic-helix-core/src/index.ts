@@ -66,7 +66,11 @@ export {
 } from './plugins';
 
 // New Plugin System (v3.0.0 - Phase 1)
-export { PluginLoader, type PluginLoadResult, type PluginLoadError } from './plugin-loader';
+export {
+  PluginLoader,
+  type PluginLoadResult,
+  type PluginLoadError,
+} from './plugin-loader';
 export {
   PluginRegistry,
   getRegistry,
@@ -92,3 +96,23 @@ export * from './types';
 
 // Export the path to the built-in templates directory
 export const BUILT_IN_TEMPLATE_DIR = resolve(__dirname, 'default_templates');
+
+// Telemetry (Phase 6)
+export { createTelemetry, TelemetryClient } from './telemetry';
+export type {
+  TelemetryEventType,
+  TelemetryEvent,
+  TelemetryOptions,
+  InstructionValidationEvent,
+  PatternSelectionEvent,
+  CliExecutionEvent,
+  SummaryEvent,
+} from './telemetry';
+
+// A/B Testing (Phase 6)
+export {
+  generateABVariants,
+  analyzeBestVariant,
+  trackABTest,
+} from './ab-testing';
+export type { ABVariant, ABTestResult } from './ab-testing';

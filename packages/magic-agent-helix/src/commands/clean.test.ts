@@ -1,13 +1,13 @@
 import * as fs from 'node:fs';
 import type * as path from 'node:path';
-import inquirer from 'inquirer';
 import {
   BUILT_IN_CONFIG,
   loadUserConfig,
   mergeConfigs,
 } from '@magic-helix/core';
+import inquirer from 'inquirer';
 import ora from 'ora';
-import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
+import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
 import { clean } from './clean';
 
 // Mock all external dependencies

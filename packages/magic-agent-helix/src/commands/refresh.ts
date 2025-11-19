@@ -13,10 +13,10 @@ import {
   loadUserConfig,
   mergeConfigs,
 } from '@magic-helix/core';
+import { PluginRegistry } from '@magic-helix/core';
 import ora from 'ora';
 import pc from 'picocolors';
 import { buildPreciseGlobPattern } from '../utils/file-extensions';
-import { PluginRegistry } from '@magic-helix/core';
 
 // --- TYPES ---
 interface Project {
@@ -189,8 +189,8 @@ async function findProjects(): Promise<Project[]> {
   const registry = PluginRegistry.getInstance();
   await registry.initialize();
   const detectedResults = await registry.detectAllProjects(rootPath);
-  const detectedProjects = detectedResults.map(r => r.metadata);
-  
+  const detectedProjects = detectedResults.map((r) => r.metadata);
+
   if (detectedProjects.length === 0) {
     return [];
   }
@@ -219,7 +219,7 @@ async function analyzeProject(
   try {
     const registry = PluginRegistry.getInstance();
     const detectedResults = await registry.detectAllProjects(projectRoot);
-    const detectedProjects = detectedResults.map(r => r.metadata);
+    const detectedProjects = detectedResults.map((r) => r.metadata);
     if (detectedProjects.length > 0) {
       const projectMetadata = detectedProjects[0]; // Use first match
 
@@ -228,13 +228,13 @@ async function analyzeProject(
           project.tags.add(tag);
         }
       }
-      
+
       for (const dep in projectMetadata.dependencies) {
         // Check both the full dependency name and the package/module name
         if (depMap[dep]) {
           project.tags.add(depMap[dep]);
         }
-        
+
         // For scoped packages like @scope/pkg or group:artifact, try the base name too
         const baseName = dep.split(/[@/:]/g).pop();
         if (baseName && depMap[baseName]) {

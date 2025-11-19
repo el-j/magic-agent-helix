@@ -1,6 +1,6 @@
 /**
  * Python Language Plugin
- * 
+ *
  * Detects Python projects via pyproject.toml, requirements.txt, or setup.py
  * Supports Poetry, pip, and setuptools project formats
  */
@@ -51,12 +51,12 @@ export class PythonPlugin extends BasePlugin {
 
   getDependencyTagMap() {
     return {
-      'django': 'django',
-      'flask': 'flask',
-      'fastapi': 'fastapi',
-      'pytest': 'pytest',
-      'numpy': 'numpy',
-      'pandas': 'pandas',
+      django: 'django',
+      flask: 'flask',
+      fastapi: 'fastapi',
+      pytest: 'pytest',
+      numpy: 'numpy',
+      pandas: 'pandas',
     };
   }
 

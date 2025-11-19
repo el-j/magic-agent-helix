@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
+  TAG_FILE_EXTENSIONS,
   buildPreciseGlobPattern,
   getApplyToDescription,
   getFileExtensionsForTag,
-  TAG_FILE_EXTENSIONS,
 } from './file-extensions';
 
 describe('File Extensions Utils', () => {

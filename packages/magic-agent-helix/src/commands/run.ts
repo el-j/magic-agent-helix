@@ -1,8 +1,5 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { glob } from 'glob';
-import gradient from 'gradient-string';
-import inquirer from 'inquirer';
 import type {
   ConfigFileTagMap,
   DependencyTagMap,
@@ -12,12 +9,15 @@ import type {
 import {
   type AssistantTarget,
   BUILT_IN_TEMPLATE_DIR,
+  PluginRegistry,
+  type ProjectMetadata,
   getFormatter,
   loadUserConfig,
   mergeConfigs,
-  PluginRegistry,
-  type ProjectMetadata,
 } from '@magic-helix/core';
+import { glob } from 'glob';
+import gradient from 'gradient-string';
+import inquirer from 'inquirer';
 import ora from 'ora';
 import pc from 'picocolors';
 import type { CliOptions } from '../utils/cli-options';
@@ -215,7 +215,9 @@ export async function run(options: CliOptions = {}) {
   // Apply template filtering if specified
   let filteredTagTemplateMap = tagTemplateMap as TagTemplateMap;
   if (effectiveOptions.template) {
-    const templatePatterns = effectiveOptions.template.split(',').map((p) => p.trim());
+    const templatePatterns = effectiveOptions.template
+      .split(',')
+      .map((p) => p.trim());
     filteredTagTemplateMap = {} as TagTemplateMap;
 
     for (const [tag, templates] of Object.entries(tagTemplateMap)) {
@@ -236,7 +238,9 @@ export async function run(options: CliOptions = {}) {
     }
 
     if (shouldLog('verbose', logLevel)) {
-      console.log(pc.gray(`Template filter applied: ${effectiveOptions.template}`));
+      console.log(
+        pc.gray(`Template filter applied: ${effectiveOptions.template}`),
+      );
     }
   }
 
@@ -420,7 +424,7 @@ async function findProjects(): Promise<Project[]> {
   const registry = PluginRegistry.getInstance();
   await registry.initialize();
   const detectedProjects = await registry.detectAllProjects(rootPath);
-  
+
   if (detectedProjects.length === 0) {
     return [];
   }
@@ -457,13 +461,13 @@ async function analyzeProject(
           project.tags.add(tag);
         }
       }
-      
+
       for (const dep in projectMetadata.dependencies) {
         // Check both the full dependency name and the package/module name
         if (depMap[dep]) {
           project.tags.add(depMap[dep]);
         }
-        
+
         // For scoped packages like @scope/pkg or group:artifact, try the base name too
         const baseName = dep.split(/[@/:]/g).pop();
         if (baseName && depMap[baseName]) {

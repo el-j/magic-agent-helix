@@ -1,6 +1,6 @@
 /**
  * C# / .NET Language Plugin
- * 
+ *
  * Detects C# projects via .csproj files
  */
 
@@ -15,7 +15,7 @@ export class CSharpPlugin extends BasePlugin {
 
   async detect(projectPath: string): Promise<ProjectMetadata | null> {
     const csprojFiles = await this.findFiles(projectPath, '*.csproj');
-    
+
     if (csprojFiles.length === 0) {
       return null;
     }
@@ -72,8 +72,8 @@ This project uses C# and .NET.
   getDependencyTagMap() {
     return {
       'Microsoft.AspNetCore': 'aspnetcore',
-      'xunit': 'xunit',
-      'NUnit': 'nunit',
+      xunit: 'xunit',
+      NUnit: 'nunit',
     };
   }
 }

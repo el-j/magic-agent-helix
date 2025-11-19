@@ -26,7 +26,7 @@ export const TOKEN_BUDGETS: Record<string, number> = {
  */
 export function refineInstructions(
   content: string,
-  config: Config['aiRefinement']
+  config: Config['aiRefinement'],
 ): string {
   const refinement = { ...DEFAULT_AI_REFINEMENT, ...config };
 
@@ -66,7 +66,7 @@ function applyQualityFilter(content: string, quality: string): string {
       // Keep only essential sections (headers + sections with "overview", "basic", "essential")
       const sections = content.split(/\n(?=##? )/); // Split on headers
       return sections
-        .filter(section => {
+        .filter((section) => {
           const lower = section.toLowerCase();
           const firstLine = section.split('\n')[0].toLowerCase();
           return (
@@ -87,9 +87,11 @@ function applyQualityFilter(content: string, quality: string): string {
       // 'standard': Remove "advanced" and "deep dive" sections
       const sections = content.split(/\n(?=##? )/);
       return sections
-        .filter(section => {
+        .filter((section) => {
           const firstLine = section.split('\n')[0].toLowerCase();
-          return !firstLine.includes('advanced') && !firstLine.includes('deep dive');
+          return (
+            !firstLine.includes('advanced') && !firstLine.includes('deep dive')
+          );
         })
         .join('\n');
     }
@@ -105,7 +107,7 @@ function applyContextLevel(content: string, level: string): string {
       // Remove background/explanation sections, keep structure intact
       const sections = content.split(/\n(?=##? )/);
       return sections
-        .filter(section => {
+        .filter((section) => {
           const firstLine = section.split('\n')[0].toLowerCase();
           return (
             !firstLine.includes('background') &&
@@ -125,7 +127,7 @@ function applyContextLevel(content: string, level: string): string {
       // 'balanced': Keep standard content, remove verbose paragraphs
       return content
         .split('\n')
-        .filter(line => {
+        .filter((line) => {
           // Keep headers, lists, code blocks, short lines
           return (
             line.startsWith('#') ||
@@ -151,8 +153,8 @@ function applyOutputFormat(content: string, format: string): string {
       // Ensure consistent section structure
       return content
         .replace(/^### /gm, '#### ') // Demote h3 to h4
-        .replace(/^## /gm, '### ')  // Demote h2 to h3
-        .replace(/^# /gm, '## ');   // Demote h1 to h2
+        .replace(/^## /gm, '### ') // Demote h2 to h3
+        .replace(/^# /gm, '## '); // Demote h1 to h2
 
     case 'conversational':
       // Convert lists to prose
@@ -165,7 +167,7 @@ function applyOutputFormat(content: string, format: string): string {
       const lines = content.split('\n');
       let inCodeBlock = false;
       return lines
-        .filter(line => {
+        .filter((line) => {
           if (line.startsWith('```')) {
             inCodeBlock = !inCodeBlock;
             return true;
@@ -223,7 +225,7 @@ function removeCodeExamples(content: string): string {
 function removeBestPractices(content: string): string {
   return content
     .split('\n')
-    .filter(line => {
+    .filter((line) => {
       const lower = line.toLowerCase();
       if (lower.match(/^##+ .*best practice/i)) return false;
       if (lower.match(/^##+ .*recommendation/i)) return false;
@@ -244,7 +246,7 @@ function enforceTokenBudget(content: string, budget: number): string {
   // Truncate at last complete section
   const truncated = content.substring(0, maxChars);
   const lastSectionIdx = truncated.lastIndexOf('\n## ');
-  
+
   if (lastSectionIdx > maxChars * 0.7) {
     return `${truncated.substring(0, lastSectionIdx)}\n\n<!-- Content truncated to fit token budget -->`;
   }

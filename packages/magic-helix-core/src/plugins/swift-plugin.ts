@@ -10,19 +10,21 @@ import type {
  */
 export class SwiftPlugin implements DetectionPlugin {
   readonly name = 'swift';
-  readonly description = 'Detects Swift projects via Package.swift, Xcode projects, and framework identification';
+  readonly description =
+    'Detects Swift projects via Package.swift, Xcode projects, and framework identification';
   readonly version = '1.0.0';
 
   detect(context: DetectionContext): DetectionResult {
     // Check for Package.swift (Swift Package Manager)
     const hasPackageSwift = context.hasFile('Package.swift');
-    
+
     // Check for .swift files
     const hasSwiftFiles = context.matchesPattern('**/*.swift');
-    
+
     // Check for Xcode project
-    const hasXcodeProject = context.matchesPattern('**/*.xcodeproj') || 
-                           context.matchesPattern('**/*.xcworkspace');
+    const hasXcodeProject =
+      context.matchesPattern('**/*.xcodeproj') ||
+      context.matchesPattern('**/*.xcworkspace');
 
     const detected = hasPackageSwift || hasSwiftFiles || hasXcodeProject;
 
@@ -43,13 +45,15 @@ export class SwiftPlugin implements DetectionPlugin {
         if (packageContent.includes('vapor')) {
           metadata.framework = 'vapor';
         }
-        
+
         // Extract Swift version
-        const swiftVersionMatch = packageContent.match(/swift-tools-version:\s*([\d.]+)/);
+        const swiftVersionMatch = packageContent.match(
+          /swift-tools-version:\s*([\d.]+)/,
+        );
         if (swiftVersionMatch) {
           metadata.swiftToolsVersion = swiftVersionMatch[1];
         }
-        
+
         // Extract package name
         const packageNameMatch = packageContent.match(/name:\s*"([^"]+)"/);
         if (packageNameMatch) {
@@ -57,7 +61,7 @@ export class SwiftPlugin implements DetectionPlugin {
         }
       }
     }
-    
+
     // Detect platform target
     const platforms: string[] = [];
     if (hasXcodeProject) {
@@ -66,7 +70,7 @@ export class SwiftPlugin implements DetectionPlugin {
     if (hasPackageSwift) {
       platforms.push('Linux/Server');
     }
-    
+
     if (platforms.length > 0) {
       metadata.platforms = platforms;
     }

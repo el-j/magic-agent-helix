@@ -8,21 +8,21 @@ import { glob } from 'glob';
  */
 
 export interface MetaInstructionOverride {
-  tag: string;                    // The tag being overridden (e.g., "react-core")
-  content: string;                // Full replacement content
+  tag: string; // The tag being overridden (e.g., "react-core")
+  content: string; // Full replacement content
   mode: 'replace' | 'prepend' | 'append'; // How to apply override
 }
 
 export interface MetaInstructionCombiner {
-  tags: string[];                 // Tags to combine
-  outputTag: string;              // New combined tag name
-  template: string;               // Template with {{tag}} placeholders
+  tags: string[]; // Tags to combine
+  outputTag: string; // New combined tag name
+  template: string; // Template with {{tag}} placeholders
 }
 
 export interface MetaInstructionConfig {
   overrides?: MetaInstructionOverride[];
   combiners?: MetaInstructionCombiner[];
-  ignoreTags?: string[];          // Built-in tags to completely ignore
+  ignoreTags?: string[]; // Built-in tags to completely ignore
 }
 
 const META_DIR = '.magic-helix';
@@ -31,9 +31,11 @@ const META_CONFIG_FILE = 'meta-instructions.json';
 /**
  * Load meta-instruction configuration from project root
  */
-export function loadMetaConfig(projectPath: string): MetaInstructionConfig | null {
+export function loadMetaConfig(
+  projectPath: string,
+): MetaInstructionConfig | null {
   const configPath = path.join(projectPath, META_DIR, META_CONFIG_FILE);
-  
+
   if (!fs.existsSync(configPath)) {
     return null;
   }
@@ -42,7 +44,9 @@ export function loadMetaConfig(projectPath: string): MetaInstructionConfig | nul
     const content = fs.readFileSync(configPath, 'utf-8');
     return JSON.parse(content) as MetaInstructionConfig;
   } catch (error) {
-    console.warn(`Failed to load meta-instruction config: ${(error as Error).message}`);
+    console.warn(
+      `Failed to load meta-instruction config: ${(error as Error).message}`,
+    );
     return null;
   }
 }
@@ -50,7 +54,9 @@ export function loadMetaConfig(projectPath: string): MetaInstructionConfig | nul
 /**
  * Load custom instruction overrides from .magic-helix/overrides/
  */
-export function loadOverrideInstructions(projectPath: string): Map<string, string> {
+export function loadOverrideInstructions(
+  projectPath: string,
+): Map<string, string> {
   const overridesDir = path.join(projectPath, META_DIR, 'overrides');
   const overrides = new Map<string, string>();
 
@@ -76,10 +82,10 @@ export function loadOverrideInstructions(projectPath: string): Map<string, strin
 export function applyOverrides(
   instructions: Map<string, string>,
   config: MetaInstructionConfig,
-  projectPath: string
+  projectPath: string,
 ): Map<string, string> {
   const result = new Map(instructions);
-  
+
   // Remove ignored tags
   if (config.ignoreTags) {
     for (const tag of config.ignoreTags) {
@@ -97,7 +103,7 @@ export function applyOverrides(
   if (config.overrides) {
     for (const override of config.overrides) {
       const existing = result.get(override.tag);
-      
+
       switch (override.mode) {
         case 'replace':
           result.set(override.tag, override.content);
@@ -128,10 +134,10 @@ export function applyOverrides(
  */
 export function applyCombiner(
   instructions: Map<string, string>,
-  combiner: MetaInstructionCombiner
+  combiner: MetaInstructionCombiner,
 ): Map<string, string> {
   const result = new Map(instructions);
-  
+
   let combined = combiner.template;
 
   // Replace {{tag}} placeholders with actual content
@@ -143,7 +149,7 @@ export function applyCombiner(
   }
 
   result.set(combiner.outputTag, combined);
-  
+
   return result;
 }
 
@@ -152,10 +158,10 @@ export function applyCombiner(
  */
 export function applyMetaInstructions(
   instructions: Map<string, string>,
-  projectPath: string
+  projectPath: string,
 ): Map<string, string> {
   const config = loadMetaConfig(projectPath);
-  
+
   if (!config) {
     return instructions;
   }
@@ -222,5 +228,7 @@ Create files like:
 
   fs.writeFileSync(path.join(overridesDir, 'example.md'), exampleOverride);
 
-  console.log(`✅ Initialized .magic-helix/ directory structure at: ${metaDir}`);
+  console.log(
+    `✅ Initialized .magic-helix/ directory structure at: ${metaDir}`,
+  );
 }

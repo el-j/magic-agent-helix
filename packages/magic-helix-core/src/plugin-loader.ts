@@ -1,6 +1,6 @@
 /**
  * Plugin Loader
- * 
+ *
  * Responsible for discovering and loading language plugins from various sources:
  * - Built-in plugins (from magic-helix-plugins package)
  * - NPM packages
@@ -36,9 +36,11 @@ export class PluginLoader {
   /**
    * Load built-in plugins from the magic-helix-plugins package
    */
-  async loadBuiltinPlugins(pluginNames?: string[]): Promise<PluginLoadResult[]> {
+  async loadBuiltinPlugins(
+    pluginNames?: string[],
+  ): Promise<PluginLoadResult[]> {
     const results: PluginLoadResult[] = [];
-    
+
     try {
       // Import built-in plugins from local builtin-plugins directory
       const { NodeJSPlugin } = await import('./builtin-plugins/nodejs/index');
@@ -49,7 +51,7 @@ export class PluginLoader {
       const { RubyPlugin } = await import('./builtin-plugins/ruby/index');
       const { PHPPlugin } = await import('./builtin-plugins/php/index');
       const { CSharpPlugin } = await import('./builtin-plugins/csharp/index');
-      
+
       const builtinPlugins = [
         NodeJSPlugin,
         GoPlugin,
@@ -58,37 +60,42 @@ export class PluginLoader {
         JavaPlugin,
         RubyPlugin,
         PHPPlugin,
-        CSharpPlugin
+        CSharpPlugin,
       ] as (new () => LanguagePlugin)[];
-      
+
       for (const PluginClass of builtinPlugins) {
         const plugin = new PluginClass();
-        
+
         // Filter by requested plugin names if specified
         if (pluginNames && !pluginNames.includes(plugin.name)) {
           continue;
         }
-        
+
         const startTime = Date.now();
         const result: PluginLoadResult = {
           plugin,
           source: {
             type: 'builtin',
             identifier: plugin.name,
-            packageName: 'magic-helix-plugins'
+            packageName: 'magic-helix-plugins',
           },
-          loadTime: Date.now() - startTime
+          loadTime: Date.now() - startTime,
         };
-        
+
         this.loadedPlugins.set(plugin.name, result);
         results.push(result);
-        this.log(`Loaded built-in plugin: ${plugin.displayName} (${plugin.name})`);
+        this.log(
+          `Loaded built-in plugin: ${plugin.displayName} (${plugin.name})`,
+        );
       }
     } catch (error) {
-      this.handleLoadError({
-        type: 'builtin',
-        identifier: 'magic-helix-plugins',
-      }, error as Error);
+      this.handleLoadError(
+        {
+          type: 'builtin',
+          identifier: 'magic-helix-plugins',
+        },
+        error as Error,
+      );
     }
 
     return results;
@@ -101,16 +108,20 @@ export class PluginLoader {
     try {
       const startTime = Date.now();
       const pluginModule = await this.tryImport(packageName);
-      
+
       if (!pluginModule) {
         throw new Error(`Package "${packageName}" not found`);
       }
 
       // Support both default export and named exports
-      const PluginClass = (pluginModule.default || pluginModule.Plugin || pluginModule) as new () => LanguagePlugin;
-      
+      const PluginClass = (pluginModule.default ||
+        pluginModule.Plugin ||
+        pluginModule) as new () => LanguagePlugin;
+
       if (typeof PluginClass !== 'function') {
-        throw new Error(`Package "${packageName}" does not export a valid plugin class`);
+        throw new Error(
+          `Package "${packageName}" does not export a valid plugin class`,
+        );
       }
 
       const plugin = new PluginClass();
@@ -129,15 +140,20 @@ export class PluginLoader {
       };
 
       this.loadedPlugins.set(plugin.name, result);
-      this.log(`✓ Loaded npm plugin: ${plugin.displayName} from ${packageName} (${loadTime}ms)`);
-      
+      this.log(
+        `✓ Loaded npm plugin: ${plugin.displayName} from ${packageName} (${loadTime}ms)`,
+      );
+
       return result;
     } catch (error) {
-      this.handleLoadError({
-        type: 'npm',
-        identifier: packageName,
-        packageName,
-      }, error as Error);
+      this.handleLoadError(
+        {
+          type: 'npm',
+          identifier: packageName,
+          packageName,
+        },
+        error as Error,
+      );
       return null;
     }
   }
@@ -148,7 +164,7 @@ export class PluginLoader {
   async loadLocalPlugin(pluginPath: string): Promise<PluginLoadResult | null> {
     try {
       const absolutePath = path.resolve(pluginPath);
-      
+
       if (!fs.existsSync(absolutePath)) {
         throw new Error(`Plugin file not found: ${absolutePath}`);
       }
@@ -158,10 +174,14 @@ export class PluginLoader {
       const loadTime = Date.now() - startTime;
 
       // Support both default export and named exports
-      const PluginClass = (pluginModule.default || pluginModule.Plugin || pluginModule) as new () => LanguagePlugin;
-      
+      const PluginClass = (pluginModule.default ||
+        pluginModule.Plugin ||
+        pluginModule) as new () => LanguagePlugin;
+
       if (typeof PluginClass !== 'function') {
-        throw new Error(`File "${pluginPath}" does not export a valid plugin class`);
+        throw new Error(
+          `File "${pluginPath}" does not export a valid plugin class`,
+        );
       }
 
       const plugin = new PluginClass();
@@ -178,15 +198,20 @@ export class PluginLoader {
       };
 
       this.loadedPlugins.set(plugin.name, result);
-      this.log(`✓ Loaded local plugin: ${plugin.displayName} from ${pluginPath} (${loadTime}ms)`);
-      
+      this.log(
+        `✓ Loaded local plugin: ${plugin.displayName} from ${pluginPath} (${loadTime}ms)`,
+      );
+
       return result;
     } catch (error) {
-      this.handleLoadError({
-        type: 'local',
-        identifier: pluginPath,
-        path: pluginPath,
-      }, error as Error);
+      this.handleLoadError(
+        {
+          type: 'local',
+          identifier: pluginPath,
+          path: pluginPath,
+        },
+        error as Error,
+      );
       return null;
     }
   }
@@ -194,13 +219,19 @@ export class PluginLoader {
   /**
    * Load plugins from workspace directory
    */
-  async loadWorkspacePlugins(workspacePath: string, patterns?: string[]): Promise<PluginLoadResult[]> {
+  async loadWorkspacePlugins(
+    workspacePath: string,
+    patterns?: string[],
+  ): Promise<PluginLoadResult[]> {
     const results: PluginLoadResult[] = [];
-    const searchPatterns = patterns || ['.magic-helix/plugins/**/*.js', '.magic-helix/plugins/**/*.mjs'];
-    
+    const searchPatterns = patterns || [
+      '.magic-helix/plugins/**/*.js',
+      '.magic-helix/plugins/**/*.mjs',
+    ];
+
     try {
       const { glob } = await import('glob');
-      
+
       for (const pattern of searchPatterns) {
         const pluginFiles = await glob(pattern, {
           cwd: workspacePath,
@@ -217,7 +248,9 @@ export class PluginLoader {
         }
       }
     } catch (error) {
-      this.logWarning(`Error loading workspace plugins: ${(error as Error).message}`);
+      this.logWarning(
+        `Error loading workspace plugins: ${(error as Error).message}`,
+      );
     }
 
     return results;
@@ -235,7 +268,7 @@ export class PluginLoader {
    */
   getAllPlugins(): LanguagePlugin[] {
     return Array.from(this.loadedPlugins.values())
-      .map(result => result.plugin)
+      .map((result) => result.plugin)
       .sort((a, b) => b.priority - a.priority);
   }
 
@@ -244,7 +277,7 @@ export class PluginLoader {
    */
   getPluginsByNames(names: string[]): LanguagePlugin[] {
     return names
-      .map(name => this.getPlugin(name))
+      .map((name) => this.getPlugin(name))
       .filter((plugin): plugin is LanguagePlugin => plugin !== undefined);
   }
 
@@ -257,18 +290,22 @@ export class PluginLoader {
     plugin: LanguagePlugin;
   } | null> {
     const plugins = this.getAllPlugins();
-    
+
     for (const plugin of plugins) {
       try {
         this.log(`Trying plugin: ${plugin.displayName}`);
         const metadata = await plugin.detect(projectPath);
-        
+
         if (metadata) {
-          this.log(`✓ Detected ${metadata.language} project with ${plugin.displayName}`);
+          this.log(
+            `✓ Detected ${metadata.language} project with ${plugin.displayName}`,
+          );
           return { metadata, plugin };
         }
       } catch (error) {
-        this.logWarning(`Plugin ${plugin.name} detection failed: ${(error as Error).message}`);
+        this.logWarning(
+          `Plugin ${plugin.name} detection failed: ${(error as Error).message}`,
+        );
       }
     }
 
@@ -278,21 +315,29 @@ export class PluginLoader {
   /**
    * Detect all projects in a directory (for monorepo support)
    */
-  async detectAllProjects(rootPath: string): Promise<Array<{
-    metadata: ProjectMetadata;
-    plugin: LanguagePlugin;
-  }>> {
-    const results: Array<{ metadata: ProjectMetadata; plugin: LanguagePlugin }> = [];
+  async detectAllProjects(rootPath: string): Promise<
+    Array<{
+      metadata: ProjectMetadata;
+      plugin: LanguagePlugin;
+    }>
+  > {
+    const results: Array<{
+      metadata: ProjectMetadata;
+      plugin: LanguagePlugin;
+    }> = [];
     const plugins = this.getAllPlugins();
-    
+
     for (const plugin of plugins) {
       try {
         const metadata = await plugin.detect(rootPath);
         if (metadata) {
           results.push({ metadata, plugin });
-          
+
           // If this plugin found workspace members, detect those too
-          if (metadata.workspaceMembers && metadata.workspaceMembers.length > 0) {
+          if (
+            metadata.workspaceMembers &&
+            metadata.workspaceMembers.length > 0
+          ) {
             for (const memberPath of metadata.workspaceMembers) {
               const fullPath = path.resolve(rootPath, memberPath);
               const memberResult = await this.detectProject(fullPath);
@@ -303,7 +348,9 @@ export class PluginLoader {
           }
         }
       } catch (error) {
-        this.logWarning(`Plugin ${plugin.name} failed: ${(error as Error).message}`);
+        this.logWarning(
+          `Plugin ${plugin.name} failed: ${(error as Error).message}`,
+        );
       }
     }
 
@@ -344,9 +391,10 @@ export class PluginLoader {
     return {
       totalLoaded: results.length,
       totalErrors: this.loadErrors.length,
-      averageLoadTime: results.length > 0
-        ? results.reduce((sum, r) => sum + r.loadTime, 0) / results.length
-        : 0,
+      averageLoadTime:
+        results.length > 0
+          ? results.reduce((sum, r) => sum + r.loadTime, 0) / results.length
+          : 0,
       byType,
     };
   }
@@ -378,7 +426,9 @@ export class PluginLoader {
     }
   }
 
-  private async tryImport(packageName: string): Promise<Record<string, unknown> | null> {
+  private async tryImport(
+    packageName: string,
+  ): Promise<Record<string, unknown> | null> {
     try {
       return await import(packageName);
     } catch {
@@ -392,7 +442,9 @@ export class PluginLoader {
       error,
       timestamp: new Date(),
     });
-    this.logWarning(`Failed to load plugin "${source.identifier}": ${error.message}`);
+    this.logWarning(
+      `Failed to load plugin "${source.identifier}": ${error.message}`,
+    );
   }
 
   private log(message: string): void {

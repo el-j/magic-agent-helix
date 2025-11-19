@@ -107,7 +107,11 @@ export interface Config {
      * - 'conversational': Natural language prose
      * - 'code-focused': Emphasis on code examples
      */
-    outputFormat?: 'markdown' | 'structured' | 'conversational' | 'code-focused';
+    outputFormat?:
+      | 'markdown'
+      | 'structured'
+      | 'conversational'
+      | 'code-focused';
 
     /**
      * Token budget hint (approximate max tokens per instruction file).
@@ -144,28 +148,28 @@ export type MergedConfig = Required<Config>;
  * Metadata about a detected project
  */
 export interface ProjectMetadata {
-  language: string;                    // e.g., "JavaScript/TypeScript", "Go", "Python"
-  name?: string;                       // Project name from manifest
-  description?: string;                // Project description
+  language: string; // e.g., "JavaScript/TypeScript", "Go", "Python"
+  name?: string; // Project name from manifest
+  description?: string; // Project description
   dependencies: Record<string, string>; // dependency name -> version
-  manifestFile?: string;               // e.g., "package.json", "go.mod"
-  projectPath: string;                 // Absolute path to project root
-  workspaceMembers?: string[];         // For monorepo support
-  tags?: string[];                     // Optional semantic tags detected by plugin
-  keywords?: string[];                 // Optional keywords/categories from manifest
-  categories?: string[];               // Optional categories for registry filtering
+  manifestFile?: string; // e.g., "package.json", "go.mod"
+  projectPath: string; // Absolute path to project root
+  workspaceMembers?: string[]; // For monorepo support
+  tags?: string[]; // Optional semantic tags detected by plugin
+  keywords?: string[]; // Optional keywords/categories from manifest
+  categories?: string[]; // Optional categories for registry filtering
 }
 
 /**
  * Definition of a template provided by a plugin or user
  */
 export interface TemplateDefinition {
-  name: string;                        // e.g., "react-core", "go-core"
-  tags: string[];                      // Required tags: ["react"] or ["go"]
+  name: string; // e.g., "react-core", "go-core"
+  tags: string[]; // Required tags: ["react"] or ["go"]
   content: string | (() => string | Promise<string>); // Template content or lazy loader
-  targetPath?: string;                 // Optional: relative path in output dir
-  language?: string;                   // Optional: target language for syntax highlighting
-  priority?: number;                   // Higher = takes precedence in conflicts
+  targetPath?: string; // Optional: relative path in output dir
+  language?: string; // Optional: target language for syntax highlighting
+  priority?: number; // Higher = takes precedence in conflicts
 }
 
 /**
@@ -173,17 +177,17 @@ export interface TemplateDefinition {
  */
 export interface LanguagePlugin {
   // Metadata
-  name: string;                        // Unique identifier: "nodejs", "go", "python"
-  displayName: string;                 // Human-readable: "Node.js", "Go"
-  version: string;                     // Semantic version
-  priority: number;                    // Higher = checked first (0-1000)
-  
+  name: string; // Unique identifier: "nodejs", "go", "python"
+  displayName: string; // Human-readable: "Node.js", "Go"
+  version: string; // Semantic version
+  priority: number; // Higher = checked first (0-1000)
+
   // Project Detection
   detect(projectPath: string): Promise<ProjectMetadata | null>;
-  
+
   // Template Provision
   getTemplates(): TemplateDefinition[] | Promise<TemplateDefinition[]>;
-  
+
   // Optional: Custom tag mappings for this language
   getDependencyTagMap?(): DependencyTagMap;
   getConfigFileTagMap?(): ConfigFileTagMap;
@@ -195,31 +199,31 @@ export interface LanguagePlugin {
  */
 export interface PluginSource {
   type: 'builtin' | 'npm' | 'local' | 'workspace';
-  identifier: string;                  // Plugin name or path
-  path?: string;                       // For local/workspace plugins
-  packageName?: string;                // For npm plugins
-  enabled?: boolean;                   // Allow disabling specific plugins
+  identifier: string; // Plugin name or path
+  path?: string; // For local/workspace plugins
+  packageName?: string; // For npm plugins
+  enabled?: boolean; // Allow disabling specific plugins
 }
 
 /**
  * Configuration for the plugin system
  */
 export interface PluginConfig {
-  builtin?: string[];                  // Built-in plugin names to load
-  npm?: string[];                      // NPM package names
-  local?: string[];                    // Local file paths
-  workspace?: string[];                // Workspace-relative paths or globs
-  priority?: Record<string, number>;   // Override plugin priorities
-  disabled?: string[];                 // Plugins to disable
+  builtin?: string[]; // Built-in plugin names to load
+  npm?: string[]; // NPM package names
+  local?: string[]; // Local file paths
+  workspace?: string[]; // Workspace-relative paths or globs
+  priority?: Record<string, number>; // Override plugin priorities
+  disabled?: string[]; // Plugins to disable
 }
 
 /**
  * Configuration for template resolution
  */
 export interface TemplateConfig {
-  searchPaths?: string[];              // Directories to search for templates
-  overrides?: Record<string, string>;  // Template name -> file path
-  extensions?: string[];               // File extensions to search: ['.md', '.txt']
+  searchPaths?: string[]; // Directories to search for templates
+  overrides?: Record<string, string>; // Template name -> file path
+  extensions?: string[]; // File extensions to search: ['.md', '.txt']
 }
 
 /**
@@ -228,9 +232,9 @@ export interface TemplateConfig {
 export interface RegistryConfig {
   plugins?: PluginConfig;
   templates?: TemplateConfig;
-  workspacePath?: string;              // Current workspace root
-  globalConfigPath?: string;           // Global config directory (~/.magic-helix)
-  verbose?: boolean;                   // Enable debug logging
+  workspacePath?: string; // Current workspace root
+  globalConfigPath?: string; // Global config directory (~/.magic-helix)
+  verbose?: boolean; // Enable debug logging
 }
 
 /**
@@ -251,5 +255,5 @@ export interface TemplateResolutionResult {
   content: string;
   source: 'override' | 'workspace' | 'global' | 'plugin' | 'builtin';
   path: string;
-  plugin?: string;                     // Plugin name if from plugin
+  plugin?: string; // Plugin name if from plugin
 }

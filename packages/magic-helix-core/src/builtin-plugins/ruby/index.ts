@@ -1,6 +1,6 @@
 /**
  * Ruby Language Plugin
- * 
+ *
  * Detects Ruby projects via Gemfile
  */
 
@@ -22,7 +22,9 @@ export class RubyPlugin extends BasePlugin {
     const deps: Record<string, string> = {};
 
     if (content) {
-      const gemMatches = content.matchAll(/gem\s+['"]([^'"]+)['"](?:,\s*['"]([^'"]+)['"])?/g);
+      const gemMatches = content.matchAll(
+        /gem\s+['"]([^'"]+)['"](?:,\s*['"]([^'"]+)['"])?/g,
+      );
       for (const match of gemMatches) {
         deps[match[1]] = match[2] || '*';
       }
@@ -66,9 +68,9 @@ This project uses Ruby.
 
   getDependencyTagMap() {
     return {
-      'rails': 'rails',
-      'rspec': 'rspec',
-      'sinatra': 'sinatra',
+      rails: 'rails',
+      rspec: 'rspec',
+      sinatra: 'sinatra',
     };
   }
 }

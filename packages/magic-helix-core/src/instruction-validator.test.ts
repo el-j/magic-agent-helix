@@ -1,5 +1,9 @@
-import { describe, it, expect } from 'vitest';
-import { validateInstructions, passesQualityThreshold, getQualityGrade } from '../src/instruction-validator';
+import { describe, expect, it } from 'vitest';
+import {
+  getQualityGrade,
+  passesQualityThreshold,
+  validateInstructions,
+} from '../src/instruction-validator';
 
 describe('Instruction Validator', () => {
   describe('validateInstructions', () => {
@@ -125,12 +129,17 @@ read_file({ path: "config.ts" })
 Refuse inappropriate requests.
       `;
 
-      const withoutExamples = withExamples.replace(/\`\`\`typescript[\s\S]+?\`\`\`/g, '');
+      const withoutExamples = withExamples.replace(
+        /\`\`\`typescript[\s\S]+?\`\`\`/g,
+        '',
+      );
 
       const resultWith = validateInstructions(withExamples);
       const resultWithout = validateInstructions(withoutExamples);
 
-      expect(resultWith.clarityScore).toBeGreaterThan(resultWithout.clarityScore);
+      expect(resultWith.clarityScore).toBeGreaterThan(
+        resultWithout.clarityScore,
+      );
     });
   });
 

@@ -1,8 +1,8 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import type { Config } from '@magic-helix/core';
 import gradient from 'gradient-string';
 import inquirer from 'inquirer';
-import type { Config } from '@magic-helix/core';
 import ora from 'ora';
 import pc from 'picocolors';
 

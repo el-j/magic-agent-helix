@@ -1,6 +1,6 @@
 /**
  * Template Loader
- * 
+ *
  * Handles template resolution with priority-based loading:
  * 1. User workspace overrides (.magic-helix/templates/)
  * 2. User global overrides (~/.magic-helix/templates/)
@@ -12,10 +12,10 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type {
-  TemplateDefinition,
-  TemplateConfig,
-  TemplateResolutionResult,
   LanguagePlugin,
+  TemplateConfig,
+  TemplateDefinition,
+  TemplateResolutionResult,
 } from './types';
 
 export interface TemplateSearchContext {
@@ -30,11 +30,13 @@ export class TemplateLoader {
   private templateCache: Map<string, string> = new Map();
   private cacheEnabled: boolean;
 
-  constructor(options: {
-    config?: TemplateConfig;
-    verbose?: boolean;
-    cacheEnabled?: boolean;
-  } = {}) {
+  constructor(
+    options: {
+      config?: TemplateConfig;
+      verbose?: boolean;
+      cacheEnabled?: boolean;
+    } = {},
+  ) {
     this.config = options.config || {};
     this.verbose = options.verbose ?? false;
     this.cacheEnabled = options.cacheEnabled ?? true;
@@ -47,8 +49,8 @@ export class TemplateLoader {
     templateName: string,
     plugins: LanguagePlugin[] = [],
   ): Promise<TemplateResolutionResult | null> {
-    const cacheKey = `${templateName}:${plugins.map(p => p.name).join(',')}`;
-    
+    const cacheKey = `${templateName}:${plugins.map((p) => p.name).join(',')}`;
+
     // Check cache first
     if (this.cacheEnabled && this.templateCache.has(cacheKey)) {
       const content = this.templateCache.get(cacheKey);
@@ -102,13 +104,19 @@ export class TemplateLoader {
   /**
    * Load all templates from a plugin
    */
-  async loadPluginTemplates(plugin: LanguagePlugin): Promise<TemplateDefinition[]> {
+  async loadPluginTemplates(
+    plugin: LanguagePlugin,
+  ): Promise<TemplateDefinition[]> {
     try {
       const templates = await Promise.resolve(plugin.getTemplates());
-      this.log(`Loaded ${templates.length} templates from ${plugin.displayName}`);
+      this.log(
+        `Loaded ${templates.length} templates from ${plugin.displayName}`,
+      );
       return templates;
     } catch (error) {
-      this.logWarning(`Failed to load templates from ${plugin.name}: ${(error as Error).message}`);
+      this.logWarning(
+        `Failed to load templates from ${plugin.name}: ${(error as Error).message}`,
+      );
       return [];
     }
   }
@@ -148,8 +156,8 @@ export class TemplateLoader {
     }
 
     // Filter by tags
-    return allTemplates.filter(template => {
-      return template.tags.some(tag => tags.includes(tag));
+    return allTemplates.filter((template) => {
+      return template.tags.some((tag) => tags.includes(tag));
     });
   }
 
@@ -160,7 +168,7 @@ export class TemplateLoader {
     if (typeof template.content === 'string') {
       return template.content;
     }
-    
+
     // Execute lazy loader
     const content = await Promise.resolve(template.content());
     return content;
@@ -198,7 +206,7 @@ export class TemplateLoader {
   ): Promise<TemplateResolutionResult | null> {
     try {
       const resolvedPath = this.resolvePath(filePath);
-      
+
       if (!fs.existsSync(resolvedPath)) {
         this.log(`Template not found at: ${resolvedPath}`);
         return null;
@@ -213,7 +221,9 @@ export class TemplateLoader {
         path: resolvedPath,
       };
     } catch (error) {
-      this.logWarning(`Failed to load template from ${filePath}: ${(error as Error).message}`);
+      this.logWarning(
+        `Failed to load template from ${filePath}: ${(error as Error).message}`,
+      );
       return null;
     }
   }
@@ -227,18 +237,20 @@ export class TemplateLoader {
     source: TemplateResolutionResult['source'],
   ): Promise<TemplateResolutionResult | null> {
     const resolvedDir = this.resolvePath(dirPath);
-    
+
     if (!fs.existsSync(resolvedDir)) {
       return null;
     }
 
     const extensions = this.config.extensions || ['.md', '.txt', ''];
-    
+
     // Try with each extension
     for (const ext of extensions) {
-      const fileName = templateName.endsWith(ext) ? templateName : `${templateName}${ext}`;
+      const fileName = templateName.endsWith(ext)
+        ? templateName
+        : `${templateName}${ext}`;
       const filePath = path.join(resolvedDir, fileName);
-      
+
       if (fs.existsSync(filePath)) {
         return this.loadFromPath(filePath, source);
       }
@@ -256,14 +268,16 @@ export class TemplateLoader {
   ): Promise<TemplateResolutionResult | null> {
     try {
       const templates = await this.loadPluginTemplates(plugin);
-      const template = templates.find(t => t.name === templateName);
-      
+      const template = templates.find((t) => t.name === templateName);
+
       if (!template) {
         return null;
       }
 
       const content = await this.resolveTemplateContent(template);
-      this.log(`✓ Loaded template "${templateName}" from plugin: ${plugin.displayName}`);
+      this.log(
+        `✓ Loaded template "${templateName}" from plugin: ${plugin.displayName}`,
+      );
 
       return {
         content,
@@ -287,7 +301,7 @@ export class TemplateLoader {
       const homeDir = process.env.HOME || process.env.USERPROFILE || '';
       return path.join(homeDir, templatePath.slice(2));
     }
-    
+
     if (path.isAbsolute(templatePath)) {
       return templatePath;
     }

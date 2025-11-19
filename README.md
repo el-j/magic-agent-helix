@@ -73,6 +73,51 @@ Magic-Agent-Helix features a powerful plugin-based architecture for polyglot sup
 
 See the [Plugin System Documentation](PLUGIN-SYSTEM.md) for details on creating and using plugins.
 
+## 🎨 Pattern Templates & Instruction Quality (v2.0.1)
+
+### Pattern-Based Instruction Generation
+
+Magic-Agent-Helix Phase 5 introduces a sophisticated pattern template system based on research from [awesome-ai-system-prompts](https://github.com/mehmetkahya0/awesome-ai-system-prompts):
+
+- **33 Pattern Templates** across 8 categories:
+  - **Role Definition**: Expert identity, scope boundaries, capability declarations
+  - **Organization**: XML-like structure, heading hierarchy, sequential workflows
+  - **Tool Guidelines**: Function schemas, usage policies, parameter examples
+  - **Reasoning**: Thinking tags, subtask breakdown, agent loops, confirmation gates
+  - **Domain Expertise**: Framework-specific rules (React, Next.js, Vue, Tailwind, shadcn/ui)
+  - **Environment**: OS commands, container awareness, IDE features
+  - **Tone**: Concise communication, forbidden phrases, adaptive styles
+  - **Safety**: Refusal messages, destructive warnings, credential handling
+
+- **Context-Aware Selection**: Automatically chooses relevant patterns based on your project:
+  ```typescript
+  import { generateInstructions } from '@magic-helix/core';
+
+  const instructions = generateInstructions({
+    framework: 'react',
+    libraries: ['tailwind', 'shadcn-ui'],
+    aiModel: 'claude',
+    tone: 'concise',
+    environment: 'vscode',
+  });
+  ```
+
+- **Quality Validation**: 15-element scoring system (0-100 scale, A-F grades):
+  ```bash
+  # Validate generated instructions
+  magic-helix validate
+
+  # Output:
+  # ✅ A 95/100 - react-patterns.md
+  # ⚠️  C 72/100 - python-basics.md
+  #    Missing: Tool Documentation, Refusal Guidelines
+  #    Tip: Add inline tool schemas with examples
+  ```
+
+See the detailed guides:
+- [Pattern Templates Guide](packages/magic-helix-core/PATTERN-TEMPLATES.md)
+- [Instruction Validation Guide](packages/magic-helix-core/INSTRUCTION-VALIDATION.md)
+
 ## 🔧 Development
 
 This is a monorepo using NPM workspaces.

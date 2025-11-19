@@ -1,6 +1,6 @@
 /**
  * PHP Language Plugin
- * 
+ *
  * Detects PHP projects via composer.json
  */
 

@@ -1,19 +1,19 @@
 /**
  * Plugin Registry
- * 
+ *
  * Central singleton for managing loaded plugins and providing
  * high-level APIs for project detection and template access.
  */
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { PluginLoader } from './plugin-loader';
 import type {
   LanguagePlugin,
+  PluginConfig,
   ProjectMetadata,
   RegistryConfig,
-  PluginConfig,
 } from './types';
-import { PluginLoader } from './plugin-loader';
 
 export class PluginRegistry {
   private static instance: PluginRegistry | null = null;
@@ -52,11 +52,15 @@ export class PluginRegistry {
     await this.loadConfiguredPlugins(config.plugins);
 
     this.initialized = true;
-    
+
     if (config.verbose) {
       const stats = this.loader.getStats();
-      console.log(`[PluginRegistry] Initialized with ${stats.totalLoaded} plugins`);
-      console.log(`[PluginRegistry] Load time: ${stats.averageLoadTime.toFixed(2)}ms avg`);
+      console.log(
+        `[PluginRegistry] Initialized with ${stats.totalLoaded} plugins`,
+      );
+      console.log(
+        `[PluginRegistry] Load time: ${stats.averageLoadTime.toFixed(2)}ms avg`,
+      );
     }
   }
 
@@ -108,10 +112,12 @@ export class PluginRegistry {
   /**
    * Detect all projects in a directory (monorepo support)
    */
-  async detectAllProjects(rootPath: string): Promise<Array<{
-    metadata: ProjectMetadata;
-    plugin: LanguagePlugin;
-  }>> {
+  async detectAllProjects(rootPath: string): Promise<
+    Array<{
+      metadata: ProjectMetadata;
+      plugin: LanguagePlugin;
+    }>
+  > {
     await this.ensureInitialized();
     return this.loader.detectAllProjects(rootPath);
   }
@@ -119,26 +125,29 @@ export class PluginRegistry {
   /**
    * Get the best plugin for a detected project language
    */
-  async getPluginForLanguage(language: string): Promise<LanguagePlugin | undefined> {
+  async getPluginForLanguage(
+    language: string,
+  ): Promise<LanguagePlugin | undefined> {
     await this.ensureInitialized();
     const plugins = this.loader.getAllPlugins();
-    
+
     // Try exact match first
-    let plugin = plugins.find(p => p.name === language.toLowerCase());
+    let plugin = plugins.find((p) => p.name === language.toLowerCase());
     if (plugin) return plugin;
 
     // Try display name match
-    plugin = plugins.find(p => 
-      p.displayName.toLowerCase() === language.toLowerCase()
+    plugin = plugins.find(
+      (p) => p.displayName.toLowerCase() === language.toLowerCase(),
     );
     if (plugin) return plugin;
 
     // Try partial match
-    plugin = plugins.find(p => 
-      p.displayName.toLowerCase().includes(language.toLowerCase()) ||
-      language.toLowerCase().includes(p.name)
+    plugin = plugins.find(
+      (p) =>
+        p.displayName.toLowerCase().includes(language.toLowerCase()) ||
+        language.toLowerCase().includes(p.name),
     );
-    
+
     return plugin;
   }
 
@@ -150,11 +159,12 @@ export class PluginRegistry {
     path: string;
   }): Promise<LanguagePlugin | null> {
     await this.ensureInitialized();
-    
-    const result = source.type === 'npm'
-      ? await this.loader.loadNpmPlugin(source.path)
-      : await this.loader.loadLocalPlugin(source.path);
-    
+
+    const result =
+      source.type === 'npm'
+        ? await this.loader.loadNpmPlugin(source.path)
+        : await this.loader.loadLocalPlugin(source.path);
+
     return result?.plugin ?? null;
   }
 
@@ -169,7 +179,7 @@ export class PluginRegistry {
   }> {
     await this.ensureInitialized();
     const stats = this.loader.getStats();
-    
+
     return {
       totalPlugins: stats.totalLoaded,
       loadErrors: stats.totalErrors,
@@ -181,13 +191,15 @@ export class PluginRegistry {
   /**
    * Get load errors
    */
-  async getLoadErrors(): Promise<Array<{
-    source: string;
-    error: string;
-    timestamp: Date;
-  }>> {
+  async getLoadErrors(): Promise<
+    Array<{
+      source: string;
+      error: string;
+      timestamp: Date;
+    }>
+  > {
     await this.ensureInitialized();
-    return this.loader.getLoadErrors().map(err => ({
+    return this.loader.getLoadErrors().map((err) => ({
       source: err.source.identifier,
       error: err.error.message,
       timestamp: err.timestamp,
@@ -206,7 +218,9 @@ export class PluginRegistry {
   /**
    * Load plugins based on configuration
    */
-  private async loadConfiguredPlugins(pluginConfig: PluginConfig = {}): Promise<void> {
+  private async loadConfiguredPlugins(
+    pluginConfig: PluginConfig = {},
+  ): Promise<void> {
     const {
       builtin = [],
       npm = [],
@@ -217,7 +231,9 @@ export class PluginRegistry {
 
     // Load built-in plugins first
     if (builtin.length > 0) {
-      const filteredBuiltin = builtin.filter(name => !disabled.includes(name));
+      const filteredBuiltin = builtin.filter(
+        (name) => !disabled.includes(name),
+      );
       await this.loader.loadBuiltinPlugins(filteredBuiltin);
     } else {
       // If no built-in plugins specified, try to load all
@@ -261,7 +277,7 @@ export class PluginRegistry {
       const homeDir = process.env.HOME || process.env.USERPROFILE || '';
       return path.join(homeDir, pluginPath.slice(2));
     }
-    
+
     if (path.isAbsolute(pluginPath)) {
       return pluginPath;
     }
@@ -286,7 +302,9 @@ export class PluginRegistry {
   /**
    * Load configuration from file
    */
-  static async loadConfigFromFile(configPath: string): Promise<RegistryConfig | null> {
+  static async loadConfigFromFile(
+    configPath: string,
+  ): Promise<RegistryConfig | null> {
     try {
       if (!fs.existsSync(configPath)) {
         return null;
@@ -294,10 +312,12 @@ export class PluginRegistry {
 
       const content = fs.readFileSync(configPath, 'utf-8');
       const config = JSON.parse(content);
-      
+
       return config;
     } catch (error) {
-      console.warn(`Failed to load config from ${configPath}: ${(error as Error).message}`);
+      console.warn(
+        `Failed to load config from ${configPath}: ${(error as Error).message}`,
+      );
       return null;
     }
   }
@@ -311,8 +331,13 @@ export class PluginRegistry {
     // Load global config (~/.magic-helix/config.json)
     const homeDir = process.env.HOME || process.env.USERPROFILE;
     if (homeDir) {
-      const globalConfigPath = path.join(homeDir, '.magic-helix', 'config.json');
-      const globalConfig = await PluginRegistry.loadConfigFromFile(globalConfigPath);
+      const globalConfigPath = path.join(
+        homeDir,
+        '.magic-helix',
+        'config.json',
+      );
+      const globalConfig =
+        await PluginRegistry.loadConfigFromFile(globalConfigPath);
       if (globalConfig) {
         configs.push(globalConfig);
       }
@@ -321,7 +346,8 @@ export class PluginRegistry {
     // Load workspace config (.magic-helix.json)
     if (workspacePath) {
       const workspaceConfigPath = path.join(workspacePath, '.magic-helix.json');
-      const workspaceConfig = await PluginRegistry.loadConfigFromFile(workspaceConfigPath);
+      const workspaceConfig =
+        await PluginRegistry.loadConfigFromFile(workspaceConfigPath);
       if (workspaceConfig) {
         workspaceConfig.workspacePath = workspacePath;
         configs.push(workspaceConfig);
@@ -333,21 +359,24 @@ export class PluginRegistry {
       return { workspacePath };
     }
 
-    return configs.reduce((merged, config) => {
-      const mergedPlugins = {
-        ...(merged.plugins || {}),
-        ...(config.plugins || {}),
-      };
-      const mergedTemplates = {
-        ...(merged.templates || {}),
-        ...(config.templates || {}),
-      };
-      
-      return Object.assign({}, merged, config, {
-        plugins: mergedPlugins,
-        templates: mergedTemplates,
-      });
-    }, { workspacePath } as RegistryConfig);
+    return configs.reduce(
+      (merged, config) => {
+        const mergedPlugins = {
+          ...(merged.plugins || {}),
+          ...(config.plugins || {}),
+        };
+        const mergedTemplates = {
+          ...(merged.templates || {}),
+          ...(config.templates || {}),
+        };
+
+        return Object.assign({}, merged, config, {
+          plugins: mergedPlugins,
+          templates: mergedTemplates,
+        });
+      },
+      { workspacePath } as RegistryConfig,
+    );
   }
 }
 
@@ -361,7 +390,9 @@ export function getRegistry(): PluginRegistry {
 /**
  * Convenience function to initialize the registry
  */
-export async function initializeRegistry(config?: RegistryConfig): Promise<PluginRegistry> {
+export async function initializeRegistry(
+  config?: RegistryConfig,
+): Promise<PluginRegistry> {
   const registry = PluginRegistry.getInstance();
   await registry.initialize(config);
   return registry;

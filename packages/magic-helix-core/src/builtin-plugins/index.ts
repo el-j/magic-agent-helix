@@ -1,6 +1,6 @@
 /**
  * Magic Helix Language Plugins
- * 
+ *
  * Built-in language detection plugins for popular languages.
  */
 

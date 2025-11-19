@@ -60,25 +60,30 @@ export class RustPlugin extends BasePlugin {
       'heapless',
       'microbit',
       'drone-core',
-    ].map(name => name.toLowerCase()),
+    ].map((name) => name.toLowerCase()),
   );
 
-  private static readonly EMBEDDED_KEYWORDS = new Set(
-    [
-      'embedded',
-      'hardware',
-      'no_std',
-      'nostd',
-      'microcontroller',
-      'firmware',
-      'hal',
-      'baremetal',
-      'bare-metal',
-    ],
-  );
+  private static readonly EMBEDDED_KEYWORDS = new Set([
+    'embedded',
+    'hardware',
+    'no_std',
+    'nostd',
+    'microcontroller',
+    'firmware',
+    'hal',
+    'baremetal',
+    'bare-metal',
+  ]);
 
-  private static readonly HARDWARE_NAME_HINTS = ['hardware', 'hardware2rust', 'embedded'];
-  private static readonly CARGO_CONFIG_FILES = ['.cargo/config', '.cargo/config.toml'];
+  private static readonly HARDWARE_NAME_HINTS = [
+    'hardware',
+    'hardware2rust',
+    'embedded',
+  ];
+  private static readonly CARGO_CONFIG_FILES = [
+    '.cargo/config',
+    '.cargo/config.toml',
+  ];
   private static readonly MEMORY_LAYOUT_FILES = ['memory.x', 'memory.x.in'];
 
   async detect(projectPath: string): Promise<ProjectMetadata | null> {
@@ -103,7 +108,12 @@ export class RustPlugin extends BasePlugin {
       ? this.extractDependenciesFromManifest(manifest)
       : this.extractDependenciesFromText(content);
     const workspaceMembers = this.extractWorkspaceMembers(manifest, content);
-    const tags = await this.computeProjectTags(projectPath, dependencies, manifest, content);
+    const tags = await this.computeProjectTags(
+      projectPath,
+      dependencies,
+      manifest,
+      content,
+    );
 
     const metadata: ProjectMetadata = {
       language: 'Rust',
@@ -112,11 +122,13 @@ export class RustPlugin extends BasePlugin {
         this.extractNameFromContent(content) ||
         this.getProjectName(projectPath),
       description:
-        manifest?.package?.description || this.extractDescriptionFromContent(content),
+        manifest?.package?.description ||
+        this.extractDescriptionFromContent(content),
       dependencies,
       manifestFile: 'Cargo.toml',
       projectPath,
-      workspaceMembers: workspaceMembers.length > 0 ? workspaceMembers : undefined,
+      workspaceMembers:
+        workspaceMembers.length > 0 ? workspaceMembers : undefined,
       tags: tags.length > 0 ? tags : undefined,
       keywords: manifest?.package?.keywords,
       categories: manifest?.package?.categories,
@@ -227,7 +239,7 @@ These guidelines focus on packages aligned with the hardware2rust stack.
       'cortex-m-rt': 'rust-embedded',
       'cortex-m-rtic': 'rust-embedded',
       rtic: 'rust-embedded',
-      'hardware2rust': 'hardware2rust',
+      hardware2rust: 'hardware2rust',
       'probe-run': 'rust-embedded',
       'probe-rs': 'rust-embedded',
       defmt: 'rust-embedded',
@@ -247,7 +259,9 @@ These guidelines focus on packages aligned with the hardware2rust stack.
     }
   }
 
-  private extractDependenciesFromManifest(manifest: CargoManifest): Record<string, string> {
+  private extractDependenciesFromManifest(
+    manifest: CargoManifest,
+  ): Record<string, string> {
     const deps: Record<string, string> = {};
     this.collectDependencies(manifest.dependencies, deps);
     this.collectDependencies(manifest['dev-dependencies'], deps);
@@ -287,18 +301,18 @@ These guidelines focus on packages aligned with the hardware2rust stack.
 
     if (value && typeof value === 'object') {
       const record = value as Record<string, unknown>;
-      const version = record['version'];
+      const version = record.version;
       if (typeof version === 'string') {
         return version;
       }
 
-      const git = record['git'];
+      const git = record.git;
       if (typeof git === 'string') {
-        const rev = record['rev'];
+        const rev = record.rev;
         return typeof rev === 'string' ? `git:${git}#${rev}` : `git:${git}`;
       }
 
-      const path = record['path'];
+      const path = record.path;
       if (typeof path === 'string') {
         return `path:${path}`;
       }
@@ -313,7 +327,7 @@ These guidelines focus on packages aligned with the hardware2rust stack.
   ): string[] {
     if (manifest?.workspace?.members?.length) {
       return manifest.workspace.members
-        .map(member => member.trim())
+        .map((member) => member.trim())
         .filter(Boolean);
     }
 
@@ -321,14 +335,16 @@ These guidelines focus on packages aligned with the hardware2rust stack.
   }
 
   private fallbackWorkspaceMembers(content: string): string[] {
-    const match = content.match(/\[workspace\][\s\S]*?members\s*=\s*\[([\s\S]*?)\]/);
+    const match = content.match(
+      /\[workspace\][\s\S]*?members\s*=\s*\[([\s\S]*?)\]/,
+    );
     if (!match) {
       return [];
     }
 
     return match[1]
       .split(',')
-      .map(member => member.trim().replace(/['"]/g, ''))
+      .map((member) => member.trim().replace(/['"]/g, ''))
       .filter(Boolean);
   }
 
@@ -358,7 +374,10 @@ These guidelines focus on packages aligned with the hardware2rust stack.
     return match ? match[1] : null;
   }
 
-  private parseDependencyLines(block: string, deps: Record<string, string>): void {
+  private parseDependencyLines(
+    block: string,
+    deps: Record<string, string>,
+  ): void {
     const lines = block.split('\n');
     for (const rawLine of lines) {
       const line = rawLine.trim();
@@ -379,7 +398,11 @@ These guidelines focus on packages aligned with the hardware2rust stack.
         const pathMatch = trimmedValue.match(/path\s*=\s*"([^"]+)"/);
         deps[name] =
           versionMatch?.[1] ||
-          (gitMatch ? `git:${gitMatch}` : pathMatch ? `path:${pathMatch}` : '*');
+          (gitMatch
+            ? `git:${gitMatch}`
+            : pathMatch
+              ? `path:${pathMatch}`
+              : '*');
       } else {
         deps[name] = trimmedValue.replace(/"/g, '');
       }
@@ -392,7 +415,9 @@ These guidelines focus on packages aligned with the hardware2rust stack.
   }
 
   private extractDescriptionFromContent(content: string): string | undefined {
-    const match = content.match(/\[package\][\s\S]*?description\s*=\s*"([^"]+)"/);
+    const match = content.match(
+      /\[package\][\s\S]*?description\s*=\s*"([^"]+)"/,
+    );
     return match?.[1];
   }
 
@@ -403,25 +428,39 @@ These guidelines focus on packages aligned with the hardware2rust stack.
     content: string,
   ): Promise<string[]> {
     const tags = new Set<string>(['lang-rust']);
-    const depNames = Object.keys(dependencies).map(dep => dep.toLowerCase());
-    const hasEmbeddedDep = depNames.some(dep => RustPlugin.EMBEDDED_DEPENDENCIES.has(dep));
+    const depNames = Object.keys(dependencies).map((dep) => dep.toLowerCase());
+    const hasEmbeddedDep = depNames.some((dep) =>
+      RustPlugin.EMBEDDED_DEPENDENCIES.has(dep),
+    );
 
-    const keywords = (manifest?.package?.keywords ?? []).map(keyword => keyword.toLowerCase());
-    const categories = (manifest?.package?.categories ?? []).map(category => category.toLowerCase());
-    const hasEmbeddedKeyword = keywords.some(keyword => RustPlugin.EMBEDDED_KEYWORDS.has(keyword));
-    const hasEmbeddedCategory = categories.some(category => RustPlugin.EMBEDDED_KEYWORDS.has(category));
+    const keywords = (manifest?.package?.keywords ?? []).map((keyword) =>
+      keyword.toLowerCase(),
+    );
+    const categories = (manifest?.package?.categories ?? []).map((category) =>
+      category.toLowerCase(),
+    );
+    const hasEmbeddedKeyword = keywords.some((keyword) =>
+      RustPlugin.EMBEDDED_KEYWORDS.has(keyword),
+    );
+    const hasEmbeddedCategory = categories.some((category) =>
+      RustPlugin.EMBEDDED_KEYWORDS.has(category),
+    );
 
-    const hasMemoryLayout = RustPlugin.MEMORY_LAYOUT_FILES.some(file => this.fileExists(projectPath, file));
-    const hasCargoConfig = RustPlugin.CARGO_CONFIG_FILES.some(file => this.fileExists(projectPath, file));
+    const hasMemoryLayout = RustPlugin.MEMORY_LAYOUT_FILES.some((file) =>
+      this.fileExists(projectPath, file),
+    );
+    const hasCargoConfig = RustPlugin.CARGO_CONFIG_FILES.some((file) =>
+      this.fileExists(projectPath, file),
+    );
 
     const normalizedName = manifest?.package?.name?.toLowerCase() ?? '';
     const contentLower = content.toLowerCase();
     const mentionsHardware = RustPlugin.HARDWARE_NAME_HINTS.some(
-      hint => normalizedName.includes(hint) || contentLower.includes(hint),
+      (hint) => normalizedName.includes(hint) || contentLower.includes(hint),
     );
     const isHardware2Rust =
       normalizedName.includes('hardware2rust') ||
-      depNames.some(dep => dep.includes('hardware2rust'));
+      depNames.some((dep) => dep.includes('hardware2rust'));
 
     if (
       hasEmbeddedDep ||

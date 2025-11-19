@@ -1,7 +1,5 @@
 import * as fs from 'node:fs';
 import type * as path from 'node:path';
-import { glob } from 'glob';
-import inquirer from 'inquirer';
 import {
   BUILT_IN_CONFIG,
   getFormatter,
@@ -9,8 +7,10 @@ import {
   mergeConfigs,
 } from '@magic-helix/core';
 import type { LanguagePlugin } from '@magic-helix/core';
+import { glob } from 'glob';
+import inquirer from 'inquirer';
 import ora from 'ora';
-import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
+import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
 import { refresh } from './refresh';
 
 const mockPluginRegistry = {

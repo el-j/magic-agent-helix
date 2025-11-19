@@ -1,6 +1,6 @@
 /**
  * Node.js Language Plugin
- * 
+ *
  * Detects Node.js/JavaScript/TypeScript projects via package.json
  * Supports npm workspaces for monorepo detection
  */
@@ -69,74 +69,82 @@ export class NodeJSPlugin extends BasePlugin {
       {
         name: 'lang-typescript',
         tags: ['typescript'],
-        content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/lang-typescript.md')
-        ).then(c => c || this.getTypescriptTemplate()),
+        content: () =>
+          this.loadTemplateFromFile(
+            path.join(__dirname, 'templates/lang-typescript.md'),
+          ).then((c) => c || this.getTypescriptTemplate()),
       },
       {
         name: 'react-core',
         tags: ['react'],
-        content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/react-core.md')
-        ).then(c => c || this.getReactTemplate()),
+        content: () =>
+          this.loadTemplateFromFile(
+            path.join(__dirname, 'templates/react-core.md'),
+          ).then((c) => c || this.getReactTemplate()),
       },
       {
         name: 'react-zustand',
         tags: ['zustand'],
-        content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/react-zustand.md')
-        ).then(c => c || this.getReactZustandTemplate()),
+        content: () =>
+          this.loadTemplateFromFile(
+            path.join(__dirname, 'templates/react-zustand.md'),
+          ).then((c) => c || this.getReactZustandTemplate()),
       },
       {
         name: 'vue-core',
         tags: ['vue'],
-        content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/vue-core.md')
-        ).then(c => c || this.getVueTemplate()),
+        content: () =>
+          this.loadTemplateFromFile(
+            path.join(__dirname, 'templates/vue-core.md'),
+          ).then((c) => c || this.getVueTemplate()),
       },
       {
         name: 'vue-pinia',
         tags: ['pinia'],
-        content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/vue-pinia.md')
-        ).then(c => c || this.getVuePiniaTemplate()),
+        content: () =>
+          this.loadTemplateFromFile(
+            path.join(__dirname, 'templates/vue-pinia.md'),
+          ).then((c) => c || this.getVuePiniaTemplate()),
       },
       {
         name: 'nestjs-core',
         tags: ['nestjs'],
-        content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/nestjs-core.md')
-        ).then(c => c || this.getNestJSTemplate()),
+        content: () =>
+          this.loadTemplateFromFile(
+            path.join(__dirname, 'templates/nestjs-core.md'),
+          ).then((c) => c || this.getNestJSTemplate()),
       },
       {
         name: 'style-tailwind',
         tags: ['tailwind'],
-        content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/style-tailwind.md')
-        ).then(c => c || this.getTailwindTemplate()),
+        content: () =>
+          this.loadTemplateFromFile(
+            path.join(__dirname, 'templates/style-tailwind.md'),
+          ).then((c) => c || this.getTailwindTemplate()),
       },
       {
         name: 'test-vitest',
         tags: ['vitest'],
-        content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/test-vitest.md')
-        ).then(c => c || this.getVitestTemplate()),
+        content: () =>
+          this.loadTemplateFromFile(
+            path.join(__dirname, 'templates/test-vitest.md'),
+          ).then((c) => c || this.getVitestTemplate()),
       },
     ];
   }
 
   getDependencyTagMap() {
     return {
-      'react': 'react',
+      react: 'react',
       'react-dom': 'react',
-      'vue': 'vue',
+      vue: 'vue',
       '@vue/runtime-core': 'vue',
-      'pinia': 'pinia',
+      pinia: 'pinia',
       '@nestjs/core': 'nestjs',
-      'tailwindcss': 'tailwind',
-      'vitest': 'vitest',
-      'zustand': 'zustand',
-      'typescript': 'typescript',
+      tailwindcss: 'tailwind',
+      vitest: 'vitest',
+      zustand: 'zustand',
+      typescript: 'typescript',
     };
   }
 
@@ -160,7 +168,7 @@ export class NodeJSPlugin extends BasePlugin {
       : pkg.workspaces.packages || [];
 
     // Convert glob patterns to actual paths (simplified - just remove wildcards)
-    return workspacePatterns.map(pattern => pattern.replace(/\/\*$/, ''));
+    return workspacePatterns.map((pattern) => pattern.replace(/\/\*$/, ''));
   }
 
   // Fallback template content (if files don't exist)

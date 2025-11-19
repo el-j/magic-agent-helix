@@ -10,14 +10,15 @@ import type {
  */
 export class RubyPlugin implements DetectionPlugin {
   readonly name = 'ruby';
-  readonly description = 'Detects Ruby projects via Gemfile, Rails, and framework identification';
+  readonly description =
+    'Detects Ruby projects via Gemfile, Rails, and framework identification';
   readonly version = '1.0.0';
 
   detect(context: DetectionContext): DetectionResult {
     // Check for Gemfile (Bundler)
     const hasGemfile = context.hasFile('Gemfile');
     const hasGemfileLock = context.hasFile('Gemfile.lock');
-    
+
     // Check for .rb files
     const hasRbFiles = context.matchesPattern('**/*.rb');
 
@@ -34,23 +35,26 @@ export class RubyPlugin implements DetectionPlugin {
     };
 
     // Detect Rails
-    const isRails = context.hasFile('config/application.rb') && 
-                    context.hasFile('config/routes.rb') &&
-                    context.hasFile('Rakefile');
-    
+    const isRails =
+      context.hasFile('config/application.rb') &&
+      context.hasFile('config/routes.rb') &&
+      context.hasFile('Rakefile');
+
     if (isRails) {
       metadata.framework = 'rails';
-      
+
       // Try to detect Rails version from Gemfile
       const gemfileContent = context.getTextFile('Gemfile');
       if (gemfileContent) {
-        const railsMatch = gemfileContent.match(/gem\s+['"]rails['"]\s*,\s*['"]~>\s*([\d.]+)['"]/);
+        const railsMatch = gemfileContent.match(
+          /gem\s+['"]rails['"]\s*,\s*['"]~>\s*([\d.]+)['"]/,
+        );
         if (railsMatch) {
           metadata.railsVersion = railsMatch[1];
         }
       }
     }
-    
+
     // Detect Sinatra (lightweight web framework)
     const gemfileContent = context.getTextFile('Gemfile');
     if (gemfileContent?.includes('sinatra')) {
@@ -64,7 +68,7 @@ export class RubyPlugin implements DetectionPlugin {
       if (gemfileContent.includes('sidekiq')) gems.push('sidekiq');
       if (gemfileContent.includes('rspec')) gems.push('rspec');
       if (gemfileContent.includes('rubocop')) gems.push('rubocop');
-      
+
       if (gems.length > 0) {
         metadata.gems = gems;
       }

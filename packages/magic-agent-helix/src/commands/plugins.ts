@@ -1,11 +1,13 @@
-import pc from 'picocolors';
 import { PluginRegistry } from '@magic-helix/core';
+import pc from 'picocolors';
 
 interface PluginsOptions {
   verbose?: boolean;
 }
 
-export async function pluginsCommand(options: PluginsOptions = {}): Promise<void> {
+export async function pluginsCommand(
+  options: PluginsOptions = {},
+): Promise<void> {
   console.log(pc.blue('🔌 MagicAgentHelix Plugin System'));
   console.log();
 
@@ -31,22 +33,30 @@ export async function pluginsCommand(options: PluginsOptions = {}): Promise<void
     console.log('──────────────────────────────');
 
     for (const plugin of sortedPlugins) {
-      const priorityColor = plugin.priority >= 90 ? 'green' : 
-                           plugin.priority >= 70 ? 'yellow' : 'cyan';
-      
+      const priorityColor =
+        plugin.priority >= 90
+          ? 'green'
+          : plugin.priority >= 70
+            ? 'yellow'
+            : 'cyan';
+
       console.log(
         `${pc.bold(plugin.displayName)} (${pc[priorityColor](`priority: ${plugin.priority}`)}) v${plugin.version}`,
       );
-      
+
       if (options.verbose) {
         const templates = plugin.getTemplates();
         if (templates.length > 0) {
-          console.log(`  📝 Templates: ${templates.map(t => t.name).join(', ')}`);
+          console.log(
+            `  📝 Templates: ${templates.map((t) => t.name).join(', ')}`,
+          );
         }
-        
+
         const tagMap = plugin.getDependencyTagMap?.();
         if (tagMap && Object.keys(tagMap).length > 0) {
-          console.log(`  🏷️  Detects: ${Object.keys(tagMap).slice(0, 3).join(', ')}${Object.keys(tagMap).length > 3 ? '...' : ''}`);
+          console.log(
+            `  🏷️  Detects: ${Object.keys(tagMap).slice(0, 3).join(', ')}${Object.keys(tagMap).length > 3 ? '...' : ''}`,
+          );
         }
         console.log();
       }
@@ -73,9 +83,11 @@ export async function pluginsCommand(options: PluginsOptions = {}): Promise<void
         console.log(`❌ ${error.source.identifier}: ${error.error.message}`);
       }
     }
-
   } catch (error) {
-    console.error(pc.red('❌ Failed to load plugin registry:'), (error as Error).message);
+    console.error(
+      pc.red('❌ Failed to load plugin registry:'),
+      (error as Error).message,
+    );
     process.exit(1);
   }
 }

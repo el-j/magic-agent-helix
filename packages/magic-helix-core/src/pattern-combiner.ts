@@ -20,7 +20,15 @@ export interface PatternContext {
 
 export interface PatternTemplate {
   name: string;
-  category: 'role-definition' | 'organization' | 'tool-guidelines' | 'reasoning' | 'domain-expertise' | 'safety' | 'tone' | 'environment';
+  category:
+    | 'role-definition'
+    | 'organization'
+    | 'tool-guidelines'
+    | 'reasoning'
+    | 'domain-expertise'
+    | 'safety'
+    | 'tone'
+    | 'environment';
   content: string;
   priority: number; // Higher priority patterns override lower priority
 }
@@ -31,7 +39,7 @@ export interface PatternTemplate {
 export function loadPatternTemplates(): Map<string, PatternTemplate> {
   const templatesDir = path.join(__dirname, 'default_templates', 'patterns');
   const patterns = new Map<string, PatternTemplate>();
-  
+
   const categories = [
     'role-definition',
     'organization',
@@ -40,14 +48,14 @@ export function loadPatternTemplates(): Map<string, PatternTemplate> {
     'domain-expertise',
     'safety',
     'tone',
-    'environment'
+    'environment',
   ];
-  
+
   for (const category of categories) {
     const categoryDir = path.join(templatesDir, category);
     if (!fs.existsSync(categoryDir)) continue;
-    
-    const files = fs.readdirSync(categoryDir).filter(f => f.endsWith('.md'));
+
+    const files = fs.readdirSync(categoryDir).filter((f) => f.endsWith('.md'));
     for (const file of files) {
       const name = file.replace('.md', '');
       const content = fs.readFileSync(path.join(categoryDir, file), 'utf-8');
@@ -55,11 +63,11 @@ export function loadPatternTemplates(): Map<string, PatternTemplate> {
         name,
         category: category as PatternTemplate['category'],
         content,
-        priority: getCategoryPriority(category as PatternTemplate['category'])
+        priority: getCategoryPriority(category as PatternTemplate['category']),
       });
     }
   }
-  
+
   return patterns;
 }
 
@@ -70,13 +78,13 @@ export function loadPatternTemplates(): Map<string, PatternTemplate> {
 function getCategoryPriority(category: PatternTemplate['category']): number {
   const priorities = {
     'role-definition': 1,
-    'organization': 2,
+    organization: 2,
     'tool-guidelines': 3,
-    'reasoning': 4,
+    reasoning: 4,
     'domain-expertise': 5,
-    'environment': 6,
-    'tone': 7,
-    'safety': 8, // Safety always highest priority (never overridden)
+    environment: 6,
+    tone: 7,
+    safety: 8, // Safety always highest priority (never overridden)
   };
   return priorities[category];
 }
@@ -86,32 +94,32 @@ function getCategoryPriority(category: PatternTemplate['category']): number {
  */
 export function selectPatterns(
   allPatterns: Map<string, PatternTemplate>,
-  context: PatternContext
+  context: PatternContext,
 ): PatternTemplate[] {
   const selected: PatternTemplate[] = [];
-  
+
   // Always include role definition
   const expertIdentity = allPatterns.get('expert-identity');
   const scopeBoundaries = allPatterns.get('scope-boundaries');
   if (expertIdentity) selected.push(expertIdentity);
   if (scopeBoundaries) selected.push(scopeBoundaries);
-  
+
   // Always include organization
   const headingHierarchy = allPatterns.get('heading-hierarchy');
   if (headingHierarchy) selected.push(headingHierarchy);
-  
+
   // Always include tool guidelines
   const functionSchemas = allPatterns.get('function-schemas');
   const usagePolicies = allPatterns.get('usage-policies');
   if (functionSchemas) selected.push(functionSchemas);
   if (usagePolicies) selected.push(usagePolicies);
-  
+
   // Framework-specific patterns
   if (context.framework === 'react' || context.framework === 'vue') {
     const reactPatterns = allPatterns.get('react-patterns');
     if (reactPatterns) selected.push(reactPatterns);
   }
-  
+
   // Library-specific patterns
   if (context.libraries) {
     if (context.libraries.includes('tailwind')) {
@@ -123,7 +131,7 @@ export function selectPatterns(
       if (shadcn) selected.push(shadcn);
     }
   }
-  
+
   // AI model-specific patterns
   if (context.aiModel === 'claude') {
     const thinking = allPatterns.get('thinking-tags');
@@ -131,7 +139,7 @@ export function selectPatterns(
     if (thinking) selected.push(thinking);
     if (concise) selected.push(concise);
   }
-  
+
   // Tone patterns
   if (context.tone === 'concise') {
     const concise = allPatterns.get('concise-communication');
@@ -139,19 +147,19 @@ export function selectPatterns(
     if (concise) selected.push(concise);
     if (forbidden) selected.push(forbidden);
   }
-  
+
   // Environment patterns
   if (context.environment === 'vscode') {
     const ideFeatures = allPatterns.get('ide-features');
     if (ideFeatures) selected.push(ideFeatures);
   }
-  
+
   // Always include safety patterns
   const refusal = allPatterns.get('refusal-messages');
   const destructive = allPatterns.get('destructive-warnings');
   if (refusal) selected.push(refusal);
   if (destructive) selected.push(destructive);
-  
+
   // Handle explicit includes/excludes
   if (context.includePatterns) {
     for (const name of context.includePatterns) {
@@ -161,11 +169,11 @@ export function selectPatterns(
       }
     }
   }
-  
+
   if (context.excludePatterns) {
-    return selected.filter(p => !context.excludePatterns?.includes(p.name));
+    return selected.filter((p) => !context.excludePatterns?.includes(p.name));
   }
-  
+
   return selected;
 }
 
@@ -175,9 +183,9 @@ export function selectPatterns(
 export function combinePatterns(patterns: PatternTemplate[]): string {
   // Sort by priority (lower priority first, higher priority can override)
   const sorted = patterns.sort((a, b) => a.priority - b.priority);
-  
+
   const sections: string[] = [];
-  
+
   // Group patterns by category
   const byCategory = new Map<string, PatternTemplate[]>();
   for (const pattern of sorted) {
@@ -189,10 +197,10 @@ export function combinePatterns(patterns: PatternTemplate[]): string {
       categoryPatterns.push(pattern);
     }
   }
-  
+
   // Build combined document
   sections.push('# AI Agent Instructions\n');
-  
+
   // Role Definition
   const roleDefPatterns = byCategory.get('role-definition');
   if (roleDefPatterns) {
@@ -201,7 +209,7 @@ export function combinePatterns(patterns: PatternTemplate[]): string {
       sections.push(extractContent(p.content));
     }
   }
-  
+
   // Organization
   const orgPatterns = byCategory.get('organization');
   if (orgPatterns) {
@@ -210,7 +218,7 @@ export function combinePatterns(patterns: PatternTemplate[]): string {
       sections.push(extractContent(p.content));
     }
   }
-  
+
   // Tool Guidelines
   const toolPatterns = byCategory.get('tool-guidelines');
   if (toolPatterns) {
@@ -219,7 +227,7 @@ export function combinePatterns(patterns: PatternTemplate[]): string {
       sections.push(extractContent(p.content));
     }
   }
-  
+
   // Reasoning
   const reasoningPatterns = byCategory.get('reasoning');
   if (reasoningPatterns) {
@@ -228,7 +236,7 @@ export function combinePatterns(patterns: PatternTemplate[]): string {
       sections.push(extractContent(p.content));
     }
   }
-  
+
   // Domain Expertise
   const domainPatterns = byCategory.get('domain-expertise');
   if (domainPatterns) {
@@ -237,7 +245,7 @@ export function combinePatterns(patterns: PatternTemplate[]): string {
       sections.push(extractContent(p.content));
     }
   }
-  
+
   // Environment
   const envPatterns = byCategory.get('environment');
   if (envPatterns) {
@@ -246,7 +254,7 @@ export function combinePatterns(patterns: PatternTemplate[]): string {
       sections.push(extractContent(p.content));
     }
   }
-  
+
   // Tone
   const tonePatterns = byCategory.get('tone');
   if (tonePatterns) {
@@ -255,7 +263,7 @@ export function combinePatterns(patterns: PatternTemplate[]): string {
       sections.push(extractContent(p.content));
     }
   }
-  
+
   // Safety (always last - highest priority)
   const safetyPatterns = byCategory.get('safety');
   if (safetyPatterns) {
@@ -264,7 +272,7 @@ export function combinePatterns(patterns: PatternTemplate[]): string {
       sections.push(extractContent(p.content));
     }
   }
-  
+
   return sections.join('\n\n');
 }
 
@@ -276,18 +284,20 @@ export function combinePatterns(patterns: PatternTemplate[]): string {
 function extractContent(markdown: string): string {
   // Remove title (# Pattern Name Pattern)
   let content = markdown.replace(/^# .+ Pattern\n+/, '');
-  
+
   // Extract examples section (most valuable)
-  const examplesMatch = content.match(/## Examples\n([\s\S]+?)(?=\n## |\n---|\Z)/);
+  const examplesMatch = content.match(
+    /## Examples\n([\s\S]+?)(?=\n## |\n---|\Z)/,
+  );
   if (examplesMatch) {
     return examplesMatch[1].trim();
   }
-  
+
   // If no examples section, return the first major section after purpose
   content = content.replace(/## Purpose\n.+?\n\n/, '');
   content = content.replace(/## Template\n[\s\S]+?(?=\n## |$)/, '');
   content = content.replace(/## Best Practices\n[\s\S]+$/, '');
-  
+
   return content.trim();
 }
 

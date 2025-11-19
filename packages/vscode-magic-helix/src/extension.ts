@@ -630,7 +630,7 @@ function sendProgressUpdate(
     ...update,
     timestamp: new Date().toLocaleTimeString(),
   };
-  
+
   // Update webview
   panel.webview.postMessage(updateWithTimestamp);
 
@@ -687,14 +687,16 @@ function updateStatusBar(update: ProgressUpdate) {
   statusBarItem.tooltip = update.message;
 }
 
-async function showPluginStatusPanel(context: vscode.ExtensionContext): Promise<void> {
+async function showPluginStatusPanel(
+  context: vscode.ExtensionContext,
+): Promise<void> {
   try {
     // Import PluginRegistry dynamically
     const { PluginRegistry } = await import('@magic-helix/core');
-    
+
     const registry = PluginRegistry.getInstance();
     await registry.initialize();
-    
+
     const plugins = await registry.getAllPlugins();
     const stats = registry.getStatistics();
     const errors = await registry.getLoadErrors();
@@ -714,10 +716,10 @@ async function showPluginStatusPanel(context: vscode.ExtensionContext): Promise<
     const pluginCards = await Promise.all(
       plugins
         .sort((a, b) => b.priority - a.priority)
-        .map(async plugin => {
+        .map(async (plugin) => {
           const templates = await Promise.resolve(plugin.getTemplates());
           const tagMap = plugin.getDependencyTagMap?.() || {};
-          
+
           return `
             <div class="plugin-card">
               <div class="plugin-header">
@@ -727,21 +729,22 @@ async function showPluginStatusPanel(context: vscode.ExtensionContext): Promise<
               <div class="plugin-details">
                 <p><strong>Name:</strong> ${plugin.name}</p>
                 <p><strong>Version:</strong> ${plugin.version}</p>
-                <p><strong>Templates:</strong> ${templates.length > 0 ? templates.map((t: {name: string}) => t.name).join(', ') : 'None'}</p>
+                <p><strong>Templates:</strong> ${templates.length > 0 ? templates.map((t: { name: string }) => t.name).join(', ') : 'None'}</p>
                 <p><strong>Detects:</strong> ${Object.keys(tagMap).length > 0 ? Object.keys(tagMap).slice(0, 5).join(', ') : 'None'}</p>
               </div>
             </div>
           `;
-        })
+        }),
     );
     const pluginsHtml = pluginCards.join('');
 
-    const errorsHtml = errors.length > 0 
-      ? `<div class="errors-section">
+    const errorsHtml =
+      errors.length > 0
+        ? `<div class="errors-section">
            <h2>Load Errors (${errors.length})</h2>
-           ${errors.map(err => `<div class="error-item">${err.source}: ${err.error}</div>`).join('')}
+           ${errors.map((err) => `<div class="error-item">${err.source}: ${err.error}</div>`).join('')}
          </div>`
-      : '';
+        : '';
 
     panel.webview.html = `
       <!DOCTYPE html>
@@ -778,10 +781,9 @@ async function showPluginStatusPanel(context: vscode.ExtensionContext): Promise<
         </body>
       </html>
     `;
-
   } catch (error) {
     vscode.window.showErrorMessage(
-      `Failed to load plugin status: ${(error as Error).message}`
+      `Failed to load plugin status: ${(error as Error).message}`,
     );
   }
 }
@@ -1276,7 +1278,8 @@ async function showQuickAccessMenu(context: vscode.ExtensionContext) {
     {
       label: '$(file-add) Initialize Config',
       description: 'Create custom configuration',
-      detail: 'Set up the Magic Helix config (magic-helix.config.json) for custom rules',
+      detail:
+        'Set up the Magic Helix config (magic-helix.config.json) for custom rules',
     },
     {
       label: '$(sync) Refresh Instructions',
@@ -1706,7 +1709,9 @@ async function detectProjectLanguage(
       const nameMatch = content.match(/name\s*=\s*["']([^"']+)["']/);
       const descMatch = content.match(/description\s*=\s*["']([^"']+)["']/);
       const deps: string[] = [];
-      const depsSection = content.match(/\[tool\.poetry\.dependencies\]([\s\S]*?)(?:\n\[|$)/);
+      const depsSection = content.match(
+        /\[tool\.poetry\.dependencies\]([\s\S]*?)(?:\n\[|$)/,
+      );
       if (depsSection) {
         const lines = depsSection[1].split('\n');
         for (const line of lines) {
@@ -1789,8 +1794,12 @@ async function detectProjectLanguage(
   if (fs.existsSync(cargoTomlPath)) {
     try {
       const content = fs.readFileSync(cargoTomlPath, 'utf-8');
-      const nameMatch = content.match(/\[package\][\s\S]*?name\s*=\s*"([^"]+)"/);
-      const descMatch = content.match(/\[package\][\s\S]*?description\s*=\s*"([^"]+)"/);
+      const nameMatch = content.match(
+        /\[package\][\s\S]*?name\s*=\s*"([^"]+)"/,
+      );
+      const descMatch = content.match(
+        /\[package\][\s\S]*?description\s*=\s*"([^"]+)"/,
+      );
       const deps: string[] = [];
       const depsSection = content.match(/\[dependencies\]([\s\S]*?)(?:\n\[|$)/);
       if (depsSection) {
@@ -1820,7 +1829,9 @@ async function detectProjectLanguage(
       const nameMatch = content.match(/<artifactId>([^<]+)<\/artifactId>/);
       const descMatch = content.match(/<description>([^<]+)<\/description>/);
       const deps: string[] = [];
-      const depMatches = content.matchAll(/<dependency>[\s\S]*?<artifactId>([^<]+)<\/artifactId>/g);
+      const depMatches = content.matchAll(
+        /<dependency>[\s\S]*?<artifactId>([^<]+)<\/artifactId>/g,
+      );
       for (const match of depMatches) {
         deps.push(match[1]);
         if (deps.length >= 10) break;
@@ -1847,7 +1858,9 @@ async function detectProjectLanguage(
     try {
       const content = fs.readFileSync(gradleFile, 'utf-8');
       const deps: string[] = [];
-      const depMatches = content.matchAll(/(?:implementation|api|testImplementation)\s*['"]([^:'"]+):([^:'"]+)/g);
+      const depMatches = content.matchAll(
+        /(?:implementation|api|testImplementation)\s*['"]([^:'"]+):([^:'"]+)/g,
+      );
       for (const match of depMatches) {
         deps.push(`${match[1]}:${match[2]}`);
         if (deps.length >= 10) break;
@@ -1908,7 +1921,9 @@ async function detectProjectLanguage(
   }
 
   // C# (.NET)
-  const csprojFiles = fs.readdirSync(rootPath).filter((f) => f.endsWith('.csproj'));
+  const csprojFiles = fs
+    .readdirSync(rootPath)
+    .filter((f) => f.endsWith('.csproj'));
   if (csprojFiles.length > 0) {
     try {
       const content = fs.readFileSync(
@@ -1916,7 +1931,9 @@ async function detectProjectLanguage(
         'utf-8',
       );
       const deps: string[] = [];
-      const depMatches = content.matchAll(/<PackageReference\s+Include="([^"]+)"/g);
+      const depMatches = content.matchAll(
+        /<PackageReference\s+Include="([^"]+)"/g,
+      );
       for (const match of depMatches) {
         deps.push(match[1]);
         if (deps.length >= 10) break;
@@ -1950,8 +1967,7 @@ async function detectProjectLanguage(
     if (extensions.has('cs')) return { language: 'C#' };
     if (extensions.has('cpp') || extensions.has('cc') || extensions.has('cxx'))
       return { language: 'C++' };
-    if (extensions.has('c') || extensions.has('h'))
-      return { language: 'C' };
+    if (extensions.has('c') || extensions.has('h')) return { language: 'C' };
     if (extensions.has('swift')) return { language: 'Swift' };
     if (extensions.has('kt') || extensions.has('kts'))
       return { language: 'Kotlin' };
@@ -1967,8 +1983,7 @@ async function detectProjectLanguage(
       return { language: 'OCaml' };
     if (extensions.has('dart')) return { language: 'Dart' };
     if (extensions.has('lua')) return { language: 'Lua' };
-    if (extensions.has('r') || extensions.has('R'))
-      return { language: 'R' };
+    if (extensions.has('r') || extensions.has('R')) return { language: 'R' };
     if (extensions.has('jl')) return { language: 'Julia' };
     if (extensions.has('ts') || extensions.has('tsx'))
       return { language: 'TypeScript' };

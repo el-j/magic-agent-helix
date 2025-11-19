@@ -1,6 +1,6 @@
 /**
  * Java Language Plugin
- * 
+ *
  * Detects Java projects via pom.xml (Maven) or build.gradle (Gradle)
  */
 
@@ -20,7 +20,10 @@ export class JavaPlugin extends BasePlugin {
     }
 
     // Check for Gradle
-    if (this.fileExists(projectPath, 'build.gradle') || this.fileExists(projectPath, 'build.gradle.kts')) {
+    if (
+      this.fileExists(projectPath, 'build.gradle') ||
+      this.fileExists(projectPath, 'build.gradle.kts')
+    ) {
       return this.detectGradle(projectPath);
     }
 
@@ -63,7 +66,7 @@ This project uses Java.
     return {
       'org.springframework.boot:spring-boot': 'spring-boot',
       'spring-boot-starter': 'spring-boot',
-      'junit': 'junit',
+      junit: 'junit',
     };
   }
 
@@ -104,7 +107,7 @@ This project uses Java.
     const manifestFile = this.fileExists(projectPath, 'build.gradle')
       ? 'build.gradle'
       : 'build.gradle.kts';
-    
+
     const content = this.readFile(projectPath, manifestFile);
     const deps: Record<string, string> = {};
 
