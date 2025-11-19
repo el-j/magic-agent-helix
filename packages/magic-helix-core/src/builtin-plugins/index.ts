@@ -13,3 +13,4 @@ export { JavaPlugin } from './java';
 export { RubyPlugin } from './ruby';
 export { PHPPlugin } from './php';
 export { CSharpPlugin } from './csharp';
+export { SwiftPlugin } from './swift';
