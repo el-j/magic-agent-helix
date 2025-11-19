@@ -21,7 +21,10 @@ export class SwiftPlugin extends BasePlugin {
 
     // Check for Xcode project
     const hasXcodeProject = await this.hasFiles(projectPath, '**/*.xcodeproj');
-    const hasXcodeWorkspace = await this.hasFiles(projectPath, '**/*.xcworkspace');
+    const hasXcodeWorkspace = await this.hasFiles(
+      projectPath,
+      '**/*.xcworkspace',
+    );
 
     if (hasXcodeProject || hasXcodeWorkspace) {
       return this.detectXcode(projectPath);
@@ -117,9 +120,7 @@ This project uses Swift.
     }
 
     // Extract Swift tools version
-    const swiftVersionMatch = content.match(
-      /swift-tools-version:\s*([\d.]+)/,
-    );
+    const swiftVersionMatch = content.match(/swift-tools-version:\s*([\d.]+)/);
     if (swiftVersionMatch) {
       metadata.description = `Swift ${swiftVersionMatch[1]}`;
     }
