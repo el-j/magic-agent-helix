@@ -1,6 +1,6 @@
 {
   "name": "@magic-helix/agent",
-  "version": "2.0.1-alpha.1",
+  "version": "3.0.0-alpha.1",
   "type": "module",
   "description": "A CLI to inspect a project and generate granular, path-specific AI instructions for agents like GitHub Copilot.",
   "engines": {

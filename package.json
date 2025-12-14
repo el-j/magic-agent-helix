@@ -1,6 +1,6 @@
 {
   "name": "magic-agent-helix-monorepo",
-  "version": "2.0.1-alpha.1",
+  "version": "3.0.0-alpha.1",
   "private": true,
   "description": "Monorepo for MagicAgentHelix CLI and VS Code Extension",
   "workspaces": [

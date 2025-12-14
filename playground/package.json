@@ -1,6 +1,6 @@
 {
   "name": "playground",
-  "version": "2.0.1-alpha.1",
+  "version": "3.0.0-alpha.1",
   "private": true,
   "type": "module",
   "description": "A web-based playground for the MagicAgentHelix core engine.",
