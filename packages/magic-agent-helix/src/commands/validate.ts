@@ -1,6 +1,11 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { formatValidationReport, loadUserConfig, mergeConfigs, validateInstructions } from '@magic-helix/core';
+import {
+  formatValidationReport,
+  loadUserConfig,
+  mergeConfigs,
+  validateInstructions,
+} from '@magic-helix/core';
 import ora from 'ora';
 import pc from 'picocolors';
 
@@ -54,7 +59,9 @@ export async function validate() {
     // Check if createTelemetry is available in the imported core module
     const coreExports = core as Record<string, unknown>;
     if (typeof coreExports.createTelemetry === 'function') {
-      const createTelemetry = coreExports.createTelemetry as (config: Record<string, unknown>) => { track: (event: unknown) => void };
+      const createTelemetry = coreExports.createTelemetry as (
+        config: Record<string, unknown>,
+      ) => { track: (event: unknown) => void };
       telemetry = createTelemetry({});
     }
   } catch {

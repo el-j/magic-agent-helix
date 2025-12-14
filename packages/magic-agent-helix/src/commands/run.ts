@@ -314,7 +314,8 @@ export async function run(options: CliOptions = {}) {
       for (const t of templates) {
         totalTemplates++;
         // Check for template in user's dir *first*, then fall back to built-in
-        let templateContent = t.inlineContent ?? readTemplate(userTemplateDir, t.template);
+        let templateContent =
+          t.inlineContent ?? readTemplate(userTemplateDir, t.template);
         let source = t.inlineContent ? 'Plugin (inline)' : 'Custom';
 
         if (!templateContent) {
@@ -484,7 +485,10 @@ async function getPluginTemplates(): Promise<Record<string, TemplateSource[]>> {
       const suffix = `${tmpl.name}.md`;
       let content: string | null = null;
       try {
-        content = typeof tmpl.content === 'function' ? await tmpl.content() : tmpl.content;
+        content =
+          typeof tmpl.content === 'function'
+            ? await tmpl.content()
+            : tmpl.content;
       } catch (e) {
         console.warn(
           pc.yellow(
