@@ -1,3 +1,9 @@
+## [3.0.0-alpha.2](https://github.com/el-j/magic-agent-helix/compare/v3.0.0-alpha.1...v3.0.0-alpha.2) (2025-12-14)
+
+### Bug Fixes
+
+* ensure npmPublish is set to false for all npm plugins and add publishConfig to magic-helix-plugins ([7e2a17e](https://github.com/el-j/magic-agent-helix/commit/7e2a17e959fd44ec73d899d8d90a541c9ed95d63))
+
 ## [3.0.0-alpha.1](https://github.com/el-j/magic-agent-helix/compare/v2.0.0...v3.0.0-alpha.1) (2025-12-14)
 
 ### ⚠ BREAKING CHANGES
