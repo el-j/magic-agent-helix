@@ -55,9 +55,15 @@
 			}
 		],
 		[
+			"@semantic-release/npm",
+			{
+				"pkgRoot": "packages/vscode-magic-helix"
+			}
+		],
+		[
 			"@semantic-release/exec",
 			{
-				"publishCmd": "npm run sync:versions -- --set ${nextRelease.version}"
+				"prepareCmd": "npm run sync:versions -- --set ${nextRelease.version} && npm install --package-lock-only --workspaces"
 			}
 		],
 		[
