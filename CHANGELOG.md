@@ -1,3 +1,9 @@
+## [3.0.0-alpha.3](https://github.com/el-j/magic-agent-helix/compare/v3.0.0-alpha.2...v3.0.0-alpha.3) (2025-12-14)
+
+### Bug Fixes
+
+* remove npmPublish setting for magic-helix packages in release configuration ([4e22b16](https://github.com/el-j/magic-agent-helix/commit/4e22b16a7d3837d8f2e21d1dc881bc01d5dbf76c))
+
 ## [3.0.0-alpha.2](https://github.com/el-j/magic-agent-helix/compare/v3.0.0-alpha.1...v3.0.0-alpha.2) (2025-12-14)
 
 ### Bug Fixes
