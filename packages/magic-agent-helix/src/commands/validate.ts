@@ -1,12 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import {
-  createTelemetry,
-  formatValidationReport,
-  loadUserConfig,
-  mergeConfigs,
-  validateInstructions,
-} from '@magic-helix/core';
+import { formatValidationReport, loadUserConfig, mergeConfigs, validateInstructions } from '@magic-helix/core';
 import ora from 'ora';
 import pc from 'picocolors';
 
@@ -53,8 +47,19 @@ export async function validate() {
 
   console.log(pc.gray(`Checking ${files.length} instruction file(s)...\n`));
 
-  // Telemetry (opt-in via env vars)
-  const telemetry = createTelemetry({});
+  // Telemetry (optional): fall back to no-op if unavailable
+  let telemetry: { track: (event: unknown) => void } = { track: () => {} };
+  try {
+    const core = await import('@magic-helix/core');
+    // Check if createTelemetry is available in the imported core module
+    const coreExports = core as Record<string, unknown>;
+    if (typeof coreExports.createTelemetry === 'function') {
+      const createTelemetry = coreExports.createTelemetry as (config: Record<string, unknown>) => { track: (event: unknown) => void };
+      telemetry = createTelemetry({});
+    }
+  } catch {
+    // ignore if core import fails in test/browser
+  }
 
   let passCount = 0;
   let failCount = 0;

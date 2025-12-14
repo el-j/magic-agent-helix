@@ -51,6 +51,7 @@ export class PluginLoader {
       const { RubyPlugin } = await import('./builtin-plugins/ruby/index');
       const { PHPPlugin } = await import('./builtin-plugins/php/index');
       const { CSharpPlugin } = await import('./builtin-plugins/csharp/index');
+      const { SwiftPlugin } = await import('./builtin-plugins/swift/index');
 
       const builtinPlugins = [
         NodeJSPlugin,
@@ -61,6 +62,7 @@ export class PluginLoader {
         RubyPlugin,
         PHPPlugin,
         CSharpPlugin,
+        SwiftPlugin,
       ] as (new () => LanguagePlugin)[];
 
       for (const PluginClass of builtinPlugins) {

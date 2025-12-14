@@ -4,6 +4,7 @@ import type {
   ConfigFileTagMap,
   DependencyTagMap,
   FileGlobTagMap,
+  LanguagePlugin,
   TagTemplateMap,
 } from '@magic-helix/core';
 import {
@@ -11,6 +12,7 @@ import {
   BUILT_IN_TEMPLATE_DIR,
   PluginRegistry,
   type ProjectMetadata,
+  type TemplateDefinition,
   getFormatter,
   loadUserConfig,
   mergeConfigs,
@@ -30,6 +32,12 @@ interface Project {
   path: string; // Relative path from root, e.g., 'packages/my-app'
   tags: Set<string>;
 }
+
+type TemplateSource = {
+  template: string;
+  suffix: string;
+  inlineContent?: string;
+};
 
 /**
  * Interactive wizard to guide users through configuration options
@@ -244,6 +252,24 @@ export async function run(options: CliOptions = {}) {
     }
   }
 
+  // Merge plugin-provided templates (inline content) with config templates
+  const pluginTemplateMap = await getPluginTemplates();
+  const combinedTemplateMap: Record<string, TemplateSource[]> = {};
+
+  for (const [tag, templates] of Object.entries(filteredTagTemplateMap)) {
+    combinedTemplateMap[tag] = templates.map((t) => ({
+      template: t.template,
+      suffix: t.suffix,
+    }));
+  }
+
+  for (const [tag, templates] of Object.entries(pluginTemplateMap)) {
+    if (!combinedTemplateMap[tag]) {
+      combinedTemplateMap[tag] = [];
+    }
+    combinedTemplateMap[tag].push(...templates);
+  }
+
   // 5. Generate files
   if (shouldLog('normal', logLevel)) {
     console.log(
@@ -282,14 +308,14 @@ export async function run(options: CliOptions = {}) {
     );
 
     for (const tag of project.tags) {
-      const templates = (filteredTagTemplateMap as TagTemplateMap)[tag];
+      const templates = combinedTemplateMap[tag];
       if (!templates) continue;
 
       for (const t of templates) {
         totalTemplates++;
         // Check for template in user's dir *first*, then fall back to built-in
-        let templateContent = readTemplate(userTemplateDir, t.template);
-        let source = 'Custom';
+        let templateContent = t.inlineContent ?? readTemplate(userTemplateDir, t.template);
+        let source = t.inlineContent ? 'Plugin (inline)' : 'Custom';
 
         if (!templateContent) {
           templateContent = readTemplate(BUILT_IN_TEMPLATE_DIR, t.template);
@@ -416,13 +442,78 @@ function ensureTargetDir(targetDir: string) {
   }
 }
 
+async function ensureRegistryInitialized() {
+  const registry = PluginRegistry.getInstance();
+  // initialize will short-circuit if already initialized
+  await registry.initialize();
+}
+
+async function getPluginTemplates(): Promise<Record<string, TemplateSource[]>> {
+  await ensureRegistryInitialized();
+  const registry = PluginRegistry.getInstance();
+  // Try to get plugins from registry; may not be available in all environments
+  const plugins: LanguagePlugin[] = [];
+  try {
+    if (
+      typeof (registry as Record<string, unknown>).getAllPlugins === 'function'
+    ) {
+      const getAllPlugins = (registry as Record<string, unknown>)
+        .getAllPlugins as () => Promise<LanguagePlugin[]>;
+      plugins.push(...(await getAllPlugins()));
+    }
+  } catch {
+    // Registry may not have getAllPlugins in test environments
+  }
+  const map: Record<string, TemplateSource[]> = {};
+
+  for (const plugin of plugins) {
+    let templates: TemplateDefinition[] = [];
+    try {
+      const maybeTemplates = await plugin.getTemplates();
+      templates = Array.isArray(maybeTemplates) ? maybeTemplates : [];
+    } catch (e) {
+      console.warn(
+        pc.yellow(
+          `⚠️  Plugin ${plugin.name} getTemplates failed: ${(e as Error).message}`,
+        ),
+      );
+      continue;
+    }
+
+    for (const tmpl of templates) {
+      const suffix = `${tmpl.name}.md`;
+      let content: string | null = null;
+      try {
+        content = typeof tmpl.content === 'function' ? await tmpl.content() : tmpl.content;
+      } catch (e) {
+        console.warn(
+          pc.yellow(
+            `⚠️  Plugin ${plugin.name} template ${tmpl.name} failed to load: ${(e as Error).message}`,
+          ),
+        );
+      }
+
+      for (const tag of tmpl.tags) {
+        if (!map[tag]) map[tag] = [];
+        map[tag].push({
+          template: `plugin:${plugin.name}/${tmpl.name}`,
+          suffix,
+          inlineContent: content ?? undefined,
+        });
+      }
+    }
+  }
+
+  return map;
+}
+
 async function findProjects(): Promise<Project[]> {
+  await ensureRegistryInitialized();
   const projects: Project[] = [];
   const rootPath = process.cwd();
 
   // Initialize plugin registry and detect projects
   const registry = PluginRegistry.getInstance();
-  await registry.initialize();
   const detectedProjects = await registry.detectAllProjects(rootPath);
 
   if (detectedProjects.length === 0) {
@@ -447,6 +538,7 @@ async function analyzeProject(
   configMap: ConfigFileTagMap,
   globMap: FileGlobTagMap,
 ) {
+  await ensureRegistryInitialized();
   const projectRoot = path.resolve(process.cwd(), project.path);
 
   // Strategy 1: Analyze dependencies from any manifest file

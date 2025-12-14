@@ -2,6 +2,15 @@
 
 export { analyzeProjectTags, type ProjectAnalysisData } from './analysis';
 export { BUILT_IN_CONFIG } from './built-in-config';
+export {
+  type AssistantTarget,
+  getFormatter,
+  type InstructionFormatter,
+  GitHubCopilotFormatter,
+  ClaudeFormatter,
+  CopilotChatFormatter,
+  GenericFormatter,
+} from './formatters';
 export * from './types';
 
 import { BUILT_IN_CONFIG } from './built-in-config';

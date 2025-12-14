@@ -1,60 +1,60 @@
 {
-	"name": "@magic-helix/core",
-	"version": "2.0.0",
-	"type": "module",
-	"main": "./dist/index.cjs",
-	"module": "./dist/index.mjs",
-	"types": "./dist/index.d.ts",
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.mjs",
-			"require": "./dist/index.cjs",
-			"default": "./dist/index.mjs"
-		}
-	},
-	"engines": {
-		"node": "^20.11.1 || >=22.0.0"
-	},
-	"scripts": {
-		"build": "npm run build:types && npm run build:bundle && npm run build:templates",
-		"test": "vitest run",
-		"test:watch": "vitest",
-		"test:coverage": "vitest run --coverage",
-		"test:combiner": "vitest run src/pattern-combiner.test.ts --reporter=verbose",
-		"test:integration": "vitest run src/integration.test.ts --reporter=verbose",
-		"build:types": "tsc --project tsconfig.declarations.json --outDir dist",
-		"build:bundle": "vite build",
-		"build:templates": "node ./scripts/copy-templates.js"
-	},
-	"keywords": [
-		"magic-agent-helix",
-		"copilot",
-		"github-copilot",
-		"ai"
-	],
-	"author": "Your Name / Community",
-	"license": "MIT",
-	"publishConfig": {
-		"access": "public"
-	},
-	"dependencies": {
-		"commander": "^12.1.0",
-		"glob": "^11.0.3",
-		"gradient-string": "^3.0.0",
-		"inquirer": "^12.11.0",
-		"js-yaml": "^4.1.0",
-		"@iarna/toml": "^3.0.0",
-		"ora": "^9.0.0",
-		"picocolors": "^1.0.1"
-	},
-	"devDependencies": {
-		"@types/js-yaml": "^4.0.9",
-		"vite": "^5.3.5"
-	},
-	"files": [
-		"dist/**/*",
-		"README.md",
-		"CHANGELOG.md"
-	]
+  "name": "@magic-helix/core",
+  "version": "2.0.1-alpha.1",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "engines": {
+    "node": "^20.11.1 || >=22.0.0"
+  },
+  "scripts": {
+    "build": "npm run build:types && npm run build:bundle && npm run build:templates",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:combiner": "vitest run src/pattern-combiner.test.ts --reporter=verbose",
+    "test:integration": "vitest run src/integration.test.ts --reporter=verbose",
+    "build:types": "tsc --project tsconfig.declarations.json --outDir dist",
+    "build:bundle": "vite build",
+    "build:templates": "node ./scripts/copy-templates.js"
+  },
+  "keywords": [
+    "magic-agent-helix",
+    "copilot",
+    "github-copilot",
+    "ai"
+  ],
+  "author": "Your Name / Community",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "glob": "^11.0.3",
+    "gradient-string": "^3.0.0",
+    "inquirer": "^12.11.0",
+    "js-yaml": "^4.1.0",
+    "@iarna/toml": "^3.0.0",
+    "ora": "^9.0.0",
+    "picocolors": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "vite": "^5.3.5"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "CHANGELOG.md"
+  ]
 }
