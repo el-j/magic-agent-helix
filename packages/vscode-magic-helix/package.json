@@ -2,7 +2,7 @@
   "name": "magic-helix-vscode",
   "displayName": "MagicAgentHelix Runner",
   "description": "Advanced VS Code extension for running MagicAgentHelix CLI with AI-powered refinement, command history, favorites, workspace configuration, and progress tracking.",
-  "version": "2.0.0-beta.2",
+  "version": "3.0.0-beta.1",
   "publisher": "el-j",
   "repository": {
     "type": "git",
