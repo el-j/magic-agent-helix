@@ -63,6 +63,7 @@
 		[
 			"@semantic-release/exec",
 			{
+				"verifyConditionsCmd": "npm run package --workspace=magic-helix-vscode",
 				"prepareCmd": "npm run sync:versions -- --set ${nextRelease.version} && npm install --package-lock-only --workspaces"
 			}
 		],
@@ -75,7 +76,7 @@
 						"label": "CLI Distribution"
 					},
 					{
-						"path": "packages/vscode-magic-helix/*.vsix",
+						"path": "packages/vscode-magic-helix/magic-helix-vscode-*.vsix",
 						"label": "VS Code Extension"
 					}
 				]

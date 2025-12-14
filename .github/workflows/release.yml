@@ -52,15 +52,6 @@ jobs:
       - name: Build Package
         run: npm run build
 
-      - name: Package VS Code Extension
-        run: npm run package --workspace=magic-helix-vscode
-
-      #- name: Publish VS Code Extension (Marketplace)
-      #  if: ${{ secrets.VSCE_TOKEN != '' }}
-      #  run: npx vsce publish --no-yarn --packagePath packages/vscode-magic-helix/*.vsix
-      #  env:
-      #    VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
-
       - name: Test & Coverage
         run: npm run test:coverage
 
