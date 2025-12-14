@@ -1,0 +1,96 @@
+{
+  "name": "@magic-helix/plugins",
+  "version": "3.0.0-alpha.3",
+  "description": "Official language detection plugins for MagicAgentHelix",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./nodejs": {
+      "import": "./dist/nodejs/index.mjs",
+      "require": "./dist/nodejs/index.cjs",
+      "types": "./dist/nodejs/index.d.ts"
+    },
+    "./go": {
+      "import": "./dist/go/index.mjs",
+      "require": "./dist/go/index.cjs",
+      "types": "./dist/go/index.d.ts"
+    },
+    "./python": {
+      "import": "./dist/python/index.mjs",
+      "require": "./dist/python/index.cjs",
+      "types": "./dist/python/index.d.ts"
+    },
+    "./rust": {
+      "import": "./dist/rust/index.mjs",
+      "require": "./dist/rust/index.cjs",
+      "types": "./dist/rust/index.d.ts"
+    },
+    "./java": {
+      "import": "./dist/java/index.mjs",
+      "require": "./dist/java/index.cjs",
+      "types": "./dist/java/index.d.ts"
+    },
+    "./ruby": {
+      "import": "./dist/ruby/index.mjs",
+      "require": "./dist/ruby/index.cjs",
+      "types": "./dist/ruby/index.d.ts"
+    },
+    "./php": {
+      "import": "./dist/php/index.mjs",
+      "require": "./dist/php/index.cjs",
+      "types": "./dist/php/index.d.ts"
+    },
+    "./csharp": {
+      "import": "./dist/csharp/index.mjs",
+      "require": "./dist/csharp/index.cjs",
+      "types": "./dist/csharp/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "npm run build:types && npm run build:bundle && npm run copy:templates",
+    "build:types": "tsc --project tsconfig.json",
+    "build:bundle": "vite build",
+    "copy:templates": "node scripts/copy-templates.js",
+    "dev": "vite build --watch",
+    "test": "vitest",
+    "lint": "eslint src --ext .ts"
+  },
+  "keywords": [
+    "magic-helix",
+    "plugins",
+    "language-detection",
+    "project-detection",
+    "monorepo",
+    "ai",
+    "copilot"
+  ],
+  "author": "MagicAgentHelix Contributors",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@magic-helix/core": "^2.0.0"
+  },
+  "dependencies": {
+    "glob": "^10.3.10"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@magic-helix/core": "*",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.0",
+    "vitest": "^1.6.0"
+  }
+}

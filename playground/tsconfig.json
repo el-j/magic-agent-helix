@@ -10,7 +10,7 @@
 		"lib": ["ESNext", "DOM", "DOM.Iterable"],
 		"types": ["vite/client"],
 		"paths": {
-			"magic-helix-core": ["../packages/magic-helix-core/src/browser.ts"]
+			"@magic-helix/core": ["../packages/magic-helix-core/src/browser.ts"]
 		},
 		"skipLibCheck": true
 	},

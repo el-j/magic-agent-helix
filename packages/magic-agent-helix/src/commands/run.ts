@@ -1,29 +1,30 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { glob } from 'glob';
-import gradient from 'gradient-string';
-import inquirer from 'inquirer';
 import type {
   ConfigFileTagMap,
   DependencyTagMap,
   FileGlobTagMap,
+  LanguagePlugin,
   TagTemplateMap,
-} from 'magic-helix-core';
+} from '@magic-helix/core';
 import {
   type AssistantTarget,
   BUILT_IN_TEMPLATE_DIR,
+  PluginRegistry,
+  type ProjectMetadata,
+  type TemplateDefinition,
   getFormatter,
   loadUserConfig,
   mergeConfigs,
-} from 'magic-helix-core';
+} from '@magic-helix/core';
+import { glob } from 'glob';
+import gradient from 'gradient-string';
+import inquirer from 'inquirer';
 import ora from 'ora';
 import pc from 'picocolors';
 import type { CliOptions } from '../utils/cli-options';
 import { getLogLevel, shouldLog } from '../utils/cli-options';
 import { buildPreciseGlobPattern } from '../utils/file-extensions';
-
-// --- CONFIGURATION ---
-const ROOT_PACKAGE_JSON = path.resolve(process.cwd(), 'package.json');
 
 // --- TYPES ---
 interface Project {
@@ -31,6 +32,12 @@ interface Project {
   path: string; // Relative path from root, e.g., 'packages/my-app'
   tags: Set<string>;
 }
+
+type TemplateSource = {
+  template: string;
+  suffix: string;
+  inlineContent?: string;
+};
 
 /**
  * Interactive wizard to guide users through configuration options
@@ -216,7 +223,9 @@ export async function run(options: CliOptions = {}) {
   // Apply template filtering if specified
   let filteredTagTemplateMap = tagTemplateMap as TagTemplateMap;
   if (effectiveOptions.template) {
-    const templatePatterns = effectiveOptions.template.split(',').map((p) => p.trim());
+    const templatePatterns = effectiveOptions.template
+      .split(',')
+      .map((p) => p.trim());
     filteredTagTemplateMap = {} as TagTemplateMap;
 
     for (const [tag, templates] of Object.entries(tagTemplateMap)) {
@@ -237,8 +246,28 @@ export async function run(options: CliOptions = {}) {
     }
 
     if (shouldLog('verbose', logLevel)) {
-      console.log(pc.gray(`Template filter applied: ${effectiveOptions.template}`));
+      console.log(
+        pc.gray(`Template filter applied: ${effectiveOptions.template}`),
+      );
     }
+  }
+
+  // Merge plugin-provided templates (inline content) with config templates
+  const pluginTemplateMap = await getPluginTemplates();
+  const combinedTemplateMap: Record<string, TemplateSource[]> = {};
+
+  for (const [tag, templates] of Object.entries(filteredTagTemplateMap)) {
+    combinedTemplateMap[tag] = templates.map((t) => ({
+      template: t.template,
+      suffix: t.suffix,
+    }));
+  }
+
+  for (const [tag, templates] of Object.entries(pluginTemplateMap)) {
+    if (!combinedTemplateMap[tag]) {
+      combinedTemplateMap[tag] = [];
+    }
+    combinedTemplateMap[tag].push(...templates);
   }
 
   // 5. Generate files
@@ -279,14 +308,15 @@ export async function run(options: CliOptions = {}) {
     );
 
     for (const tag of project.tags) {
-      const templates = (filteredTagTemplateMap as TagTemplateMap)[tag];
+      const templates = combinedTemplateMap[tag];
       if (!templates) continue;
 
       for (const t of templates) {
         totalTemplates++;
         // Check for template in user's dir *first*, then fall back to built-in
-        let templateContent = readTemplate(userTemplateDir, t.template);
-        let source = 'Custom';
+        let templateContent =
+          t.inlineContent ?? readTemplate(userTemplateDir, t.template);
+        let source = t.inlineContent ? 'Plugin (inline)' : 'Custom';
 
         if (!templateContent) {
           templateContent = readTemplate(BUILT_IN_TEMPLATE_DIR, t.template);
@@ -413,46 +443,94 @@ function ensureTargetDir(targetDir: string) {
   }
 }
 
-async function findProjects(): Promise<Project[]> {
-  const projects: Project[] = [];
+async function ensureRegistryInitialized() {
+  const registry = PluginRegistry.getInstance();
+  // initialize will short-circuit if already initialized
+  await registry.initialize();
+}
 
-  if (!fs.existsSync(ROOT_PACKAGE_JSON)) {
-    throw new Error('No root package.json found. Cannot find projects.');
-  }
-
-  const rootPkg = JSON.parse(fs.readFileSync(ROOT_PACKAGE_JSON, 'utf-8'));
-  const workspaces = rootPkg.workspaces?.packages || rootPkg.workspaces || [];
-
-  // 1. Add root project
-  projects.push({
-    name: rootPkg.name
-      ? rootPkg.name.replace(/@/g, '').replace(/\//g, '-')
-      : 'root-project',
-    path: '.',
-    tags: new Set<string>(),
-  });
-
-  if (workspaces.length === 0) {
-    console.log('No workspaces found. Analyzing root project only.');
-    return projects;
-  }
-
-  // 2. Add workspace projects
-  const packageJsonPaths = await glob(
-    workspaces.map((w: string) => `${w}/package.json`),
-  );
-
-  for (const pkgPath of packageJsonPaths) {
-    try {
-      const pkgContent = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
-      projects.push({
-        name: pkgContent.name.replace(/@/g, '').replace(/\//g, '-'), // e.g., @scope/my-app -> scope-my-app
-        path: path.dirname(pkgPath),
-        tags: new Set<string>(),
-      });
-    } catch (_e) {
-      console.warn(pc.yellow(`⚠️  Skipping invalid package.json: ${pkgPath}`));
+async function getPluginTemplates(): Promise<Record<string, TemplateSource[]>> {
+  await ensureRegistryInitialized();
+  const registry = PluginRegistry.getInstance();
+  // Try to get plugins from registry; may not be available in all environments
+  const plugins: LanguagePlugin[] = [];
+  try {
+    if (
+      typeof (registry as Record<string, unknown>).getAllPlugins === 'function'
+    ) {
+      const getAllPlugins = (registry as Record<string, unknown>)
+        .getAllPlugins as () => Promise<LanguagePlugin[]>;
+      plugins.push(...(await getAllPlugins()));
     }
+  } catch {
+    // Registry may not have getAllPlugins in test environments
+  }
+  const map: Record<string, TemplateSource[]> = {};
+
+  for (const plugin of plugins) {
+    let templates: TemplateDefinition[] = [];
+    try {
+      const maybeTemplates = await plugin.getTemplates();
+      templates = Array.isArray(maybeTemplates) ? maybeTemplates : [];
+    } catch (e) {
+      console.warn(
+        pc.yellow(
+          `⚠️  Plugin ${plugin.name} getTemplates failed: ${(e as Error).message}`,
+        ),
+      );
+      continue;
+    }
+
+    for (const tmpl of templates) {
+      const suffix = `${tmpl.name}.md`;
+      let content: string | null = null;
+      try {
+        content =
+          typeof tmpl.content === 'function'
+            ? await tmpl.content()
+            : tmpl.content;
+      } catch (e) {
+        console.warn(
+          pc.yellow(
+            `⚠️  Plugin ${plugin.name} template ${tmpl.name} failed to load: ${(e as Error).message}`,
+          ),
+        );
+      }
+
+      for (const tag of tmpl.tags) {
+        if (!map[tag]) map[tag] = [];
+        map[tag].push({
+          template: `plugin:${plugin.name}/${tmpl.name}`,
+          suffix,
+          inlineContent: content ?? undefined,
+        });
+      }
+    }
+  }
+
+  return map;
+}
+
+async function findProjects(): Promise<Project[]> {
+  await ensureRegistryInitialized();
+  const projects: Project[] = [];
+  const rootPath = process.cwd();
+
+  // Initialize plugin registry and detect projects
+  const registry = PluginRegistry.getInstance();
+  const detectedProjects = await registry.detectAllProjects(rootPath);
+
+  if (detectedProjects.length === 0) {
+    return [];
+  }
+
+  for (const result of detectedProjects) {
+    const relativePath = path.relative(rootPath, result.metadata.projectPath);
+    projects.push({
+      name: result.metadata.name || path.basename(result.metadata.projectPath),
+      path: relativePath || '.',
+      tags: new Set<string>(),
+    });
   }
 
   return projects;
@@ -464,28 +542,39 @@ async function analyzeProject(
   configMap: ConfigFileTagMap,
   globMap: FileGlobTagMap,
 ) {
+  await ensureRegistryInitialized();
   const projectRoot = path.resolve(process.cwd(), project.path);
 
-  // Strategy 1: Analyze package.json dependencies
+  // Strategy 1: Analyze dependencies from any manifest file
   try {
-    const pkgPath = path.join(projectRoot, 'package.json');
-    if (fs.existsSync(pkgPath)) {
-      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
-      const allDeps = {
-        ...(pkg.dependencies || {}),
-        ...(pkg.devDependencies || {}),
-      };
+    const registry = PluginRegistry.getInstance();
+    const detectedProjects = await registry.detectAllProjects(projectRoot);
+    if (detectedProjects.length > 0) {
+      const projectMetadata = detectedProjects[0].metadata; // Use first match
 
-      for (const dep in allDeps) {
+      if (projectMetadata.tags?.length) {
+        for (const tag of projectMetadata.tags) {
+          project.tags.add(tag);
+        }
+      }
+
+      for (const dep in projectMetadata.dependencies) {
+        // Check both the full dependency name and the package/module name
         if (depMap[dep]) {
           project.tags.add(depMap[dep]);
+        }
+
+        // For scoped packages like @scope/pkg or group:artifact, try the base name too
+        const baseName = dep.split(/[@/:]/g).pop();
+        if (baseName && depMap[baseName]) {
+          project.tags.add(depMap[baseName]);
         }
       }
     }
   } catch (e) {
     console.warn(
       pc.yellow(
-        `⚠️  Could not parse package.json for ${project.name}: ${(e as Error).message}`,
+        `⚠️  Could not analyze dependencies for ${project.name}: ${(e as Error).message}`,
       ),
     );
   }

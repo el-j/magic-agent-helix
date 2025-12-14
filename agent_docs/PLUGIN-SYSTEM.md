@@ -45,7 +45,7 @@ import type {
   DetectionContext, 
   DetectionResult, 
   InstructionTemplate 
-} from "magic-helix-core";
+} from "@magic-helix/core";
 
 export class RustPlugin implements DetectionPlugin {
   readonly name = "rust";
@@ -108,7 +108,7 @@ export class RustPlugin implements DetectionPlugin {
 ### Registering a Plugin
 
 \`\`\`typescript
-import { pluginRegistry, RustPlugin } from "magic-helix-core";
+import { pluginRegistry, RustPlugin } from "@magic-helix/core";
 
 // Register the plugin
 const rustPlugin = new RustPlugin();
@@ -118,7 +118,7 @@ pluginRegistry.register(rustPlugin);
 ### Using the Detection Context
 
 \`\`\`typescript
-import type { DetectionContext } from "magic-helix-core";
+import type { DetectionContext } from "@magic-helix/core";
 
 const context: DetectionContext = {
   files: ["src/main.rs", "Cargo.toml", "README.md"],

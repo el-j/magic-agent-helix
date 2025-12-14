@@ -167,29 +167,29 @@ watch([isLoading, isLoadingGit, currentFile, currentFileGit], () => {
 });
 
 // Event handlers
-const handleSelectProject = async () => {
+const _handleSelectProject = async () => {
 	await selectProject();
 };
 
-const handleLoadFromGit = async () => {
+const _handleLoadFromGit = async () => {
 	if (gitUrl.value) {
 		await loadFromGitUrl(gitUrl.value);
 	}
 };
 
-const handleDownloadFile = (file: { name: string; content: string }) => {
+const _handleDownloadFile = (file: { name: string; content: string }) => {
 	downloadSingleFile(file);
 };
 
-const handleDownloadAll = () => {
+const _handleDownloadAll = () => {
 	downloadAllFiles();
 };
 
-const handleDownloadZip = () => {
+const _handleDownloadZip = () => {
 	downloadAsZipArchive();
 };
 
-const handleResetFile = (index: number) => {
+const _handleResetFile = (index: number) => {
 	if (analysisResult.value) {
 		resetFileContent(
 			index,
