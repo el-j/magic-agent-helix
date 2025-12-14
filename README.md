@@ -8,8 +8,8 @@ A powerful tool that inspects your project and generates granular, path-specific
 
 This is a monorepo containing:
 
-* **`packages/magic-helix-core`**: The core library with analysis and configuration logic (published to NPM as `magic-helix-core`).
-* **`packages/magic-agent-helix`**: The CLI tool (published to NPM as `magic-agent-helix`).
+* **`packages/magic-helix-core`**: The core library with analysis and configuration logic (published to NPM as `@magic-helix/core`).
+* **`packages/magic-agent-helix`**: The CLI tool (published to NPM as `@magic-helix/agent`).
 * **`packages/vscode-magic-helix`**: The VS Code extension that provides a "Run" command.
 * **`playground/`**: A browser-based playground for testing the core engine (not published to NPM).
 
@@ -19,10 +19,10 @@ This is a monorepo containing:
 
 ```bash
 # Install globally
-npm install -g magic-agent-helix
+npm install -g @magic-helix/agent
 
 # Or use with npx
-npx magic-agent-helix run
+npx @magic-helix/agent run
 ```
 
 ### Available Commands
@@ -73,6 +73,89 @@ Magic-Agent-Helix features a powerful plugin-based architecture for polyglot sup
 
 See the [Plugin System Documentation](PLUGIN-SYSTEM.md) for details on creating and using plugins.
 
+## 🎨 Pattern Templates & Instruction Quality (v2.0.1)
+
+### Pattern-Based Instruction Generation
+
+Magic-Agent-Helix Phase 5 introduces a sophisticated pattern template system based on research from [awesome-ai-system-prompts](https://github.com/mehmetkahya0/awesome-ai-system-prompts):
+
+- **33 Pattern Templates** across 8 categories:
+  - **Role Definition**: Expert identity, scope boundaries, capability declarations
+  - **Organization**: XML-like structure, heading hierarchy, sequential workflows
+  - **Tool Guidelines**: Function schemas, usage policies, parameter examples
+  - **Reasoning**: Thinking tags, subtask breakdown, agent loops, confirmation gates
+  - **Domain Expertise**: Framework-specific rules (React, Next.js, Vue, Tailwind, shadcn/ui)
+  - **Environment**: OS commands, container awareness, IDE features
+  - **Tone**: Concise communication, forbidden phrases, adaptive styles
+  - **Safety**: Refusal messages, destructive warnings, credential handling
+
+- **Context-Aware Selection**: Automatically chooses relevant patterns based on your project:
+  ```typescript
+  import { generateInstructions } from '@magic-helix/core';
+
+  const instructions = generateInstructions({
+    framework: 'react',
+    libraries: ['tailwind', 'shadcn-ui'],
+    aiModel: 'claude',
+    tone: 'concise',
+    environment: 'vscode',
+  });
+  ```
+
+- **Quality Validation**: 15-element scoring system (0-100 scale, A-F grades):
+  ```bash
+  # Validate generated instructions
+  magic-helix validate
+
+  # Output:
+  # ✅ A 95/100 - react-patterns.md
+  # ⚠️  C 72/100 - python-basics.md
+  #    Missing: Tool Documentation, Refusal Guidelines
+  #    Tip: Add inline tool schemas with examples
+  ```
+
+See the detailed guides:
+- [Pattern Templates Guide](packages/magic-helix-core/PATTERN-TEMPLATES.md)
+- [Instruction Validation Guide](packages/magic-helix-core/INSTRUCTION-VALIDATION.md)
+
+## 🎉 Roadmap Completion Status
+
+**Current Implementation: 98% Complete**
+
+### ✅ Phase 1: Config Rename (100% Complete)
+- Configuration system fully refactored to `.magic-helix.json`
+- All references updated across codebase
+- Documentation aligned
+
+### ✅ Phase 2: Container Support & Polyglot (100% Complete)
+- **9 Built-in Language Plugins**: Node.js, Go, Python, Rust, Java, Ruby, PHP, C#, Swift
+- Swift plugin migrated to v3 BasePlugin architecture
+- Template system supports all major languages
+- Container detection and optimization
+
+### ✅ Phase 3: AI Refinement (100% Complete)
+- Model-specific optimizations (Claude, GPT-4, Gemini)
+- Token budget management
+- Prompt engineering refinements
+- A/B testing framework
+
+### ✅ Phase 4: Meta-Instruction System (100% Complete)
+- Core meta-instruction infrastructure built
+- **4 Context-Aware Modes**:
+  - `magic-helix-meta.md` - Universal agent optimization
+  - `meta-roadmap.md` - Strategic planning mode
+  - `meta-implement.md` - Implementation mode
+  - `meta-debug.md` - Debugging mode
+- Dynamic context injection based on task type
+
+### ✅ Phase 5: Pattern Templates (100% Complete)
+- 33 pattern templates across 8 categories
+- Quality validation system (15-element scoring, A-F grades)
+- Context-aware template selection
+- A/B testing and telemetry integration
+
+**See [ROADMAP-UNIVERSAL-AI-PLATFORM.md](ROADMAP-UNIVERSAL-AI-PLATFORM.md) for detailed phase documentation.**
+
 ## 🔧 Development
 
 This is a monorepo using NPM workspaces.
@@ -89,14 +172,14 @@ npm install
 npm run build
 ```
 
-This builds: `magic-helix-core`, `magic-agent-helix`, and `vscode-magic-helix`.
+This builds: `@magic-helix/core`, `@magic-helix/agent`, and `@magic-helix/vscode`.
 
 ### 3. Build Individual Packages
 
 ```bash
-npm run build:core      # Build magic-helix-core
-npm run build:cli       # Build magic-agent-helix CLI
-npm run build:vscode    # Build VS Code extension
+npm run build:core      # Build @magic-helix/core
+npm run build:cli       # Build @magic-helix/agent CLI
+npm run build:vscode    # Build @magic-helix/vscode extension
 npm run build:playground # Build playground (separately)
 ```
 
@@ -123,7 +206,7 @@ This is the best way to test the CLI in a real-world scenario.
 5.  A new VS Code window (the "Extension Development Host") will open with the extension installed.
 6.  Open any test project in this new window.
 7.  Open Command Palette (Ctrl+Shift+P) and run: **"MagicAgentHelix: Align Conventions"**.
-8.  The extension will execute `npx magic-helix run` in your test project.
+8.  The extension will execute `npx @magic-helix/agent run` in your test project.
 
 ### Testing the CLI Directly
 
@@ -189,7 +272,7 @@ Add to your project's `.vscode/settings.json`:
 
 ### Custom Configuration
 
-Create `ai-aligner.config.json` in your project root:
+Create `magic-helix.config.json` in your project root (legacy `ai-aligner.config.json` still loads automatically):
 
 ```json
 {
@@ -209,7 +292,7 @@ Create `ai-aligner.config.json` in your project root:
 
 ## 🚀 Publishing
 
-Releases are automated via semantic-release. Both `magic-helix-core` and `magic-agent-helix` are published to NPM when pushing to `main`.
+Releases are automated via semantic-release. Both `@magic-helix/core` and `@magic-helix/agent` are published to NPM when pushing to `main`.
 
 ### Release Configuration
 
@@ -228,8 +311,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed release guidelines.
 3. Semantic-release analyzes commits and determines version
 4. Bumps version numbers in package.json files
 5. Updates CHANGELOG.md
-6. Publishes `magic-helix-core` to NPM
-7. Publishes `magic-agent-helix` to NPM
+6. Publishes `@magic-helix/core` to NPM
+7. Publishes `@magic-helix/agent` to NPM
 8. Creates GitHub Release with changelog and assets
 
 ### Manual Publishing (if needed)
@@ -304,30 +387,3 @@ Run all tests: `npm test`
 Run tests in watch mode: `npm run test:watch`
 
 Check test coverage: `npm run test:coverage`
-      // ...
-      "dependencyTagMap": {
-        "my-internal-package": "domain-my-rules"
-      },
-      // ...
-      "tagTemplateMap": {
-        "domain-my-rules": [
-          { "template": "my-custom-rule.md", "suffix": "my-rule.md" }
-        ]
-      }
-    }
-    \`\`\`
-5.  Re-run `npx ai-aligner run`. The tool will merge its built-in rules with your custom ones.
-
-### 4. Configure VS Code (Recommended)
-
-To ensure GitHub Copilot *always* reads these files, add this to your workspace's `.vscode/settings.json`:
-
-\`\`\`json
-{
-  "github.copilot.advanced": {
-    "instructions": ".github/instructions"
-  }
-}
-\`\`\`
-
-Restart VS Code, and you're all set!

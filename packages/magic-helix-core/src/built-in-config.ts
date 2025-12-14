@@ -10,6 +10,14 @@ export const BUILT_IN_CONFIG: MergedConfig = {
   target: 'github-copilot',
   templateDirectory: 'ai_templates', // User's custom template dir
   outputDirectory: '.github/instructions', // Default output dir
+  aiRefinement: {
+    quality: 'standard',
+    contextLevel: 'balanced',
+    outputFormat: 'markdown',
+    tokenBudget: 4000,
+    includeExamples: true,
+    includeBestPractices: true,
+  },
 
   dependencyTagMap: {
     // Frameworks

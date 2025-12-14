@@ -1,0 +1,4 @@
+[tool.poetry]
+name = "poetryproj"
+version = "0.1.0"
+description = "Poetry test"

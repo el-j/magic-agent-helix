@@ -1,5 +1,4 @@
-
-import { BUILT_IN_CONFIG } from "magic-helix-core";
+import { BUILT_IN_CONFIG } from "@magic-helix/core";
 import { computed, ref } from "vue";
 import {
 	downloadAsZip,

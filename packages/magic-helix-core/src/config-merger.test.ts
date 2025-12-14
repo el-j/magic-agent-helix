@@ -4,10 +4,14 @@ import { mergeConfigs } from './config-merger';
 import type { Config } from './types';
 
 describe('mergeConfigs', () => {
-  it('should return the base config if user config is empty', () => {
+  it('should return the base config with aiRefinement defaults if user config is empty', () => {
     const userConfig = {};
     const merged = mergeConfigs(userConfig);
-    expect(merged).toEqual(BUILT_IN_CONFIG);
+    expect(merged.target).toBe(BUILT_IN_CONFIG.target);
+    expect(merged.templateDirectory).toBe(BUILT_IN_CONFIG.templateDirectory);
+    expect(merged.outputDirectory).toBe(BUILT_IN_CONFIG.outputDirectory);
+    expect(merged).toHaveProperty('aiRefinement');
+    expect(merged.aiRefinement.quality).toBe('standard');
   });
 
   it('should overwrite a base dependency tag', () => {

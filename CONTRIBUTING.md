@@ -128,7 +128,7 @@ semantic-release updates versions automatically. Never manually update version n
 
 #### NPM publish failing?
 
-Ensure the `NPM_TOKEN` secret is configured in GitHub repository settings with a valid npm access token that has publish permissions for the `@el-j` scope (or remove scope if publishing to root).
+Ensure the `NPM_TOKEN` secret is configured in GitHub repository settings with a valid npm access token that has publish permissions for the `@magic-helix` scope (or remove scope if publishing to root).
 
 ### Development Workflow
 

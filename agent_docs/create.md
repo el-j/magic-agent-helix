@@ -1176,7 +1176,7 @@ async function main() {
   
   program
     .name('magic-helix')
-    .description('A CLI to align AI instructions in your monorepo.')
+    .description('Magic Helix CLI for aligning AI instructions in your monorepo.')
     .version(pkg.version);
 
   program

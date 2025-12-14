@@ -88,7 +88,8 @@ export class GitHubActionsPlugin implements DetectionPlugin {
             const job = workflow.jobs[jobId];
             content += `    * \`${jobId}\`${job.name ? ` (Display: "${job.name}")` : ''}\n`;
             if (job.strategy?.matrix) {
-              content += '        * This job uses a **build matrix** (e.g., multiple Node/OS versions).\n';
+              content +=
+                '        * This job uses a **build matrix** (e.g., multiple Node/OS versions).\n';
             }
           }
         }

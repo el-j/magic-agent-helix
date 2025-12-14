@@ -6,22 +6,22 @@ A powerful CLI tool that inspects your project and generates granular, path-spec
 
 ```bash
 # Install globally
-npm install -g magic-agent-helix
+npm install -g @magic-helix/agent
 
 # Or use with npx (no installation required)
-npx magic-agent-helix run
+npx @magic-helix/agent run
 ```
 
 ## 📦 Installation
 
 ### Global Installation
 ```bash
-npm install -g magic-agent-helix
+npm install -g @magic-helix/agent
 ```
 
 ### Project-Specific Installation
 ```bash
-npm install --save-dev magic-agent-helix
+npm install --save-dev @magic-helix/agent
 ```
 
 Then add to your `package.json` scripts:
@@ -141,7 +141,7 @@ magic-helix init
 ```
 
 Creates:
-- `ai-aligner.config.json` - Configuration file
+- `magic-helix.config.json` - Configuration file (legacy: `ai-aligner.config.json` still supported)
 - `ai_templates/` - Directory for custom templates
 
 ## ⚙️ Configuration
@@ -167,7 +167,7 @@ MagicAgentHelix automatically detects:
 
 ### Custom Configuration
 
-Create `ai-aligner.config.json` to extend or override:
+Create `magic-helix.config.json` to extend or override:
 
 ```json
 {
@@ -258,7 +258,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '20'
-      - run: npx magic-agent-helix run --force
+      - run: npx @magic-helix/agent run --force
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "chore: update AI instructions"

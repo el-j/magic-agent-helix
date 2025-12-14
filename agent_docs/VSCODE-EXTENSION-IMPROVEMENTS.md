@@ -27,7 +27,7 @@ The VS Code extension has been **completely rebuilt** to provide full control ov
 ### 2. **New Init Command**
 
 - **Command**: `MagicAgentHelix: Initialize Config`
-- **Purpose**: Create `ai-aligner.config.json` directly from VS Code
+- **Purpose**: Create `magic-helix.config.json` directly from VS Code
 - **Workflow**: First-time users can now generate config without using terminal
 
 ### 3. **Interactive Options Menu**
@@ -101,7 +101,7 @@ await runMagicHelixWithOptions(context, "run");
 ### Example 4: First Time Setup
 1. Open Command Palette
 2. Select "MagicAgentHelix: Initialize Config"
-3. Edit generated `ai-aligner.config.json`
+3. Edit generated `magic-helix.config.json`
 4. Run "MagicAgentHelix: Run"
 
 ## 🎨 UI Improvements
