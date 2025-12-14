@@ -1,5 +1,5 @@
-import type { ProjectAnalysisData } from "magic-helix-core";
-import { analyzeProjectTags, mergeConfigs } from "magic-helix-core";
+import type { ProjectAnalysisData } from "@magic-helix/core";
+import { analyzeProjectTags, mergeConfigs } from "@magic-helix/core";
 import { ref } from "vue";
 
 /**

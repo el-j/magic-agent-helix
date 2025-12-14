@@ -4,8 +4,12 @@ import type {
   ConfigFileTagMap,
   DependencyTagMap,
   FileGlobTagMap,
-} from 'magic-helix-core';
-import { loadUserConfig, mergeConfigs } from 'magic-helix-core';
+} from '@magic-helix/core';
+import {
+  PluginRegistry,
+  loadUserConfig,
+  mergeConfigs,
+} from '@magic-helix/core';
 import ora from 'ora';
 import pc from 'picocolors';
 
@@ -94,45 +98,25 @@ interface Project {
 
 async function findProjects(): Promise<Project[]> {
   const projects: Project[] = [];
-  const ROOT_PACKAGE_JSON = path.resolve(process.cwd(), 'package.json');
+  const rootPath = process.cwd();
 
-  if (!fs.existsSync(ROOT_PACKAGE_JSON)) {
-    throw new Error('No root package.json found.');
+  // Use the new polyglot detection
+  const registry = PluginRegistry.getInstance();
+  await registry.initialize();
+  const detectedResults = await registry.detectAllProjects(rootPath);
+  const detectedProjects = detectedResults.map((r) => r.metadata);
+
+  if (detectedProjects.length === 0) {
+    return [];
   }
 
-  const rootPkg = JSON.parse(fs.readFileSync(ROOT_PACKAGE_JSON, 'utf-8'));
-  const workspaces = rootPkg.workspaces?.packages || rootPkg.workspaces || [];
-
-  // Add root project
-  projects.push({
-    name: rootPkg.name
-      ? rootPkg.name.replace(/@/g, '').replace(/\//g, '-')
-      : 'root-project',
-    path: '.',
-    tags: new Set<string>(),
-  });
-
-  if (workspaces.length === 0) {
-    return projects;
-  }
-
-  // Add workspace projects
-  const { glob } = await import('glob');
-  const packageJsonPaths = await glob(
-    workspaces.map((w: string) => `${w}/package.json`),
-  );
-
-  for (const pkgPath of packageJsonPaths) {
-    try {
-      const pkgContent = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
-      projects.push({
-        name: pkgContent.name.replace(/@/g, '').replace(/\//g, '-'),
-        path: path.dirname(pkgPath),
-        tags: new Set<string>(),
-      });
-    } catch (_e) {
-      // Skip invalid package.json
-    }
+  for (const proj of detectedProjects) {
+    const relativePath = path.relative(rootPath, proj.projectPath);
+    projects.push({
+      name: proj.name || path.basename(proj.projectPath),
+      path: relativePath || '.',
+      tags: new Set<string>(),
+    });
   }
 
   return projects;
@@ -146,19 +130,30 @@ async function analyzeProject(
 ) {
   const projectRoot = path.resolve(process.cwd(), project.path);
 
-  // Analyze package.json dependencies
+  // Analyze dependencies from any manifest file
   try {
-    const pkgPath = path.join(projectRoot, 'package.json');
-    if (fs.existsSync(pkgPath)) {
-      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
-      const allDeps = {
-        ...(pkg.dependencies || {}),
-        ...(pkg.devDependencies || {}),
-      };
+    const registry = PluginRegistry.getInstance();
+    const detectedResults = await registry.detectAllProjects(projectRoot);
+    const detectedProjects = detectedResults.map((r) => r.metadata);
+    if (detectedProjects.length > 0) {
+      const projectMetadata = detectedProjects[0]; // Use first match
 
-      for (const dep in allDeps) {
+      if (projectMetadata.tags?.length) {
+        for (const tag of projectMetadata.tags) {
+          project.tags.add(tag);
+        }
+      }
+
+      for (const dep in projectMetadata.dependencies) {
+        // Check both the full dependency name and the package/module name
         if (depMap[dep]) {
           project.tags.add(depMap[dep]);
+        }
+
+        // For scoped packages like @scope/pkg or group:artifact, try the base name too
+        const baseName = dep.split(/[@/:]/g).pop();
+        if (baseName && depMap[baseName]) {
+          project.tags.add(depMap[baseName]);
         }
       }
     }

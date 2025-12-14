@@ -10,13 +10,13 @@ async function main() {
   const program = new Command();
   
   program
-    .name('ai-aligner')
-    .description('A CLI to align AI instructions in your monorepo.')
+    .name('magic-helix')
+    .description('Magic Helix CLI for aligning AI instructions in your monorepo.')
     .version('0.1.0'); // This should match package.json
 
   program
     .command('init')
-    .description('Initialize a custom ai-aligner.config.json to extend the built-in rules.')
+    .description('Initialize a custom magic-helix.config.json to extend the built-in rules.')
     .action(init);
 
   program
@@ -76,8 +76,8 @@ describe('CLI Main Entry Point (/src/cli.ts)', () => {
     await runCli();
     
     expect(Command).toHaveBeenCalled();
-    expect(mockCommand.name).toHaveBeenCalledWith('ai-aligner');
-    expect(mockCommand.description).toHaveBeenCalledWith('A CLI to align AI instructions in your monorepo.');
+    expect(mockCommand.name).toHaveBeenCalledWith('magic-helix');
+    expect(mockCommand.description).toHaveBeenCalledWith('Magic Helix CLI for aligning AI instructions in your monorepo.');
     expect(mockCommand.version).toHaveBeenCalledWith('0.1.0');
   });
 
@@ -86,7 +86,7 @@ describe('CLI Main Entry Point (/src/cli.ts)', () => {
     await runCli();
     
     expect(mockCommand.command).toHaveBeenCalledWith('init');
-    expect(mockCommand.description).toHaveBeenCalledWith('Initialize a custom ai-aligner.config.json to extend the built-in rules.');
+    expect(mockCommand.description).toHaveBeenCalledWith('Initialize a custom magic-helix.config.json to extend the built-in rules.');
     expect(mockCommand.action).toHaveBeenCalledWith(init);
   });
 
@@ -134,7 +134,7 @@ import gradient from 'gradient-string';
 import { Config } from '../types';
 
 // --- CONFIGURATION ---
-const CONFIG_FILENAME = 'ai-aligner.config.json';
+const CONFIG_FILENAME = 'magic-helix.config.json';
 const DEFAULT_TEMPLATE_DIR = 'ai_templates';
 
 // This is the *minimal* config file 'init' will create.
@@ -165,7 +165,7 @@ const MINIMAL_USER_CONFIG: Config = {
  * for users who want to *extend* the built-in conventions.
  */
 export async function init() {
-  const spinner = ora(pc.bold('Initializing AI Aligner for custom rules...')).start();
+  const spinner = ora(pc.bold('Initializing Magic Helix for custom rules...')).start();
   
   const configPath = path.resolve(process.cwd(), CONFIG_FILENAME);
   const templatePath = path.resolve(process.cwd(), DEFAULT_TEMPLATE_DIR);
@@ -229,7 +229,7 @@ export async function init() {
   console.log(pc.cyan(`\nNext steps:`));
   console.log(`  1. Edit ${pc.bold(CONFIG_FILENAME)} to define your team's "tags".`);
   console.log(`  2. Add your custom .md instruction files to ${pc.bold(DEFAULT_TEMPLATE_DIR)}.`);
-  console.log(`  3. Run ${pc.bold('npx ai-aligner run')} to generate your files.`);
+  console.log(`  3. Run ${pc.bold('npx @magic-helix/agent run')} to generate your files.`);
 }
 File 4: /src/commands/init.test.ts (Test Skeleton)import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as fs from 'fs';
@@ -288,11 +288,11 @@ describe('Init Command (/src/commands/init.ts)', () => {
 
     await init();
 
-    expect(mockSpinner.start).toHaveBeenCalledWith('Initializing AI Aligner for custom rules...');
+    expect(mockSpinner.start).toHaveBeenCalledWith('Initializing Magic Helix for custom rules...');
     expect(fs.writeFileSync).toHaveBeenCalledTimes(2);
     // 1. Config file
     expect(fs.writeFileSync).toHaveBeenCalledWith(
-      './ai-aligner.config.json',
+      './magic-helix.config.json',
       expect.stringContaining('"target": "github-copilot"'),
       'utf-8'
     );
@@ -303,7 +303,7 @@ describe('Init Command (/src/commands/init.ts)', () => {
       'utf-8'
     );
     expect(fs.mkdirSync).toHaveBeenCalledWith('./ai_templates', { recursive: true });
-    expect(mockSpinner.succeed).toHaveBeenCalledWith('Created minimal config file: ai-aligner.config.json');
+    expect(mockSpinner.succeed).toHaveBeenCalledWith('Created minimal config file: magic-helix.config.json');
     expect(mockSpinner.succeed).toHaveBeenCalledWith('Created templates directory and example file: ai_templates');
     expect(console.log).toHaveBeenCalledWith(expect.stringContaining('✨ Success!'));
   });
@@ -331,11 +331,11 @@ describe('Init Command (/src/commands/init.ts)', () => {
     expect(mockSpinner.start).toHaveBeenCalledWith('Overwriting existing config...');
     expect(fs.writeFileSync).toHaveBeenCalledTimes(2); // Config + example template
     expect(fs.writeFileSync).toHaveBeenCalledWith(
-      './ai-aligner.config.json',
+      './magic-helix.config.json',
       expect.stringContaining('"target": "github-copilot"'),
       'utf-8'
     );
-    expect(mockSpinner.succeed).toHaveBeenCalledWith('Created minimal config file: ai-aligner.config.json');
+    expect(mockSpinner.succeed).toHaveBeenCalledWith('Created minimal config file: magic-helix.config.json');
   });
 
   it('should handle config write error', async () => {
@@ -359,7 +359,7 @@ describe('Init Command (/src/commands/init.ts)', () => {
 
     expect(fs.writeFileSync).toHaveBeenCalledTimes(1); // Only config file
     expect(fs.writeFileSync).toHaveBeenCalledWith(
-      './ai-aligner.config.json',
+      './magic-helix.config.json',
       expect.anything(),
       'utf-8'
     );

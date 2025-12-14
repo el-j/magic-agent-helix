@@ -49,6 +49,24 @@
 			}
 		],
 		[
+			"@semantic-release/npm",
+			{
+				"pkgRoot": "packages/magic-helix-plugins"
+			}
+		],
+		[
+			"@semantic-release/npm",
+			{
+				"pkgRoot": "packages/vscode-magic-helix"
+			}
+		],
+		[
+			"@semantic-release/exec",
+			{
+				"prepareCmd": "npm run sync:versions -- --set ${nextRelease.version} && npm install --package-lock-only --workspaces"
+			}
+		],
+		[
 			"@semantic-release/github",
 			{
 				"assets": [
@@ -70,6 +88,9 @@
 					"package.json",
 					"packages/magic-helix-core/package.json",
 					"packages/magic-agent-helix/package.json",
+					"packages/vscode-magic-helix/package.json",
+					"packages/magic-helix-plugins/package.json",
+					"playground/package.json",
 					"package-lock.json",
 					"CHANGELOG.md"
 				],

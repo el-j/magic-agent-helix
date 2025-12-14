@@ -1,290 +1,311 @@
 {
-	"name": "vscode-magic-helix",
-	"displayName": "MagicAgentHelix Runner",
-	"description": "Advanced VS Code extension for running MagicAgentHelix CLI with AI-powered refinement, command history, favorites, workspace configuration, and progress tracking.",
-	"version": "1.3.0",
-	"publisher": "el-j",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/el-j/magic-agent-helix.git"
-	},
-	"homepage": "https://github.com/el-j/magic-agent-helix#readme",
-	"bugs": {
-		"url": "https://github.com/el-j/magic-agent-helix/issues"
-	},
-	"engines": {
-		"vscode": "^1.85.0"
-	},
-	"categories": [
-		"Other",
-		"Programming Languages",
-		"Snippets"
-	],
-	"keywords": [
-		"ai",
-		"instruction",
-		"alignment",
-		"monorepo",
-		"cli",
-		"automation",
-		"productivity"
-	],
-	"activationEvents": [
-		"onStartupFinished"
-	],
-	"main": "./dist/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "magic-helix.run",
-				"title": "Run MagicAgentHelix",
-				"category": "MagicAgentHelix",
-				"icon": "$(wand)"
-			},
-			{
-				"command": "magic-helix.init",
-				"title": "Initialize Config",
-				"category": "MagicAgentHelix",
-				"icon": "$(file-add)"
-			},
-			{
-				"command": "magic-helix.refresh",
-				"title": "Refresh MagicAgentHelix",
-				"category": "MagicAgentHelix",
-				"icon": "$(sync)"
-			},
-			{
-				"command": "magic-helix.list",
-				"title": "List Projects & Tags",
-				"category": "MagicAgentHelix",
-				"icon": "$(list-tree)"
-			},
-			{
-				"command": "magic-helix.validate",
-				"title": "Validate Instruction Files",
-				"category": "MagicAgentHelix",
-				"icon": "$(checklist)"
-			},
-			{
-				"command": "magic-helix.clean",
-				"title": "Clean Generated Files",
-				"category": "MagicAgentHelix",
-				"icon": "$(trash)"
-			},
-			{
-				"command": "magic-helix.showOutput",
-				"title": "Show Output",
-				"category": "MagicAgentHelix",
-				"icon": "$(output)"
-			},
-			{
-				"command": "magic-helix.showStatus",
-				"title": "Show Status Panel",
-				"category": "MagicAgentHelix",
-				"icon": "$(graph)"
-			},
-			{
-				"command": "magic-helix.quickAccess",
-				"title": "Quick Access Menu",
-				"category": "MagicAgentHelix",
-				"icon": "$(menu)"
-			},
-			{
-				"command": "magic-helix.saveFavorite",
-				"title": "Save Current Config as Favorite",
-				"category": "MagicAgentHelix",
-				"icon": "$(star-empty)"
-			},
-			{
-				"command": "magic-helix.configureWorkspace",
-				"title": "Configure Workspace Settings",
-				"category": "MagicAgentHelix",
-				"icon": "$(settings-gear)"
-			},
-			{
-				"command": "magic-helix.refineWithAI",
-				"title": "Refine Instruction File with AI",
-				"category": "MagicAgentHelix",
-				"icon": "$(sparkle)"
-			}
-		],
-		"menus": {
-			"commandPalette": [
-				{
-					"command": "magic-helix.run",
-					"when": "workspaceFolderCount > 0"
-				},
-				{
-					"command": "magic-helix.init",
-					"when": "workspaceFolderCount > 0"
-				},
-				{
-					"command": "magic-helix.refresh",
-					"when": "workspaceFolderCount > 0"
-				},
-				{
-					"command": "magic-helix.list",
-					"when": "workspaceFolderCount > 0"
-				},
-				{
-					"command": "magic-helix.validate",
-					"when": "workspaceFolderCount > 0"
-				},
-				{
-					"command": "magic-helix.clean",
-					"when": "workspaceFolderCount > 0"
-				},
-				{
-					"command": "magic-helix.showOutput",
-					"when": "workspaceFolderCount > 0"
-				},
-				{
-					"command": "magic-helix.showStatus",
-					"when": "workspaceFolderCount > 0"
-				},
-				{
-					"command": "magic-helix.quickAccess",
-					"when": "workspaceFolderCount > 0"
-				},
-				{
-					"command": "magic-helix.saveFavorite",
-					"when": "workspaceFolderCount > 0"
-				},
-				{
-					"command": "magic-helix.configureWorkspace",
-					"when": "workspaceFolderCount > 0"
-				},
-				{
-					"command": "magic-helix.refineWithAI",
-					"when": "workspaceFolderCount > 0"
-				}
-			],
-			"explorer/context": [
-				{
-					"command": "magic-helix.refineWithAI",
-					"when": "resourcePath =~ /\\.github\\/instructions\\/.*\\.md$/",
-					"group": "magichelix@1"
-				}
-			],
-			"editor/context": [
-				{
-					"command": "magic-helix.refineWithAI",
-					"when": "resourcePath =~ /\\.github\\/instructions\\/.*\\.md$/",
-					"group": "magichelix@1"
-				}
-			]
-		},
-		"keybindings": [
-			{
-				"command": "magic-helix.quickAccess",
-				"key": "ctrl+shift+m",
-				"mac": "cmd+shift+m",
-				"when": "workspaceFolderCount > 0"
-			},
-			{
-				"command": "magic-helix.run",
-				"key": "ctrl+shift+r",
-				"mac": "cmd+shift+r",
-				"when": "workspaceFolderCount > 0"
-			}
-		]
-	},
-	"configuration": {
-		"type": "object",
-		"title": "MagicAgentHelix",
-		"properties": {
-			"magicAgentHelix.defaultCommand": {
-				"type": "string",
-				"default": "run",
-				"description": "Default command to run when using the run command",
-				"enum": [
-					"run",
-					"init",
-					"validate",
-					"list"
-				],
-				"enumDescriptions": [
-					"Run the main MagicAgentHelix process",
-					"Initialize configuration files",
-					"Validate instruction files",
-					"List projects and tags"
-				]
-			},
-			"magicAgentHelix.defaultOptions": {
-				"type": "array",
-				"default": [],
-				"description": "Default CLI options to use for all commands",
-				"items": {
-					"type": "string",
-					"enum": [
-						"--verbose",
-						"--quiet",
-						"--force",
-						"--dry-run"
-					],
-					"enumDescriptions": [
-						"Enable verbose output",
-						"Suppress non-error output",
-						"Force operations without prompts",
-						"Preview changes without executing"
-					]
-				}
-			},
-			"magicAgentHelix.historySize": {
-				"type": "number",
-				"default": 10,
-				"minimum": 1,
-				"maximum": 50,
-				"description": "Maximum number of commands to keep in history"
-			},
-			"magicAgentHelix.autoSaveFavorites": {
-				"type": "boolean",
-				"default": false,
-				"description": "Automatically save frequently used commands as favorites"
-			},
-			"magicAgentHelix.showStatusBar": {
-				"type": "boolean",
-				"default": true,
-				"description": "Show MagicAgentHelix status in the status bar"
-			},
-			"magicAgentHelix.notifications": {
-				"type": "object",
-				"description": "Notification preferences",
-				"properties": {
-					"onSuccess": {
-						"type": "boolean",
-						"default": true,
-						"description": "Show notification on successful completion"
-					},
-					"onError": {
-						"type": "boolean",
-						"default": true,
-						"description": "Show notification on errors"
-					},
-					"showProgress": {
-						"type": "boolean",
-						"default": true,
-						"description": "Show progress notifications during execution"
-					}
-				}
-			},
-			"magicAgentHelix.cliPath": {
-				"type": "string",
-				"default": "",
-				"description": "Custom path to the MagicAgentHelix CLI. Leave empty to auto-detect."
-			}
-		}
-	},
-	"scripts": {
-		"build": "tsc --build",
-		"package": "vsce package --no-yarn"
-	},
-	"dependencies": {
-		"@types/node": "^20.11.0"
-	},
-	"devDependencies": {
-		"@types/vscode": "^1.85.0",
-		"@vscode/vsce": "^3.2.1",
-		"typescript": "^5.0.0"
-	}
+  "name": "magic-helix-vscode",
+  "displayName": "MagicAgentHelix Runner",
+  "description": "Advanced VS Code extension for running MagicAgentHelix CLI with AI-powered refinement, command history, favorites, workspace configuration, and progress tracking.",
+  "version": "3.0.0-beta.1",
+  "publisher": "el-j",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/el-j/magic-agent-helix.git"
+  },
+  "homepage": "https://github.com/el-j/magic-agent-helix#readme",
+  "bugs": {
+    "url": "https://github.com/el-j/magic-agent-helix/issues"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages",
+    "Snippets"
+  ],
+  "keywords": [
+    "ai",
+    "instruction",
+    "alignment",
+    "monorepo",
+    "cli",
+    "automation",
+    "productivity"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "magic-helix.run",
+        "title": "Run MagicAgentHelix",
+        "category": "MagicAgentHelix",
+        "icon": "$(wand)"
+      },
+      {
+        "command": "magic-helix.init",
+        "title": "Initialize Config",
+        "category": "MagicAgentHelix",
+        "icon": "$(file-add)"
+      },
+      {
+        "command": "magic-helix.refresh",
+        "title": "Refresh MagicAgentHelix",
+        "category": "MagicAgentHelix",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "magic-helix.list",
+        "title": "List Projects & Tags",
+        "category": "MagicAgentHelix",
+        "icon": "$(list-tree)"
+      },
+      {
+        "command": "magic-helix.validate",
+        "title": "Validate Instruction Files",
+        "category": "MagicAgentHelix",
+        "icon": "$(checklist)"
+      },
+      {
+        "command": "magic-helix.clean",
+        "title": "Clean Generated Files",
+        "category": "MagicAgentHelix",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "magic-helix.plugins",
+        "title": "List Language Plugins",
+        "category": "MagicAgentHelix",
+        "icon": "$(extensions)"
+      },
+      {
+        "command": "magic-helix.pluginStatus",
+        "title": "Show Plugin Status",
+        "category": "MagicAgentHelix",
+        "icon": "$(info)"
+      },
+      {
+        "command": "magic-helix.showOutput",
+        "title": "Show Output",
+        "category": "MagicAgentHelix",
+        "icon": "$(output)"
+      },
+      {
+        "command": "magic-helix.showStatus",
+        "title": "Show Status Panel",
+        "category": "MagicAgentHelix",
+        "icon": "$(graph)"
+      },
+      {
+        "command": "magic-helix.quickAccess",
+        "title": "Quick Access Menu",
+        "category": "MagicAgentHelix",
+        "icon": "$(menu)"
+      },
+      {
+        "command": "magic-helix.saveFavorite",
+        "title": "Save Current Config as Favorite",
+        "category": "MagicAgentHelix",
+        "icon": "$(star-empty)"
+      },
+      {
+        "command": "magic-helix.configureWorkspace",
+        "title": "Configure Workspace Settings",
+        "category": "MagicAgentHelix",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "command": "magic-helix.refineWithAI",
+        "title": "Refine Instruction File with AI",
+        "category": "MagicAgentHelix",
+        "icon": "$(sparkle)"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "magic-helix.run",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "magic-helix.init",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "magic-helix.refresh",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "magic-helix.list",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "magic-helix.validate",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "magic-helix.clean",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "magic-helix.plugins",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "magic-helix.pluginStatus",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "magic-helix.showOutput",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "magic-helix.showStatus",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "magic-helix.quickAccess",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "magic-helix.saveFavorite",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "magic-helix.configureWorkspace",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "magic-helix.refineWithAI",
+          "when": "workspaceFolderCount > 0"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "magic-helix.refineWithAI",
+          "when": "resourcePath =~ /\\.github\\/instructions\\/.*\\.md$/",
+          "group": "magichelix@1"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "magic-helix.refineWithAI",
+          "when": "resourcePath =~ /\\.github\\/instructions\\/.*\\.md$/",
+          "group": "magichelix@1"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "magic-helix.quickAccess",
+        "key": "ctrl+shift+m",
+        "mac": "cmd+shift+m",
+        "when": "workspaceFolderCount > 0"
+      },
+      {
+        "command": "magic-helix.run",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r",
+        "when": "workspaceFolderCount > 0"
+      }
+    ]
+  },
+  "configuration": {
+    "type": "object",
+    "title": "MagicAgentHelix",
+    "properties": {
+      "magicAgentHelix.defaultCommand": {
+        "type": "string",
+        "default": "run",
+        "description": "Default command to run when using the run command",
+        "enum": [
+          "run",
+          "init",
+          "validate",
+          "list"
+        ],
+        "enumDescriptions": [
+          "Run the main MagicAgentHelix process",
+          "Initialize configuration files",
+          "Validate instruction files",
+          "List projects and tags"
+        ]
+      },
+      "magicAgentHelix.defaultOptions": {
+        "type": "array",
+        "default": [],
+        "description": "Default CLI options to use for all commands",
+        "items": {
+          "type": "string",
+          "enum": [
+            "--verbose",
+            "--quiet",
+            "--force",
+            "--dry-run"
+          ],
+          "enumDescriptions": [
+            "Enable verbose output",
+            "Suppress non-error output",
+            "Force operations without prompts",
+            "Preview changes without executing"
+          ]
+        }
+      },
+      "magicAgentHelix.historySize": {
+        "type": "number",
+        "default": 10,
+        "minimum": 1,
+        "maximum": 50,
+        "description": "Maximum number of commands to keep in history"
+      },
+      "magicAgentHelix.autoSaveFavorites": {
+        "type": "boolean",
+        "default": false,
+        "description": "Automatically save frequently used commands as favorites"
+      },
+      "magicAgentHelix.showStatusBar": {
+        "type": "boolean",
+        "default": true,
+        "description": "Show MagicAgentHelix status in the status bar"
+      },
+      "magicAgentHelix.notifications": {
+        "type": "object",
+        "description": "Notification preferences",
+        "properties": {
+          "onSuccess": {
+            "type": "boolean",
+            "default": true,
+            "description": "Show notification on successful completion"
+          },
+          "onError": {
+            "type": "boolean",
+            "default": true,
+            "description": "Show notification on errors"
+          },
+          "showProgress": {
+            "type": "boolean",
+            "default": true,
+            "description": "Show progress notifications during execution"
+          }
+        }
+      },
+      "magicAgentHelix.cliPath": {
+        "type": "string",
+        "default": "",
+        "description": "Custom path to the MagicAgentHelix CLI. Leave empty to auto-detect."
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "package": "vsce package --no-yarn"
+  },
+  "dependencies": {
+    "@types/node": "^20.11.0",
+    "@magic-helix/core": "*"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.2.1",
+    "typescript": "^5.0.0"
+  }
 }

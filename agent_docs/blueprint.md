@@ -1159,7 +1159,7 @@ async function main() {
   
   program
     .name('[DEFAULT_CLI_COMMAND]')
-    .description('A CLI to align AI instructions in your monorepo.')
+    .description('[DEFAULT_PROJECT_NAME] CLI for aligning AI instructions in your monorepo.')
     .version(pkg.version);
 
   program

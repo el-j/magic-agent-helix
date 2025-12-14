@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { analyzeProjectTags, type ProjectAnalysisData } from './analysis';
+import { type ProjectAnalysisData, analyzeProjectTags } from './analysis';
 
 describe('Analysis Module', () => {
   const mockAnalysisData: ProjectAnalysisData = {

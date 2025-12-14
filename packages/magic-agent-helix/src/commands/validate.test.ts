@@ -4,9 +4,9 @@ import {
   BUILT_IN_CONFIG,
   loadUserConfig,
   mergeConfigs,
-} from 'magic-helix-core';
+} from '@magic-helix/core';
 import ora from 'ora';
-import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
+import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
 import { validate } from './validate';
 
 // Mock all external dependencies
@@ -40,7 +40,7 @@ vi.mock('picocolors', () => {
     default: mockPc,
   };
 });
-vi.mock('magic-helix-core', () => ({
+vi.mock('@magic-helix/core', () => ({
   loadUserConfig: vi.fn(),
   mergeConfigs: vi.fn(),
   getFormatter: vi.fn(),

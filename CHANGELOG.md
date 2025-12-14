@@ -1,4 +1,4 @@
-## [3.0.0](https://github.com/el-j/magic-agent-helix/compare/v2.0.0...v3.0.0) (2025-12-14)
+## [3.0.0-beta.1](https://github.com/el-j/magic-agent-helix/compare/v2.0.0...v3.0.0-beta.1) (2025-12-14)
 
 ### ⚠ BREAKING CHANGES
 
@@ -16,6 +16,55 @@
 * Feature/updates branch merge ([#31](https://github.com/el-j/magic-agent-helix/issues/31)) ([6719f91](https://github.com/el-j/magic-agent-helix/commit/6719f91a5c36d20b61b175785ae3580aab3e0aec)), closes [#27](https://github.com/el-j/magic-agent-helix/issues/27)
 * remove tsconfig.tsbuildinfo from git tracking ([#26](https://github.com/el-j/magic-agent-helix/issues/26)) ([a085781](https://github.com/el-j/magic-agent-helix/commit/a085781baebd1e5e9d6bcf05f47b41c48037f01c))
 * remove tsconfig.tsbuildinfo from git tracking to fix build ([43345d5](https://github.com/el-j/magic-agent-helix/commit/43345d5c8fd4f5eaca22a5d667672f9ce600d98b))
+
+## [2.0.0-beta.2](https://github.com/el-j/magic-agent-helix/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2025-12-14)
+
+### Features
+
+* add VS Code extension VSIX to release assets ([16915bb](https://github.com/el-j/magic-agent-helix/commit/16915bba63046f2f7c5355871349e52f66e0c158))
+
+### Bug Fixes
+
+* CLI execution detection to work with npm bin symlinks ([61b43b3](https://github.com/el-j/magic-agent-helix/commit/61b43b34171daed163ab0ddf85fa715553c14127))
+* Feature/updates branch merge ([#31](https://github.com/el-j/magic-agent-helix/issues/31)) ([6719f91](https://github.com/el-j/magic-agent-helix/commit/6719f91a5c36d20b61b175785ae3580aab3e0aec)), closes [#27](https://github.com/el-j/magic-agent-helix/issues/27)
+* remove tsconfig.tsbuildinfo from git tracking to fix build ([43345d5](https://github.com/el-j/magic-agent-helix/commit/43345d5c8fd4f5eaca22a5d667672f9ce600d98b))
+
+## [3.0.0-alpha.3](https://github.com/el-j/magic-agent-helix/compare/v3.0.0-alpha.2...v3.0.0-alpha.3) (2025-12-14)
+
+### Bug Fixes
+
+* remove npmPublish setting for magic-helix packages in release configuration ([4e22b16](https://github.com/el-j/magic-agent-helix/commit/4e22b16a7d3837d8f2e21d1dc881bc01d5dbf76c))
+
+## [3.0.0-alpha.2](https://github.com/el-j/magic-agent-helix/compare/v3.0.0-alpha.1...v3.0.0-alpha.2) (2025-12-14)
+
+### Bug Fixes
+
+* ensure npmPublish is set to false for all npm plugins and add publishConfig to magic-helix-plugins ([7e2a17e](https://github.com/el-j/magic-agent-helix/commit/7e2a17e959fd44ec73d899d8d90a541c9ed95d63))
+
+## [3.0.0-alpha.1](https://github.com/el-j/magic-agent-helix/compare/v2.0.0...v3.0.0-alpha.1) (2025-12-14)
+
+### ⚠ BREAKING CHANGES
+
+* 1.4.0 release (#24)
+
+### Features
+
+* Add Swift Plugin and enhance documentation with roadmap completion status ([27dc57f](https://github.com/el-j/magic-agent-helix/commit/27dc57fcaa04e7902ffa8051bbc69af547318c20))
+* Add test fixtures for multiple languages and Docker setups ([08e3d5c](https://github.com/el-j/magic-agent-helix/commit/08e3d5c1b9f1143e0d1938e3c8ab028735eb1dda))
+* Add Vite configuration for magic-helix-plugins and enhance AI instruction refinement ([a0c046c](https://github.com/el-j/magic-agent-helix/commit/a0c046c634c75e5769c3a4c64a7ddf29793104a6))
+* add VS Code extension VSIX to release assets ([16915bb](https://github.com/el-j/magic-agent-helix/commit/16915bba63046f2f7c5355871349e52f66e0c158))
+* chore: update package versions and add version sync script ([5b8afb0](https://github.com/el-j/magic-agent-helix/commit/5b8afb05085ba7fd2689ea1c4da7717051e7620a))
+* enhance release workflow and add vscode-magic-helix package support ([a111a4d](https://github.com/el-j/magic-agent-helix/commit/a111a4dd29813a8ff151afaa571bf42e4f72c44a))
+
+### Bug Fixes
+
+* 1.4.0 release ([#24](https://github.com/el-j/magic-agent-helix/issues/24)) ([6b051c8](https://github.com/el-j/magic-agent-helix/commit/6b051c80720c8dcd8197c1162ef6857f8717fb6b)), closes [#2](https://github.com/el-j/magic-agent-helix/issues/2)
+* CLI execution detection to work with npm bin symlinks ([61b43b3](https://github.com/el-j/magic-agent-helix/commit/61b43b34171daed163ab0ddf85fa715553c14127))
+* CLI symlink execution and add VS Code extension to releases ([#25](https://github.com/el-j/magic-agent-helix/issues/25)) ([b97ac13](https://github.com/el-j/magic-agent-helix/commit/b97ac130921ae30db2422e9db4a101af2f45ca50))
+* Feature/updates branch merge ([#31](https://github.com/el-j/magic-agent-helix/issues/31)) ([6719f91](https://github.com/el-j/magic-agent-helix/commit/6719f91a5c36d20b61b175785ae3580aab3e0aec)), closes [#27](https://github.com/el-j/magic-agent-helix/issues/27)
+* remove tsconfig.tsbuildinfo from git tracking ([#26](https://github.com/el-j/magic-agent-helix/issues/26)) ([a085781](https://github.com/el-j/magic-agent-helix/commit/a085781baebd1e5e9d6bcf05f47b41c48037f01c))
+* remove tsconfig.tsbuildinfo from git tracking to fix build ([43345d5](https://github.com/el-j/magic-agent-helix/commit/43345d5c8fd4f5eaca22a5d667672f9ce600d98b))
+* Replace any types with proper type definitions ([c467c64](https://github.com/el-j/magic-agent-helix/commit/c467c64916fd4af5a90d01e96b4f83c4dd21317f))
 
 ## [2.0.0](https://github.com/el-j/magic-agent-helix/compare/v1.4.0...v2.0.0) (2025-11-12)
 

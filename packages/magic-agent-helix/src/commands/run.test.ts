@@ -1,16 +1,61 @@
 import * as fs from 'node:fs';
 import type * as path from 'node:path';
-import { glob } from 'glob';
-import inquirer from 'inquirer';
 import {
   BUILT_IN_CONFIG,
   getFormatter,
   loadUserConfig,
   mergeConfigs,
-} from 'magic-helix-core';
+} from '@magic-helix/core';
+import type { LanguagePlugin } from '@magic-helix/core';
+import { glob } from 'glob';
+import inquirer from 'inquirer';
 import ora from 'ora';
-import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
+import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
 import { run } from './run';
+
+const mockPluginRegistry = {
+  initialize: vi.fn(),
+  detectAllProjects: vi.fn(),
+};
+
+const rootPath = process.cwd();
+const vueProjectPath = `${rootPath}/packages/app-vue`;
+const reactProjectPath = `${rootPath}/packages/app-react`;
+
+const mockDetectedProjects = [
+  {
+    metadata: {
+      language: 'TypeScript',
+      name: '@scope/app-vue',
+      projectPath: vueProjectPath,
+      dependencies: { vue: '3.0.0' },
+      tags: ['lang-vue'],
+    },
+    plugin: {} as LanguagePlugin,
+  },
+  {
+    metadata: {
+      language: 'TypeScript',
+      name: '@scope/app-react',
+      projectPath: reactProjectPath,
+      dependencies: { react: '18.0.0', 'my-custom-lib': '1.0.0' },
+      tags: ['lang-react'],
+    },
+    plugin: {} as LanguagePlugin,
+  },
+];
+
+const defaultRegistryDetection = async (scanPath: string) => {
+  if (scanPath?.includes('app-vue')) {
+    return [mockDetectedProjects[0]];
+  }
+
+  if (scanPath?.includes('app-react')) {
+    return [mockDetectedProjects[1]];
+  }
+
+  return mockDetectedProjects;
+};
 
 // Mock all external dependencies
 vi.mock('node:fs', () => ({
@@ -63,10 +108,13 @@ vi.mock('gradient-string', () => {
     default: mockGradient,
   };
 });
-vi.mock('magic-helix-core', () => ({
+vi.mock('@magic-helix/core', () => ({
   loadUserConfig: vi.fn(),
   mergeConfigs: vi.fn(),
   getFormatter: vi.fn(),
+  PluginRegistry: {
+    getInstance: vi.fn(() => mockPluginRegistry),
+  },
   BUILT_IN_CONFIG: {
     dependencyTagMap: {},
     tagTemplateMap: {},
@@ -98,6 +146,10 @@ describe('Run Command (/src/commands/run.ts)', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockPluginRegistry.initialize.mockResolvedValue(undefined);
+    mockPluginRegistry.detectAllProjects.mockImplementation(
+      defaultRegistryDetection,
+    );
     vi.mocked(loadUserConfig).mockReturnValue({});
     vi.mocked(mergeConfigs).mockReturnValue(mockMergedConfig);
     vi.mocked(getFormatter).mockReturnValue({
@@ -234,13 +286,7 @@ describe('Run Command (/src/commands/run.ts)', () => {
   });
 
   it('should warn if no projects are found', async () => {
-    (fs.readFileSync as Mock).mockImplementation((p) => {
-      if (p === './package.json') {
-        return JSON.stringify({ name: 'root-project', workspaces: [] }); // No workspaces
-      }
-      return '{}';
-    });
-    (glob as unknown as Mock).mockImplementation(() => Promise.resolve([]));
+    mockPluginRegistry.detectAllProjects.mockResolvedValue([]);
 
     await expect(run()).resolves.not.toThrow();
 
