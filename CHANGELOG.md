@@ -1,3 +1,15 @@
+## [2.0.0-beta.2](https://github.com/el-j/magic-agent-helix/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2025-12-14)
+
+### Features
+
+* add VS Code extension VSIX to release assets ([16915bb](https://github.com/el-j/magic-agent-helix/commit/16915bba63046f2f7c5355871349e52f66e0c158))
+
+### Bug Fixes
+
+* CLI execution detection to work with npm bin symlinks ([61b43b3](https://github.com/el-j/magic-agent-helix/commit/61b43b34171daed163ab0ddf85fa715553c14127))
+* Feature/updates branch merge ([#31](https://github.com/el-j/magic-agent-helix/issues/31)) ([6719f91](https://github.com/el-j/magic-agent-helix/commit/6719f91a5c36d20b61b175785ae3580aab3e0aec)), closes [#27](https://github.com/el-j/magic-agent-helix/issues/27)
+* remove tsconfig.tsbuildinfo from git tracking to fix build ([43345d5](https://github.com/el-j/magic-agent-helix/commit/43345d5c8fd4f5eaca22a5d667672f9ce600d98b))
+
 ## [3.0.0-alpha.3](https://github.com/el-j/magic-agent-helix/compare/v3.0.0-alpha.2...v3.0.0-alpha.3) (2025-12-14)
 
 ### Bug Fixes
