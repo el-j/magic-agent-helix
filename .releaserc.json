@@ -39,22 +39,19 @@
 		[
 			"@semantic-release/npm",
 			{
-				"pkgRoot": "packages/magic-helix-core",
-				"npmPublish": false
+				"pkgRoot": "packages/magic-helix-core"
 			}
 		],
 		[
 			"@semantic-release/npm",
 			{
-				"pkgRoot": "packages/magic-agent-helix",
-				"npmPublish": false
+				"pkgRoot": "packages/magic-agent-helix"
 			}
 		],
 		[
 			"@semantic-release/npm",
 			{
-				"pkgRoot": "packages/magic-helix-plugins",
-				"npmPublish": false
+				"pkgRoot": "packages/magic-helix-plugins"
 			}
 		],
 		[
