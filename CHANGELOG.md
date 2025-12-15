@@ -1,3 +1,9 @@
+## [3.0.1-beta.1](https://github.com/el-j/magic-agent-helix/compare/v3.0.0...v3.0.1-beta.1) (2025-12-14)
+
+### Bug Fixes
+
+* **release:** move VSIX packaging to verifyConditions phase and fix asset glob pattern ([d095136](https://github.com/el-j/magic-agent-helix/commit/d095136799fea8406c03f4e8f6e447f0ad6a8ee4))
+
 ## [3.0.0-beta.1](https://github.com/el-j/magic-agent-helix/compare/v2.0.0...v3.0.0-beta.1) (2025-12-14)
 
 ### ⚠ BREAKING CHANGES

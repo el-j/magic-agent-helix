@@ -1,6 +1,6 @@
 {
-  "name": "@el-j/magic-agent-helix",
-  "version": "3.0.0-beta.1",
+  "name": "@magic-helix/agent",
+  "version": "3.0.1-beta.1",
   "type": "module",
   "description": "A CLI to inspect a project and generate granular, path-specific AI instructions for agents like GitHub Copilot.",
   "engines": {
@@ -22,8 +22,7 @@
   "author": "Your Name / Community",
   "license": "MIT",
   "publishConfig": {
-    "access": "public",
-    "provenance": true
+    "access": "public"
   },
   "pkg": {
     "scripts": "dist/cli.js",
@@ -36,7 +35,7 @@
   },
   "dependencies": {
     "commander": "^12.1.0",
-    "@el-j/magic-helix-core": "*"
+    "@magic-helix/core": "*"
   },
   "devDependencies": {
     "vite": "^5.3.5"
