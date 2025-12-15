@@ -6,22 +6,22 @@ A powerful CLI tool that inspects your project and generates granular, path-spec
 
 ```bash
 # Install globally
-npm install -g @magic-helix/agent
+npm install -g @el-j/magic-agent-helix
 
 # Or use with npx (no installation required)
-npx @magic-helix/agent run
+npx @el-j/magic-agent-helix run
 ```
 
 ## 📦 Installation
 
 ### Global Installation
 ```bash
-npm install -g @magic-helix/agent
+npm install -g @el-j/magic-agent-helix
 ```
 
 ### Project-Specific Installation
 ```bash
-npm install --save-dev @magic-helix/agent
+npm install --save-dev @el-j/magic-agent-helix
 ```
 
 Then add to your `package.json` scripts:
@@ -258,7 +258,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '20'
-      - run: npx @magic-helix/agent run --force
+      - run: npx @el-j/magic-agent-helix run --force
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "chore: update AI instructions"

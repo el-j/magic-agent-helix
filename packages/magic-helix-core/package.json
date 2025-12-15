@@ -1,5 +1,5 @@
 {
-  "name": "@magic-helix/core",
+  "name": "@el-j/magic-helix-core",
   "version": "3.0.0-beta.1",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -36,7 +36,8 @@
   "author": "Your Name / Community",
   "license": "MIT",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "dependencies": {
     "commander": "^12.1.0",

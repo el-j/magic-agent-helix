@@ -5,7 +5,7 @@
  * Supports Poetry, pip, and setuptools project formats
  */
 
-import type { ProjectMetadata, TemplateDefinition } from '@magic-helix/core';
+import type { ProjectMetadata, TemplateDefinition } from '@el-j/magic-helix-core';
 import { BasePlugin } from '../base/BasePlugin';
 
 export class PythonPlugin extends BasePlugin {

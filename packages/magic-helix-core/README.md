@@ -5,7 +5,7 @@ The core library for MagicAgentHelix. Provides project analysis, configuration m
 ## 📦 Installation
 
 ```bash
-npm install @magic-helix/core
+npm install @el-j/magic-helix-core
 ```
 
 ## 🎯 Purpose
@@ -22,7 +22,7 @@ This package is the brain of MagicAgentHelix. It:
 ### Basic Analysis
 
 ```typescript
-import { analyzeProjectTags, mergeConfigs } from '@magic-helix/core';
+import { analyzeProjectTags, mergeConfigs } from '@el-j/magic-helix-core';
 
 // Load and merge configuration
 const config = mergeConfigs(userConfig);
@@ -52,7 +52,7 @@ console.log(tags);
 ### Configuration Merging
 
 ```typescript
-import { loadUserConfig, mergeConfigs } from '@magic-helix/core';
+import { loadUserConfig, mergeConfigs } from '@el-j/magic-helix-core';
 
 // Load user config from file (or pass custom config)
 const userConfig = loadUserConfig('./custom-config.json');

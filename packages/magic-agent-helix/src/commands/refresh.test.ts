@@ -5,8 +5,8 @@ import {
   getFormatter,
   loadUserConfig,
   mergeConfigs,
-} from '@magic-helix/core';
-import type { LanguagePlugin } from '@magic-helix/core';
+} from '@el-j/magic-helix-core';
+import type { LanguagePlugin } from '@el-j/magic-helix-core';
 import { glob } from 'glob';
 import inquirer from 'inquirer';
 import ora from 'ora';
@@ -108,7 +108,7 @@ vi.mock('gradient-string', () => {
     default: mockGradient,
   };
 });
-vi.mock('@magic-helix/core', () => ({
+vi.mock('@el-j/magic-helix-core', () => ({
   loadUserConfig: vi.fn(),
   mergeConfigs: vi.fn(),
   getFormatter: vi.fn(),

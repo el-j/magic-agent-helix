@@ -25,10 +25,10 @@ Version Synchronization: ✅ COMPLETE
   Playground: 2.0.1-alpha.1
 
 Build: ✅ ALL PACKAGES BUILD SUCCESSFULLY
-  @magic-helix/core built
-  @magic-helix/agent built
+  @el-j/magic-helix-core built
+  @el-j/magic-agent-helix built
   magic-helix-vscode built
-  @magic-helix/plugins built
+  @el-j/magic-helix-plugins built
 
 Tests: ✅ 160/160 PASSING
   28 test files

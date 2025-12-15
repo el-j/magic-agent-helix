@@ -4,7 +4,7 @@
  * Detects Java projects via pom.xml (Maven) or build.gradle (Gradle)
  */
 
-import type { ProjectMetadata, TemplateDefinition } from '@magic-helix/core';
+import type { ProjectMetadata, TemplateDefinition } from '@el-j/magic-helix-core';
 import { BasePlugin } from '../base/BasePlugin';
 
 export class JavaPlugin extends BasePlugin {

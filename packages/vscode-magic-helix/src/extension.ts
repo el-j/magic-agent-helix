@@ -452,7 +452,7 @@ async function runMagicHelix(
       });
     } else {
       // Production mode: use npx
-      commandStr = `npx @magic-helix/agent ${command} ${mergedOptions.join(' ')}`;
+      commandStr = `npx @el-j/magic-agent-helix ${command} ${mergedOptions.join(' ')}`;
       outputChannel.appendLine('Mode: Production (using npx)');
       outputChannel.appendLine('⚠️ Local CLI not found. Using npx instead.');
       outputChannel.appendLine(
@@ -460,7 +460,7 @@ async function runMagicHelix(
       );
       sendProgressUpdate(panel, {
         stage: 'Configuration',
-        message: 'Using npx to run @magic-helix/agent',
+        message: 'Using npx to run @el-j/magic-agent-helix',
         progress: 10,
         type: 'warning',
       });
@@ -692,7 +692,7 @@ async function showPluginStatusPanel(
 ): Promise<void> {
   try {
     // Import PluginRegistry dynamically
-    const { PluginRegistry } = await import('@magic-helix/core');
+    const { PluginRegistry } = await import('@el-j/magic-helix-core');
 
     const registry = PluginRegistry.getInstance();
     await registry.initialize();

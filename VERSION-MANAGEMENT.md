@@ -167,9 +167,9 @@ packages/magic-agent-helix/dist/cli.mjs
 
 ### npm Packages
 ```
-@magic-helix/core@2.0.1-alpha.1
-@magic-helix/agent@2.0.1-alpha.1
-@magic-helix/plugins@2.0.1-alpha.1
+@el-j/magic-helix-core@2.0.1-alpha.1
+@el-j/magic-agent-helix@2.0.1-alpha.1
+@el-j/magic-helix-plugins@2.0.1-alpha.1
 ```
 
 ## Common Tasks

@@ -4,12 +4,12 @@ import type {
   ConfigFileTagMap,
   DependencyTagMap,
   FileGlobTagMap,
-} from '@magic-helix/core';
+} from '@el-j/magic-helix-core';
 import {
   PluginRegistry,
   loadUserConfig,
   mergeConfigs,
-} from '@magic-helix/core';
+} from '@el-j/magic-helix-core';
 import ora from 'ora';
 import pc from 'picocolors';
 

@@ -4,7 +4,7 @@
  * Detects Ruby projects via Gemfile
  */
 
-import type { ProjectMetadata, TemplateDefinition } from '@magic-helix/core';
+import type { ProjectMetadata, TemplateDefinition } from '@el-j/magic-helix-core';
 import { BasePlugin } from '../base/BasePlugin';
 
 export class RubyPlugin extends BasePlugin {

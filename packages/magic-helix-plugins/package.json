@@ -1,5 +1,5 @@
 {
-  "name": "@magic-helix/plugins",
+  "name": "@el-j/magic-helix-plugins",
   "version": "3.0.0-beta.1",
   "description": "Official language detection plugins for MagicAgentHelix",
   "type": "module",
@@ -78,17 +78,18 @@
   "author": "MagicAgentHelix Contributors",
   "license": "MIT",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "peerDependencies": {
-    "@magic-helix/core": "^2.0.0"
+    "@el-j/magic-helix-core": "^2.0.0"
   },
   "dependencies": {
     "glob": "^10.3.10"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
-    "@magic-helix/core": "*",
+    "@el-j/magic-helix-core": "*",
     "typescript": "^5.5.4",
     "vite": "^5.4.0",
     "vitest": "^1.6.0"

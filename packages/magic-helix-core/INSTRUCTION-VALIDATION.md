@@ -1,6 +1,6 @@
 # Instruction Validation Guide
 
-This guide explains how instruction quality is measured in `@magic-helix/core`, what elements are checked, how scores and grades are computed, and how to improve low-scoring instructions.
+This guide explains how instruction quality is measured in `@el-j/magic-helix-core`, what elements are checked, how scores and grades are computed, and how to improve low-scoring instructions.
 
 ## Overview
 
@@ -68,7 +68,7 @@ Validate all generated instructions:
 
 ```bash
 # From your project root
-npx @magic-helix/agent validate
+npx @el-j/magic-agent-helix validate
 ```
 
 Example output:
@@ -97,7 +97,7 @@ import {
   formatValidationReport,
   passesQualityThreshold,
   getQualityGrade,
-} from '@magic-helix/core';
+} from '@el-j/magic-helix-core';
 
 const quality = validateInstructions(instructions);
 console.log(formatValidationReport(quality));

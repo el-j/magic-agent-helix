@@ -30,9 +30,9 @@ This document explains how the release pipeline works with the new version synch
          │ ├─ Analyze commits (feat:, fix:, BREAKING:)       │
          │ ├─ Determine next version (e.g., 2.0.0 → 2.0.1)   │
          │ │                                                  │
-         │ ├─ Publish npm: @magic-helix/core@2.0.1            │
-         │ ├─ Publish npm: @magic-helix/agent@2.0.1           │
-         │ ├─ Publish npm: @magic-helix/plugins@2.0.1         │
+         │ ├─ Publish npm: @el-j/magic-helix-core@2.0.1            │
+         │ ├─ Publish npm: @el-j/magic-agent-helix@2.0.1           │
+         │ ├─ Publish npm: @el-j/magic-helix-plugins@2.0.1         │
          │ │                                                  │
          │ ├─ **EXEC SYNC: npm run sync:versions -- --set 2.0.1**  ← KEY STEP
          │ │  └─ Updates ALL 5 package.json files to 2.0.1   │
@@ -207,9 +207,9 @@ All artifacts are now published with **consistent, matching versions**:
 
 ```
 NPM Registry:
-  @magic-helix/core@2.1.0          ✅
-  @magic-helix/agent@2.1.0         ✅
-  @magic-helix/plugins@2.1.0       ✅
+  @el-j/magic-helix-core@2.1.0          ✅
+  @el-j/magic-agent-helix@2.1.0         ✅
+  @el-j/magic-helix-plugins@2.1.0       ✅
 
 GitHub Release:
   Tag: v2.1.0

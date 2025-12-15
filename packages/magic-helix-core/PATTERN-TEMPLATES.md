@@ -244,7 +244,7 @@ kubectl delete namespace production
 ### Example 1: Next.js + React + Tailwind Project
 
 ```typescript
-import { generateInstructions } from '@magic-helix/core';
+import { generateInstructions } from '@el-j/magic-helix-core';
 
 const instructions = generateInstructions({
   framework: 'react',
@@ -367,7 +367,7 @@ Patterns automatically inherit:
 ### Loading Custom Patterns
 
 ```typescript
-import { loadPatternTemplates } from '@magic-helix/core';
+import { loadPatternTemplates } from '@el-j/magic-helix-core';
 
 const patterns = loadPatternTemplates();
 // Returns Map<string, PatternTemplate> with all 33+ patterns

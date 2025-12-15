@@ -1,4 +1,4 @@
-import { PluginRegistry } from '@magic-helix/core';
+import { PluginRegistry } from '@el-j/magic-helix-core';
 import pc from 'picocolors';
 
 interface PluginsOptions {

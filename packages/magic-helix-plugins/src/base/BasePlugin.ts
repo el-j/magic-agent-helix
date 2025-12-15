@@ -14,7 +14,7 @@ import type {
   DependencyTagMap,
   ConfigFileTagMap,
   FileGlobTagMap,
-} from '@magic-helix/core';
+} from '@el-j/magic-helix-core';
 
 export abstract class BasePlugin implements LanguagePlugin {
   abstract name: string;

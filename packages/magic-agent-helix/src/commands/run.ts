@@ -6,7 +6,7 @@ import type {
   FileGlobTagMap,
   LanguagePlugin,
   TagTemplateMap,
-} from '@magic-helix/core';
+} from '@el-j/magic-helix-core';
 import {
   type AssistantTarget,
   BUILT_IN_TEMPLATE_DIR,
@@ -16,7 +16,7 @@ import {
   getFormatter,
   loadUserConfig,
   mergeConfigs,
-} from '@magic-helix/core';
+} from '@el-j/magic-helix-core';
 import { glob } from 'glob';
 import gradient from 'gradient-string';
 import inquirer from 'inquirer';

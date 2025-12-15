@@ -8,7 +8,7 @@ A VS Code extension that runs MagicAgentHelix to align AI instructions across yo
 - Click the "Magic Helix" button in the status bar or use the Command Palette
 - Use the quick access menu with **Ctrl+Shift+M** (or Cmd+Shift+M on Mac)
 - Automatically detects and uses the local CLI in development mode
-- Falls back to `npx @magic-helix/agent` in production mode
+- Falls back to `npx @el-j/magic-agent-helix` in production mode
 
 ### 📊 Real-Time Status Panel
 - Visual progress tracking with percentage completion
@@ -223,7 +223,7 @@ In development mode, make sure you've built the CLI:
 npm run build:cli
 ```
 
-In production mode, the extension will use `npx @magic-helix/agent`.
+In production mode, the extension will use `npx @el-j/magic-agent-helix`.
 
 ### Extension Not Activating
 

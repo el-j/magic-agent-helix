@@ -301,7 +301,7 @@
   },
   "dependencies": {
     "@types/node": "^20.11.0",
-    "@magic-helix/core": "*"
+    "@el-j/magic-helix-core": "*"
   },
   "devDependencies": {
     "@types/vscode": "^1.85.0",

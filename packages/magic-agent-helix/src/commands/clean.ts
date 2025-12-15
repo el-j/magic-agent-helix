@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { loadUserConfig, mergeConfigs } from '@magic-helix/core';
+import { loadUserConfig, mergeConfigs } from '@el-j/magic-helix-core';
 import inquirer from 'inquirer';
 import ora from 'ora';
 import pc from 'picocolors';

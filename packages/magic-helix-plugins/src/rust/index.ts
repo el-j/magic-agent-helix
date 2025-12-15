@@ -5,7 +5,7 @@
  * Supports Cargo workspaces for monorepo detection
  */
 
-import type { ProjectMetadata, TemplateDefinition } from '@magic-helix/core';
+import type { ProjectMetadata, TemplateDefinition } from '@el-j/magic-helix-core';
 import { BasePlugin } from '../base/BasePlugin';
 
 export class RustPlugin extends BasePlugin {

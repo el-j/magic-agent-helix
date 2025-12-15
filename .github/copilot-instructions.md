@@ -16,7 +16,7 @@ applyTo: "**/*"
 ## Development Workflows
 - Install once at root: `npm install` (Node 20+). Lint/format with Biome: `npm run lint`, `npm run format`. Tests: `npm test`, `npm run test:core`, `npm run test:coverage`. Builds: `npm run build` (all) or `build:core|cli|vscode|playground`.
 - CLI smoke: `npm run build:cli && node packages/magic-agent-helix/dist/cli.mjs run --dry-run` (adds `--project <name>` or `--template <pattern>` filters). Validate generated files: `npm run validate:instructions` or `magic-helix validate`.
-- VS Code extension dev: run "Run VS Code Extension (Dev Mode)" launch config; extension shells out to `npx @magic-helix/agent run` in the target workspace.
+- VS Code extension dev: run "Run VS Code Extension (Dev Mode)" launch config; extension shells out to `npx @el-j/magic-agent-helix run` in the target workspace.
 
 ## File-Type Guidance
 - TypeScript-first repo; keep `tsconfig.base.json` settings intact. Favor small, pure functions and keep CLI logging style (picocolors gradients, ora spinners) consistent. In `run.ts`, preserve dry-run/force/skip-pruning behaviors and tag → template filtering.

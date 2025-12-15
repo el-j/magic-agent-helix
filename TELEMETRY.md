@@ -148,7 +148,7 @@ Events are stored in **JSONL (JSON Lines)** format - one JSON object per line - 
 ### Programmatic Usage
 
 ```typescript
-import { createTelemetry } from '@magic-helix/core';
+import { createTelemetry } from '@el-j/magic-helix-core';
 
 // Create telemetry client (respects environment variables)
 const telemetry = createTelemetry({
@@ -211,7 +211,7 @@ The A/B testing framework allows you to **compare multiple pattern template conf
 Generate instructions for multiple pattern contexts and evaluate their quality scores:
 
 ```typescript
-import { generateABVariants, type ABVariant } from '@magic-helix/core';
+import { generateABVariants, type ABVariant } from '@el-j/magic-helix-core';
 
 const variants: ABVariant[] = [
   {
@@ -255,7 +255,7 @@ console.log(results);
 Identify the highest-scoring variant:
 
 ```typescript
-import { analyzeBestVariant } from '@magic-helix/core';
+import { analyzeBestVariant } from '@el-j/magic-helix-core';
 
 const best = analyzeBestVariant(results);
 
@@ -276,7 +276,7 @@ console.log(`Instructions:\n${best.instructions}`);
 Track A/B test results to telemetry for long-term analysis:
 
 ```typescript
-import { generateABVariants, trackABTest, createTelemetry } from '@magic-helix/core';
+import { generateABVariants, trackABTest, createTelemetry } from '@el-j/magic-helix-core';
 
 const telemetry = createTelemetry({
   enabled: true,
@@ -312,7 +312,7 @@ import {
   trackABTest,
   createTelemetry,
   type ABVariant,
-} from '@magic-helix/core';
+} from '@el-j/magic-helix-core';
 
 // 1. Define test variants
 const variants: ABVariant[] = [

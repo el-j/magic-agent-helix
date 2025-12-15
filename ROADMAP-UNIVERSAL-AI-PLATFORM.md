@@ -14,7 +14,7 @@ Transform Magic Helix from a **Node.js-focused instruction generator** into a **
 ## 🎯 Core Principles
 
 ### 1. **Language Agnostic Core**
-- Base package (`@magic-helix/core`) generates framework/language-specific instructions via **plugin system**
+- Base package (`@el-j/magic-helix-core`) generates framework/language-specific instructions via **plugin system**
 - Zero coupling to Node.js ecosystem beyond the CLI itself
 - Pure analysis engine that works in browsers, servers, containers
 

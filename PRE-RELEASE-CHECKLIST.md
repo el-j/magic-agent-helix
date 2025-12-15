@@ -98,9 +98,9 @@ Use this checklist before any release to ensure everything is ready.
 - [ ] Verify GitHub release created: https://github.com/el-j/magic-agent-helix/releases
 - [ ] Verify VSIX attached to release
 - [ ] Verify npm packages published:
-  - https://www.npmjs.com/package/@magic-helix/core
-  - https://www.npmjs.com/package/@magic-helix/agent
-  - https://www.npmjs.com/package/@magic-helix/plugins
+  - https://www.npmjs.com/package/@el-j/magic-helix-core
+  - https://www.npmjs.com/package/@el-j/magic-agent-helix
+  - https://www.npmjs.com/package/@el-j/magic-helix-plugins
 - [ ] All versions match the release tag
 
 ---

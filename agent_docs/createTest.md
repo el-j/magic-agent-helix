@@ -229,7 +229,7 @@ export async function init() {
   console.log(pc.cyan(`\nNext steps:`));
   console.log(`  1. Edit ${pc.bold(CONFIG_FILENAME)} to define your team's "tags".`);
   console.log(`  2. Add your custom .md instruction files to ${pc.bold(DEFAULT_TEMPLATE_DIR)}.`);
-  console.log(`  3. Run ${pc.bold('npx @magic-helix/agent run')} to generate your files.`);
+  console.log(`  3. Run ${pc.bold('npx @el-j/magic-agent-helix run')} to generate your files.`);
 }
 File 4: /src/commands/init.test.ts (Test Skeleton)import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as fs from 'fs';
