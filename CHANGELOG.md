@@ -1,3 +1,29 @@
+## [4.0.0-beta.1](https://github.com/el-j/magic-agent-helix/compare/v3.0.1-beta.1...v4.0.0-beta.1) (2025-12-15)
+
+### ⚠ BREAKING CHANGES
+
+* All packages now published under @el-j scope
+
+- Migrate @magic-helix/* to @el-j/* organization
+- Add npm provenance attestations for supply chain security
+- Configure OIDC authentication for GitHub Actions
+- Update semantic-release configuration for scoped publishing
+- Enable tarball distribution for all npm packages
+
+This is the first release of scoped packages:
+- @el-j/magic-helix-core
+- @el-j/magic-agent-helix
+- @el-j/magic-helix-plugins
+
+### Features
+
+* migrate to [@el-j](https://github.com/el-j) scoped packages with npm provenance ([2ba9d90](https://github.com/el-j/magic-agent-helix/commit/2ba9d903476190670916692f9a3723ffa69455e0))
+
+### Bug Fixes
+
+* **vscode:** update engines.vscode to ^1.107.0 to match @types/vscode ([13c4eba](https://github.com/el-j/magic-agent-helix/commit/13c4eba91eeed8c7ca3da1cebde56571bc53c0b2))
+* **vscode:** update engines.vscode to match @types/vscode ^1.95.0 ([cc3fbb2](https://github.com/el-j/magic-agent-helix/commit/cc3fbb2aa67d8164cfb01fa7d8d5b53b71ec888a))
+
 ## [3.0.1-beta.1](https://github.com/el-j/magic-agent-helix/compare/v3.0.0...v3.0.1-beta.1) (2025-12-14)
 
 ### Bug Fixes
