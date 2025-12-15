@@ -39,19 +39,25 @@
 		[
 			"@semantic-release/npm",
 			{
-				"pkgRoot": "packages/magic-helix-core"
+				"pkgRoot": "packages/magic-helix-core",
+				"npmPublish": true,
+				"tarballDir": "dist"
 			}
 		],
 		[
 			"@semantic-release/npm",
 			{
-				"pkgRoot": "packages/magic-agent-helix"
+				"pkgRoot": "packages/magic-agent-helix",
+				"npmPublish": true,
+				"tarballDir": "dist"
 			}
 		],
 		[
 			"@semantic-release/npm",
 			{
-				"pkgRoot": "packages/magic-helix-plugins"
+				"pkgRoot": "packages/magic-helix-plugins",
+				"npmPublish": true,
+				"tarballDir": "dist"
 			}
 		],
 		[
