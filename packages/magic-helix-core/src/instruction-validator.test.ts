@@ -130,7 +130,7 @@ Refuse inappropriate requests.
       `;
 
       const withoutExamples = withExamples.replace(
-        /\`\`\`typescript[\s\S]+?\`\`\`/g,
+        /```typescript[\s\S]+?```/g,
         '',
       );
 

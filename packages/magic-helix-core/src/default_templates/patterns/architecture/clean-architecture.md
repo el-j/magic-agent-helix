@@ -360,13 +360,110 @@ class PostgresUserRepository implements IUserRepository {
 }
 ```
 
+## Test-Driven Development (TDD)
+
+**ALWAYS write tests before implementation. Follow the Red-Green-Refactor cycle.**
+
+### TDD Workflow
+
+```typescript
+// 1. RED: Write failing test first
+describe('createUser', () => {
+  it('should create user with valid email and hashed password', () => {
+    const user = createUser('test@example.com', 'password123');
+    
+    expect(user.email).toBe('test@example.com');
+    expect(user.passwordHash).not.toBe('password123'); // Should be hashed
+    expect(user.id).toBeDefined();
+    expect(user.createdAt).toBeInstanceOf(Date);
+  });
+  
+  it('should throw error for invalid email', () => {
+    expect(() => createUser('invalid-email', 'password123'))
+      .toThrow('Invalid email format');
+  });
+});
+
+// 2. GREEN: Write minimal code to pass
+export function createUser(email: string, password: string): User {
+  if (!isValidEmail(email)) {
+    throw new Error('Invalid email format');
+  }
+  
+  return {
+    id: generateId(),
+    email,
+    passwordHash: hashPassword(password),
+    createdAt: new Date(),
+  };
+}
+
+// 3. REFACTOR: Clean up while keeping tests green
+```
+
+### Why Test-First?
+
+- **Design pressure**: Tests force you to think about interfaces before implementation
+- **Testable code**: Code written to be tested is naturally more modular and decoupled
+- **Living documentation**: Tests show how code is meant to be used
+- **Confidence**: Refactor freely knowing tests will catch breakage
+- **No test debt**: Tests are written, not "TODO"
+
+### TDD Best Practices
+
+```typescript
+// ✅ DO: Test behavior, not implementation
+it('should return active users', () => {
+  const users = filterActiveUsers(allUsers);
+  expect(users.every(u => u.isActive)).toBe(true);
+});
+
+// ❌ DON'T: Test internal implementation details
+it('should call isActive method', () => {
+  expect(mockUser.isActive).toHaveBeenCalled(); // Fragile!
+});
+
+// ✅ DO: Use descriptive test names that explain business rules
+it('should reject orders when inventory is insufficient', () => {
+  // ...
+});
+
+// ❌ DON'T: Use vague test names
+it('should work correctly', () => {
+  // What does "correctly" mean?
+});
+
+// ✅ DO: Arrange-Act-Assert (AAA) pattern
+it('should calculate total with tax', () => {
+  // Arrange
+  const items = [{ price: 100 }, { price: 200 }];
+  const taxRate = 0.1;
+  
+  // Act
+  const total = calculateTotal(items, taxRate);
+  
+  // Assert
+  expect(total).toBe(330); // (100 + 200) * 1.1
+});
+```
+
+### Test Coverage Goals
+
+- **Entities/Domain**: 100% coverage - critical business logic
+- **Use Cases**: 90%+ coverage - application logic paths
+- **Adapters**: 80%+ coverage - focus on error handling
+- **Integration**: Key user journeys and edge cases
+
 ## Rules Summary
 
+- **ALWAYS** write tests BEFORE writing implementation code (TDD)
 - **ALWAYS** keep entities framework-free
 - **ALWAYS** define interfaces in use cases, implement in adapters
 - **ALWAYS** point dependencies inward (outer layers depend on inner)
-- **ALWAYS** test each layer independently
+- **ALWAYS** test each layer independently with appropriate coverage
 - **NEVER** import frameworks in entities or use cases
 - **NEVER** let inner layers know about outer layers
+- **NEVER** skip writing tests (no test debt)
 - **PREFER** dependency injection over direct instantiation
 - **PREFER** small, focused use cases over large service classes
+- **PREFER** testing behavior over implementation details

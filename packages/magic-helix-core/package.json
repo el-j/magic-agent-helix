@@ -1,5 +1,5 @@
 {
-  "name": "@magic-helix/core",
+  "name": "@el-j/magic-helix-core",
   "version": "3.0.1-beta.1",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -39,18 +39,18 @@
     "access": "public"
   },
   "dependencies": {
-    "commander": "^12.1.0",
-    "glob": "^11.0.3",
-    "gradient-string": "^3.0.0",
-    "inquirer": "^12.11.0",
-    "js-yaml": "^4.1.0",
     "@iarna/toml": "^3.0.0",
+    "commander": "^14.0.2",
+    "glob": "^13.0.0",
+    "gradient-string": "^3.0.0",
+    "inquirer": "^13.1.0",
+    "js-yaml": "^4.1.1",
     "ora": "^9.0.0",
-    "picocolors": "^1.0.1"
+    "picocolors": "^1.1.1"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
-    "vite": "^5.3.5"
+    "vite": "^7.3.0"
   },
   "files": [
     "dist/**/*",

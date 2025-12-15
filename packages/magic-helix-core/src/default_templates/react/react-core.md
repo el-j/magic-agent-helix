@@ -538,28 +538,69 @@ src/
 
 ## Testing Strategy
 
-**Components:** Test rendering and user interactions (shallow tests)
-```tsx
-// UserProfile.test.tsx
-import { render, screen } from '@testing-library/react';
-import { UserProfile } from './UserProfile';
+**ALWAYS write tests BEFORE implementation (Test-Driven Development).**
 
-// Mock the hook
-jest.mock('@/hooks/useUser', () => ({
-  useUser: () => ({
-    user: { id: '1', name: 'John', email: 'john@example.com' },
-    loading: false,
-    updateEmail: jest.fn()
-  })
-}));
+### TDD Workflow
 
-test('renders user name', () => {
-  render(<UserProfile userId="1" />);
-  expect(screen.getByText('John')).toBeInTheDocument();
+```typescript
+// 1. RED: Write failing test first
+describe('UserService', () => {
+  it('should validate email format before API call', async () => {
+    await expect(
+      userService.updateUserEmail('1', 'invalid-email')
+    ).rejects.toThrow('Invalid email format');
+    
+    expect(apiClient.patch).not.toHaveBeenCalled();
+  });
+});
+
+// 2. GREEN: Write minimal code to pass
+export async function updateUserEmail(userId: string, email: string): Promise<User> {
+  if (!isValidEmail(email)) {
+    throw new Error('Invalid email format');
+  }
+  const response = await apiClient.patch(`/users/${userId}`, { email });
+  return response.data;
+}
+
+// 3. REFACTOR: Clean up while keeping tests green
+```
+
+### Test Layer Strategy
+
+**Services (Framework-Free):** Test first, 90%+ coverage
+```typescript
+// userService.test.ts - Write BEFORE userService.ts
+import { userService } from './userService';
+import { apiClient } from '@/lib/apiClient';
+
+jest.mock('@/lib/apiClient');
+
+describe('UserService - TDD', () => {
+  // Test validates business rules
+  test('validates email before updating', async () => {
+    await expect(
+      userService.updateUserEmail('1', 'invalid-email')
+    ).rejects.toThrow('Invalid email format');
+
+    expect(apiClient.patch).not.toHaveBeenCalled();
+  });
+
+  test('updates email when valid', async () => {
+    const mockUser = { id: '1', email: 'new@example.com' };
+    (apiClient.patch as jest.Mock).mockResolvedValue({ data: mockUser });
+
+    const result = await userService.updateUserEmail('1', 'new@example.com');
+
+    expect(apiClient.patch).toHaveBeenCalledWith('/users/1', {
+      email: 'new@example.com'
+    });
+    expect(result.email).toBe('new@example.com');
+  });
 });
 ```
 
-**Hooks:** Test React state/effect integration
+**Hooks (React Integration):** Test React behavior
 ```tsx
 // useUser.test.ts
 import { renderHook, waitFor } from '@testing-library/react';
@@ -583,36 +624,33 @@ test('loads user on mount', async () => {
 });
 ```
 
-**Services:** Test business logic (no React involved)
-```typescript
-// userService.test.ts
-import { userService } from './userService';
-import { apiClient } from '@/lib/apiClient';
+**Components (UI):** Test rendering and user interactions
+```tsx
+// UserProfile.test.tsx
+import { render, screen } from '@testing-library/react';
+import { UserProfile } from './UserProfile';
 
-jest.mock('@/lib/apiClient');
+// Mock the hook
+jest.mock('@/hooks/useUser', () => ({
+  useUser: () => ({
+    user: { id: '1', name: 'John', email: 'john@example.com' },
+    loading: false,
+    updateEmail: jest.fn()
+  })
+}));
 
-describe('UserService', () => {
-  test('validates email before updating', async () => {
-    await expect(
-      userService.updateUserEmail('1', 'invalid-email')
-    ).rejects.toThrow('Invalid email format');
-
-    expect(apiClient.patch).not.toHaveBeenCalled();
-  });
-
-  test('updates email when valid', async () => {
-    const mockUser = { id: '1', email: 'new@example.com' };
-    (apiClient.patch as jest.Mock).mockResolvedValue({ data: mockUser });
-
-    const result = await userService.updateUserEmail('1', 'new@example.com');
-
-    expect(apiClient.patch).toHaveBeenCalledWith('/users/1', {
-      email: 'new@example.com'
-    });
-    expect(result.email).toBe('new@example.com');
-  });
+test('renders user name', () => {
+  render(<UserProfile userId="1" />);
+  expect(screen.getByText('John')).toBeInTheDocument();
 });
 ```
+
+### Test Coverage Goals
+
+- **Services/Business Logic**: 90%+ coverage (test-first, critical paths)
+- **Hooks**: 80%+ coverage (state/effect integration)
+- **Components**: 70%+ coverage (user interactions, conditional rendering)
+- **Models/Utilities**: 100% coverage (pure functions, edge cases)
 
 ## Architecture Summary
 

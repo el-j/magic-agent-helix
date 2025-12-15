@@ -385,7 +385,7 @@ These guidelines focus on packages aligned with the hardware2rust stack.
         continue;
       }
 
-      const match = line.match(/^([A-Za-z0-9_\-]+)\s*=\s*(.+)$/);
+      const match = line.match(/^([A-Za-z0-9_-]+)\s*=\s*(.+)$/);
       if (!match) {
         continue;
       }

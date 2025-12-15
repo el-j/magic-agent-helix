@@ -287,7 +287,7 @@ function extractContent(markdown: string): string {
 
   // Extract examples section (most valuable)
   const examplesMatch = content.match(
-    /## Examples\n([\s\S]+?)(?=\n## |\n---|\Z)/,
+    /## Examples\n([\s\S]+?)(?=\n## |\n---|Z)/,
   );
   if (examplesMatch) {
     return examplesMatch[1].trim();
