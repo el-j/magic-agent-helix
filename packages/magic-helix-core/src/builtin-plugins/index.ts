@@ -14,3 +14,4 @@ export { RubyPlugin } from './ruby';
 export { PHPPlugin } from './php';
 export { CSharpPlugin } from './csharp';
 export { SwiftPlugin } from './swift';
+export { CppPlugin } from './cpp';

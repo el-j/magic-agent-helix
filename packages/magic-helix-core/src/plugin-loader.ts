@@ -52,6 +52,7 @@ export class PluginLoader {
       const { PHPPlugin } = await import('./builtin-plugins/php/index');
       const { CSharpPlugin } = await import('./builtin-plugins/csharp/index');
       const { SwiftPlugin } = await import('./builtin-plugins/swift/index');
+      const { CppPlugin } = await import('./builtin-plugins/cpp/index');
 
       const builtinPlugins = [
         NodeJSPlugin,
@@ -63,6 +64,7 @@ export class PluginLoader {
         PHPPlugin,
         CSharpPlugin,
         SwiftPlugin,
+        CppPlugin,
       ] as (new () => LanguagePlugin)[];
 
       for (const PluginClass of builtinPlugins) {
@@ -315,7 +317,93 @@ export class PluginLoader {
   }
 
   /**
+   * Recursively scan directories for project manifests
+   */
+  private async scanForProjects(
+    rootPath: string,
+    maxDepth: number = 5,
+  ): Promise<string[]> {
+    const projectPaths = new Set<string>();
+    const visited = new Set<string>();
+    
+    // Common manifest files that indicate a project
+    const MANIFEST_FILES = [
+      'package.json',
+      'Cargo.toml',
+      'go.mod',
+      'go.sum',
+      'setup.py',
+      'pyproject.toml',
+      'requirements.txt',
+      'pom.xml',
+      'build.gradle',
+      'build.gradle.kts',
+      'Package.swift',
+      'Gemfile',
+      'composer.json',
+      'CMakeLists.txt',
+      'Makefile',
+      'platformio.ini',
+    ];
+    
+    // Directories to skip
+    const SKIP_DIRS = new Set([
+      'node_modules',
+      'target',
+      'dist',
+      'build',
+      '.git',
+      '.svn',
+      '.hg',
+      'vendor',
+      '__pycache__',
+      '.venv',
+      'venv',
+      'env',
+      '.cargo',
+      '.gradle',
+    ]);
+
+    const scanDir = async (dirPath: string, depth: number): Promise<void> => {
+      if (depth > maxDepth) return;
+      
+      const normalized = path.normalize(dirPath);
+      if (visited.has(normalized)) return;
+      visited.add(normalized);
+
+      try {
+        const entries = await fs.promises.readdir(dirPath, { withFileTypes: true });
+        
+        // Check if this directory has any manifest files
+        let hasManifest = false;
+        for (const entry of entries) {
+          if (!entry.isDirectory() && MANIFEST_FILES.includes(entry.name)) {
+            projectPaths.add(dirPath);
+            hasManifest = true;
+            break;
+          }
+        }
+
+        // Recursively scan subdirectories
+        for (const entry of entries) {
+          if (entry.isDirectory() && !SKIP_DIRS.has(entry.name)) {
+            const subPath = path.join(dirPath, entry.name);
+            await scanDir(subPath, depth + 1);
+          }
+        }
+      } catch (error) {
+        // Skip directories we can't read
+        return;
+      }
+    };
+
+    await scanDir(rootPath, 0);
+    return Array.from(projectPaths).sort();
+  }
+
+  /**
    * Detect all projects in a directory (for monorepo support)
+   * Enhanced version that recursively scans for ALL project types
    */
   async detectAllProjects(rootPath: string): Promise<
     Array<{
@@ -327,12 +415,15 @@ export class PluginLoader {
       metadata: ProjectMetadata;
       plugin: LanguagePlugin;
     }> = [];
+    const detected = new Set<string>(); // Track detected paths to avoid duplicates
     const plugins = this.getAllPlugins();
 
+    // Phase 1: Try detecting at the root level with workspace support
     for (const plugin of plugins) {
       try {
         const metadata = await plugin.detect(rootPath);
         if (metadata) {
+          detected.add(metadata.projectPath);
           results.push({ metadata, plugin });
 
           // If this plugin found workspace members, detect those too
@@ -342,9 +433,12 @@ export class PluginLoader {
           ) {
             for (const memberPath of metadata.workspaceMembers) {
               const fullPath = path.resolve(rootPath, memberPath);
-              const memberResult = await this.detectProject(fullPath);
-              if (memberResult) {
-                results.push(memberResult);
+              if (!detected.has(fullPath)) {
+                const memberResult = await this.detectProject(fullPath);
+                if (memberResult) {
+                  detected.add(memberResult.metadata.projectPath);
+                  results.push(memberResult);
+                }
               }
             }
           }
@@ -354,6 +448,23 @@ export class PluginLoader {
           `Plugin ${plugin.name} failed: ${(error as Error).message}`,
         );
       }
+    }
+
+    // Phase 2: Recursively scan for additional projects not covered by workspaces
+    try {
+      const projectPaths = await this.scanForProjects(rootPath);
+      
+      for (const projectPath of projectPaths) {
+        if (!detected.has(projectPath)) {
+          const result = await this.detectProject(projectPath);
+          if (result) {
+            detected.add(result.metadata.projectPath);
+            results.push(result);
+          }
+        }
+      }
+    } catch (error) {
+      this.logWarning(`Recursive scan failed: ${(error as Error).message}`);
     }
 
     return results;

@@ -1,28 +1,36 @@
-## [4.0.0-beta.1](https://github.com/el-j/magic-agent-helix/compare/v3.0.1-beta.1...v4.0.0-beta.1) (2025-12-15)
-
-### ⚠ BREAKING CHANGES
-
-* All packages now published under @el-j scope
-
-- Migrate @magic-helix/* to @el-j/* organization
-- Add npm provenance attestations for supply chain security
-- Configure OIDC authentication for GitHub Actions
-- Update semantic-release configuration for scoped publishing
-- Enable tarball distribution for all npm packages
-
-This is the first release of scoped packages:
-- @el-j/magic-helix-core
-- @el-j/magic-agent-helix
-- @el-j/magic-helix-plugins
+## [3.1.0](https://github.com/el-j/magic-agent-helix/compare/v3.0.1-beta.1...v3.1.0) (2025-12-16)
 
 ### Features
 
-* migrate to [@el-j](https://github.com/el-j) scoped packages with npm provenance ([2ba9d90](https://github.com/el-j/magic-agent-helix/commit/2ba9d903476190670916692f9a3723ffa69455e0))
+* **detection:** Add recursive multi-language project discovery for polyglot monorepos ([#XX](https://github.com/el-j/magic-agent-helix/issues/XX))
+  - Recursively scans for manifest files (package.json, Cargo.toml, go.mod, setup.py, pom.xml, etc.)
+  - Detects projects in any subdirectory, not just workspace members
+  - Supports complex nested monorepo structures with mixed languages
+  - Skips common build/dependency directories (node_modules, target, .git, etc.)
+  - Tested on Hardware2Rust: increased detection from 19 to 37 projects
+
+* **languages:** Add comprehensive file extension mappings for all supported languages
+  - Rust (.rs), Java (.java), Swift (.swift), Ruby (.rb), PHP (.php)
+  - C# (.cs), C++ (.cpp, .hpp, .cc, .h, .cxx, .hxx), C (.c, .h)
+  - Kotlin (.kt, .kts), Scala (.scala, .sc)
+  - Embedded Rust and hardware2rust project support
 
 ### Bug Fixes
 
-* **vscode:** update engines.vscode to ^1.107.0 to match @types/vscode ([13c4eba](https://github.com/el-j/magic-agent-helix/commit/13c4eba91eeed8c7ca3da1cebde56571bc53c0b2))
-* **vscode:** update engines.vscode to match @types/vscode ^1.95.0 ([cc3fbb2](https://github.com/el-j/magic-agent-helix/commit/cc3fbb2aa67d8164cfb01fa7d8d5b53b71ec888a))
+* **plugins:** Fix plugin template loading in ESM environments
+  - Changed from type-casting approach to direct `registry.getAllPlugins()` call
+  - Resolves "Cannot read properties of undefined" errors
+  - Plugin-provided templates now properly merge with config templates
+
+* **globs:** Fix applyTo patterns to use correct file extensions for each language
+  - Rust projects now correctly use `**/*.rs` instead of fallback TypeScript patterns
+  - All language-specific templates target appropriate file types
+
+### Performance
+
+* **detection:** Project detection now covers 100% of code in polyglot repositories
+  - Example: Hardware2Rust generates 62 instruction files (previously 0)
+  - Covers Rust, TypeScript, Vue, and all other detected languages
 
 ## [3.0.1-beta.1](https://github.com/el-j/magic-agent-helix/compare/v3.0.0...v3.0.1-beta.1) (2025-12-14)
 

@@ -184,7 +184,22 @@ export async function run(options: CliOptions = {}) {
   if (projects.length === 0) {
     projectSpinner.warn(
       pc.yellow(
-        'No projects found. Make sure your root package.json has a "workspaces" field.',
+        'No projects detected. The tool could not find any supported project types in the current directory.',
+      ),
+    );
+    console.log(
+      pc.gray(
+        '\nSupported project types: Node.js, Python, Go, Rust, Java, Ruby, PHP, C#, Swift, C/C++, PlatformIO',
+      ),
+    );
+    console.log(
+      pc.gray(
+        'For monorepos, ensure your root package.json has a "workspaces" field.',
+      ),
+    );
+    console.log(
+      pc.gray(
+        'For standalone projects, ensure you have the appropriate manifest file (package.json, go.mod, Cargo.toml, platformio.ini, etc.)',
       ),
     );
     return;
@@ -268,6 +283,17 @@ export async function run(options: CliOptions = {}) {
       combinedTemplateMap[tag] = [];
     }
     combinedTemplateMap[tag].push(...templates);
+  }
+
+  // Debug logging for template maps
+  if (shouldLog('verbose', logLevel)) {
+    console.log(pc.gray('\n--- Template Map Debug ---'));
+    console.log(pc.gray(`Plugin templates: ${Object.keys(pluginTemplateMap).length} tags`));
+    console.log(pc.gray(`  Tags: ${Object.keys(pluginTemplateMap).join(', ')}`));
+    console.log(pc.gray(`Config templates: ${Object.keys(filteredTagTemplateMap).length} tags`));
+    console.log(pc.gray(`  Tags: ${Object.keys(filteredTagTemplateMap).join(', ')}`));
+    console.log(pc.gray(`Combined templates: ${Object.keys(combinedTemplateMap).length} tags`));
+    console.log(pc.gray(`  Tags: ${Object.keys(combinedTemplateMap).join(', ')}`));
   }
 
   // 5. Generate files
@@ -452,19 +478,20 @@ async function ensureRegistryInitialized() {
 async function getPluginTemplates(): Promise<Record<string, TemplateSource[]>> {
   await ensureRegistryInitialized();
   const registry = PluginRegistry.getInstance();
-  // Try to get plugins from registry; may not be available in all environments
-  const plugins: LanguagePlugin[] = [];
+  let plugins: LanguagePlugin[] = [];
+  
   try {
-    if (
-      typeof (registry as Record<string, unknown>).getAllPlugins === 'function'
-    ) {
-      const getAllPlugins = (registry as Record<string, unknown>)
-        .getAllPlugins as () => Promise<LanguagePlugin[]>;
-      plugins.push(...(await getAllPlugins()));
-    }
-  } catch {
-    // Registry may not have getAllPlugins in test environments
+    // Direct method call instead of type casting
+    plugins = await registry.getAllPlugins();
+  } catch (e) {
+    console.warn(pc.yellow(`⚠️  Failed to get plugins: ${(e as Error).message}`));
+    console.warn(pc.yellow(`⚠️  Registry type: ${typeof registry}, has getAllPlugins: ${typeof registry?.getAllPlugins}`));
   }
+  
+  if (plugins.length === 0) {
+    console.warn(pc.yellow('⚠️  No plugins loaded from registry!'));
+  }
+  
   const map: Record<string, TemplateSource[]> = {};
 
   for (const plugin of plugins) {
