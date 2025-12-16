@@ -325,7 +325,7 @@ export class PluginLoader {
   ): Promise<string[]> {
     const projectPaths = new Set<string>();
     const visited = new Set<string>();
-    
+
     // Common manifest files that indicate a project
     const MANIFEST_FILES = [
       'package.json',
@@ -345,7 +345,7 @@ export class PluginLoader {
       'Makefile',
       'platformio.ini',
     ];
-    
+
     // Directories to skip
     const SKIP_DIRS = new Set([
       'node_modules',
@@ -366,14 +366,16 @@ export class PluginLoader {
 
     const scanDir = async (dirPath: string, depth: number): Promise<void> => {
       if (depth > maxDepth) return;
-      
+
       const normalized = path.normalize(dirPath);
       if (visited.has(normalized)) return;
       visited.add(normalized);
 
       try {
-        const entries = await fs.promises.readdir(dirPath, { withFileTypes: true });
-        
+        const entries = await fs.promises.readdir(dirPath, {
+          withFileTypes: true,
+        });
+
         // Check if this directory has any manifest files
         let hasManifest = false;
         for (const entry of entries) {
@@ -453,7 +455,7 @@ export class PluginLoader {
     // Phase 2: Recursively scan for additional projects not covered by workspaces
     try {
       const projectPaths = await this.scanForProjects(rootPath);
-      
+
       for (const projectPath of projectPaths) {
         if (!detected.has(projectPath)) {
           const result = await this.detectProject(projectPath);

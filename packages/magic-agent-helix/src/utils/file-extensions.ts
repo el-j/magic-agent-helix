@@ -54,7 +54,7 @@ export const TAG_FILE_EXTENSIONS: Record<string, FileExtensionMapping> = {
     extensions: ['rs'],
     description: 'Embedded Rust files',
   },
-  'hardware2rust': {
+  hardware2rust: {
     extensions: ['rs'],
     description: 'Hardware2Rust project files',
   },

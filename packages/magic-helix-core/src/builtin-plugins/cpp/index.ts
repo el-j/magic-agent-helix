@@ -42,7 +42,7 @@ export class CppPlugin extends BasePlugin {
       }
       if (platformioConfig.platform) {
         tags.push(`platform-${platformioConfig.platform}`);
-        
+
         // Common platforms
         if (platformioConfig.platform.includes('espressif32')) {
           tags.push('esp32');
@@ -72,7 +72,7 @@ export class CppPlugin extends BasePlugin {
     if (hasCMake) {
       tags.push('cmake');
       if (!manifestFile) manifestFile = 'CMakeLists.txt';
-      
+
       // Try to extract project name from CMakeLists.txt
       const cmakeContent = this.readFile(projectPath, 'CMakeLists.txt');
       if (cmakeContent) {
@@ -84,8 +84,9 @@ export class CppPlugin extends BasePlugin {
     }
 
     // Detect Makefile
-    const hasMakefile = this.fileExists(projectPath, 'Makefile') || 
-                        this.fileExists(projectPath, 'makefile');
+    const hasMakefile =
+      this.fileExists(projectPath, 'Makefile') ||
+      this.fileExists(projectPath, 'makefile');
     if (hasMakefile) {
       tags.push('makefile');
       if (!manifestFile) manifestFile = 'Makefile';
@@ -207,14 +208,14 @@ export class CppPlugin extends BasePlugin {
       fmt: 'fmt',
       spdlog: 'spdlog',
       googletest: 'gtest',
-      'catch2': 'catch2',
-      
+      catch2: 'catch2',
+
       // Arduino/PlatformIO libraries
       'Adafruit GFX Library': 'adafruit-gfx',
-      'WiFi': 'wifi',
-      'ESP32': 'esp32',
-      'FastLED': 'fastled',
-      'ArduinoJson': 'arduino-json',
+      WiFi: 'wifi',
+      ESP32: 'esp32',
+      FastLED: 'fastled',
+      ArduinoJson: 'arduino-json',
     };
   }
 
@@ -222,7 +223,7 @@ export class CppPlugin extends BasePlugin {
     return {
       'platformio.ini': 'platformio',
       'CMakeLists.txt': 'cmake',
-      'Makefile': 'makefile',
+      Makefile: 'makefile',
       '.clang-format': 'clang-format',
       '.clang-tidy': 'clang-tidy',
     };

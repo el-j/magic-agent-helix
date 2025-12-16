@@ -288,12 +288,30 @@ export async function run(options: CliOptions = {}) {
   // Debug logging for template maps
   if (shouldLog('verbose', logLevel)) {
     console.log(pc.gray('\n--- Template Map Debug ---'));
-    console.log(pc.gray(`Plugin templates: ${Object.keys(pluginTemplateMap).length} tags`));
-    console.log(pc.gray(`  Tags: ${Object.keys(pluginTemplateMap).join(', ')}`));
-    console.log(pc.gray(`Config templates: ${Object.keys(filteredTagTemplateMap).length} tags`));
-    console.log(pc.gray(`  Tags: ${Object.keys(filteredTagTemplateMap).join(', ')}`));
-    console.log(pc.gray(`Combined templates: ${Object.keys(combinedTemplateMap).length} tags`));
-    console.log(pc.gray(`  Tags: ${Object.keys(combinedTemplateMap).join(', ')}`));
+    console.log(
+      pc.gray(
+        `Plugin templates: ${Object.keys(pluginTemplateMap).length} tags`,
+      ),
+    );
+    console.log(
+      pc.gray(`  Tags: ${Object.keys(pluginTemplateMap).join(', ')}`),
+    );
+    console.log(
+      pc.gray(
+        `Config templates: ${Object.keys(filteredTagTemplateMap).length} tags`,
+      ),
+    );
+    console.log(
+      pc.gray(`  Tags: ${Object.keys(filteredTagTemplateMap).join(', ')}`),
+    );
+    console.log(
+      pc.gray(
+        `Combined templates: ${Object.keys(combinedTemplateMap).length} tags`,
+      ),
+    );
+    console.log(
+      pc.gray(`  Tags: ${Object.keys(combinedTemplateMap).join(', ')}`),
+    );
   }
 
   // 5. Generate files
@@ -479,19 +497,25 @@ async function getPluginTemplates(): Promise<Record<string, TemplateSource[]>> {
   await ensureRegistryInitialized();
   const registry = PluginRegistry.getInstance();
   let plugins: LanguagePlugin[] = [];
-  
+
   try {
     // Direct method call instead of type casting
     plugins = await registry.getAllPlugins();
   } catch (e) {
-    console.warn(pc.yellow(`⚠️  Failed to get plugins: ${(e as Error).message}`));
-    console.warn(pc.yellow(`⚠️  Registry type: ${typeof registry}, has getAllPlugins: ${typeof registry?.getAllPlugins}`));
+    console.warn(
+      pc.yellow(`⚠️  Failed to get plugins: ${(e as Error).message}`),
+    );
+    console.warn(
+      pc.yellow(
+        `⚠️  Registry type: ${typeof registry}, has getAllPlugins: ${typeof registry?.getAllPlugins}`,
+      ),
+    );
   }
-  
+
   if (plugins.length === 0) {
     console.warn(pc.yellow('⚠️  No plugins loaded from registry!'));
   }
-  
+
   const map: Record<string, TemplateSource[]> = {};
 
   for (const plugin of plugins) {
