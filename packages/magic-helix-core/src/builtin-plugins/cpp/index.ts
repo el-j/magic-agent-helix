@@ -140,6 +140,7 @@ export class CppPlugin extends BasePlugin {
 
     const lines = content.split('\n');
     let inEnv = false;
+    let currentKey: string | null = null;
 
     for (const line of lines) {
       const trimmed = line.trim();
@@ -147,18 +148,21 @@ export class CppPlugin extends BasePlugin {
       // Detect environment section
       if (trimmed.startsWith('[env:')) {
         inEnv = true;
+        currentKey = null;
         continue;
       }
       if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
         inEnv = false;
+        currentKey = null;
         continue;
       }
 
       if (inEnv || !config.board) {
         // Parse key-value pairs
-        const match = trimmed.match(/^(\w+)\s*=\s*(.+)$/);
+        const match = trimmed.match(/^(\w+)\s*=\s*(.*)$/);
         if (match) {
           const [, key, value] = match;
+          currentKey = key;
           switch (key) {
             case 'board':
               config.board = value.trim();
@@ -170,10 +174,15 @@ export class CppPlugin extends BasePlugin {
               config.framework = value.trim();
               break;
             case 'lib_deps':
-              // lib_deps can be multiline
-              config.libs?.push(value.trim());
+              // lib_deps can be multiline, value might be empty if libs are on next lines
+              if (value.trim()) {
+                config.libs?.push(value.trim());
+              }
               break;
           }
+        } else if (currentKey === 'lib_deps' && trimmed && !trimmed.startsWith('[')) {
+          // Continuation line for lib_deps (indented library names)
+          config.libs?.push(trimmed);
         }
       }
     }
