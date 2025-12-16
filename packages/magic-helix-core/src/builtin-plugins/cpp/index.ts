@@ -180,7 +180,11 @@ export class CppPlugin extends BasePlugin {
               }
               break;
           }
-        } else if (currentKey === 'lib_deps' && trimmed && !trimmed.startsWith('[')) {
+        } else if (
+          currentKey === 'lib_deps' &&
+          trimmed &&
+          !trimmed.startsWith('[')
+        ) {
           // Continuation line for lib_deps (indented library names)
           config.libs?.push(trimmed);
         }
