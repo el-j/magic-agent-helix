@@ -1,3 +1,8 @@
+---
+applyTo: "./src/**/*.{ts,tsx,js,jsx,vue,test.ts,test.tsx,spec.ts,spec.tsx}"
+---
+
+
 # Testing: Vitest
 
 ## Expert Identity

@@ -1,3 +1,7 @@
+> Note: The output directory is `.github/instructions` by default. If a user config mistakenly sets `.github/instruction`, the core config merger normalizes it to `.github/instructions`. 
+> 
+> **GitHub Copilot Naming Convention**: Files follow the official pattern `NAME.instructions.md` (e.g., `typescript.instructions.md`, `vue.instructions.md`) as specified in the [GitHub Copilot documentation](https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions). This allows multiple instruction files per repository, each with `applyTo` frontmatter specifying which files they apply to.
+
 import { Command } from 'commander';
 import { run } from './commands/run';
 import { init } from './commands/init';

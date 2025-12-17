@@ -380,7 +380,9 @@ export async function run(options: CliOptions = {}) {
         );
         const fullContent = `${header}\n${formattedContent}`;
 
-        const outputFilename = `${project.name}.${t.suffix}`;
+        // Use just the suffix as the filename (e.g., "typescript.instructions.md")
+        // This follows GitHub Copilot's naming convention for path-specific instructions
+        const outputFilename = t.suffix;
         const outputPath = path.join(targetDir, outputFilename);
 
         generatedFiles.push(outputFilename);
@@ -578,13 +580,30 @@ async function findProjects(): Promise<Project[]> {
   for (const result of detectedProjects) {
     const relativePath = path.relative(rootPath, result.metadata.projectPath);
     projects.push({
-      name: result.metadata.name || path.basename(result.metadata.projectPath),
+      name: sanitizeProjectName(
+        result.metadata.name || path.basename(result.metadata.projectPath),
+      ),
       path: relativePath || '.',
       tags: new Set<string>(),
     });
   }
 
   return projects;
+}
+
+/**
+ * Sanitize project names for filesystem-safe output filenames.
+ * - Convert scoped names like "@scope/app" to "scope-app"
+ * - Replace path separators and whitespace with '-'
+ * - Remove leading '@'
+ */
+function sanitizeProjectName(name: string): string {
+  const trimmed = name.trim();
+  // Replace slashes with dashes, remove leading '@'
+  let sanitized = trimmed.replace(/^@/, '').replace(/[\\/\s]+/g, '-');
+  // Collapse multiple dashes
+  sanitized = sanitized.replace(/-+/g, '-');
+  return sanitized;
 }
 
 async function analyzeProject(

@@ -1,3 +1,8 @@
+---
+applyTo: "./src/**/*.{ts,tsx,js,jsx,vue,test.ts,test.tsx,spec.ts,spec.tsx}"
+---
+
+
 # Framework: Vue 3
 
 ## Expert Identity
@@ -41,7 +46,7 @@ You are an expert Vue 3 developer specializing in the Composition API, TypeScrip
 
 ### Ecosystem
 - **ALWAYS** Use Vue Router for routing.
-- **AVOID** Use Pinia for state management. use singleton store imlpementations with composables instead.
+- **AVOID** Use Pinia for state management. Rely on props and emits for component communication.
 - **ALWAYS** Use Vitest for unit tests of all utils and composables.
 - **ALWAYS** Use Vue's built-in directives (`v-if`, `v-for`, `v-show`, etc.) for conditional rendering and list rendering.
 - **ALWAYS** Use slots for component composition.

@@ -64,60 +64,89 @@ export const BUILT_IN_CONFIG: MergedConfig = {
 
   tagTemplateMap: {
     // Vue Projects
-    'framework-vue': [{ template: 'vue/vue-core.md', suffix: 'vue-core.md' }],
-    'state-pinia': [{ template: 'vue/vue-pinia.md', suffix: 'vue-pinia.md' }],
+    'framework-vue': [
+      { template: 'vue/vue-core.md', suffix: 'vue.instructions.md' },
+    ],
+    'state-pinia': [
+      { template: 'vue/vue-pinia.md', suffix: 'vue-pinia.instructions.md' },
+    ],
     'style-primevue': [
-      { template: 'vue/style-primevue.md', suffix: 'vue-style-primevue.md' },
+      {
+        template: 'vue/style-primevue.md',
+        suffix: 'vue-primevue.instructions.md',
+      },
     ],
     'style-quasar': [
-      { template: 'vue/style-quasar.md', suffix: 'vue-style-quasar.md' },
+      { template: 'vue/style-quasar.md', suffix: 'vue-quasar.instructions.md' },
     ],
 
     // React Projects
     'framework-react': [
-      { template: 'react/react-core.md', suffix: 'react-core.md' },
+      { template: 'react/react-core.md', suffix: 'react.instructions.md' },
     ],
     'state-zustand': [
-      { template: 'react/react-zustand.md', suffix: 'react-zustand.md' },
+      {
+        template: 'react/react-zustand.md',
+        suffix: 'react-zustand.instructions.md',
+      },
     ],
 
     // NestJS Projects
     'framework-nestjs': [
-      { template: 'nestjs/nestjs-core.md', suffix: 'nestjs-core.md' },
+      { template: 'nestjs/nestjs-core.md', suffix: 'nestjs.instructions.md' },
     ],
 
     // Angular Projects
     'framework-angular': [
-      { template: 'angular/angular-core.md', suffix: 'angular-core.md' },
+      {
+        template: 'angular/angular-core.md',
+        suffix: 'angular.instructions.md',
+      },
     ],
 
     // Generic
     'style-tailwind': [
-      { template: 'generic/style-tailwind.md', suffix: 'style-tailwind.md' },
+      {
+        template: 'generic/style-tailwind.md',
+        suffix: 'tailwind.instructions.md',
+      },
     ],
-    'style-mui': [{ template: 'generic/style-mui.md', suffix: 'style-mui.md' }],
+    'style-mui': [
+      { template: 'generic/style-mui.md', suffix: 'mui.instructions.md' },
+    ],
     'test-vitest': [
-      { template: 'generic/test-vitest.md', suffix: 'test-vitest.md' },
+      { template: 'generic/test-vitest.md', suffix: 'vitest.instructions.md' },
     ],
-    'test-jest': [{ template: 'generic/test-jest.md', suffix: 'test-jest.md' }],
+    'test-jest': [
+      { template: 'generic/test-jest.md', suffix: 'jest.instructions.md' },
+    ],
     'test-cypress': [
-      { template: 'generic/test-cypress.md', suffix: 'test-cypress.md' },
+      {
+        template: 'generic/test-cypress.md',
+        suffix: 'cypress.instructions.md',
+      },
     ],
     'test-playwright': [
-      { template: 'generic/test-playwright.md', suffix: 'test-playwright.md' },
+      {
+        template: 'generic/test-playwright.md',
+        suffix: 'playwright.instructions.md',
+      },
     ],
     'lang-typescript': [
-      { template: 'generic/lang-typescript.md', suffix: 'lang-typescript.md' },
+      {
+        template: 'generic/lang-typescript.md',
+        suffix: 'typescript.instructions.md',
+      },
     ],
     'lang-python': [
-      { template: 'python/lang-python.md', suffix: 'lang-python.md' },
+      { template: 'python/lang-python.md', suffix: 'python.instructions.md' },
     ],
-    'lang-go': [{ template: 'go/lang-go.md', suffix: 'lang-go.md' }],
+    'lang-go': [{ template: 'go/lang-go.md', suffix: 'go.instructions.md' }],
     'state-rxjs': [
-      { template: 'generic/state-rxjs.md', suffix: 'state-rxjs.md' },
+      { template: 'generic/state-rxjs.md', suffix: 'rxjs.instructions.md' },
     ],
     'state-redux': [
-      { template: 'generic/state-redux.md', suffix: 'state-redux.md' },
+      { template: 'generic/state-redux.md', suffix: 'redux.instructions.md' },
     ],
   },
 };

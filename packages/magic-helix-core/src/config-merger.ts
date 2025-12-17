@@ -69,10 +69,14 @@ export function loadUserConfig(configPath?: string): Partial<Config> {
 export function mergeConfigs(userConfig: Partial<Config>): MergedConfig {
   const base = BUILT_IN_CONFIG;
 
+  const normalizedOutputDir = normalizeOutputDirectory(
+    (userConfig.outputDirectory ?? base.outputDirectory) as string,
+  );
+
   return {
     target: userConfig.target || base.target,
     templateDirectory: userConfig.templateDirectory ?? base.templateDirectory,
-    outputDirectory: userConfig.outputDirectory ?? base.outputDirectory,
+    outputDirectory: normalizedOutputDir,
     dependencyTagMap: {
       ...base.dependencyTagMap,
       ...(userConfig.dependencyTagMap || {}),
@@ -94,4 +98,27 @@ export function mergeConfigs(userConfig: Partial<Config>): MergedConfig {
       ...(userConfig.aiRefinement || {}),
     },
   };
+}
+
+/**
+ * Normalize common output directory misconfigurations.
+ * - Convert `.github/instruction` → `.github/instructions`
+ * - Trim whitespace
+ */
+function normalizeOutputDirectory(dir: string): string {
+  const trimmed = dir.trim();
+  // Normalize common singular mistake
+  if (
+    trimmed.endsWith('.github/instruction') ||
+    /\binstruction\/?$/.test(trimmed)
+  ) {
+    const corrected = trimmed.replace(/instruction\/?$/, 'instructions');
+    console.warn(
+      pc.yellow(
+        `  Normalized outputDirectory from "${trimmed}" to "${corrected}". Using ".github/instructions" as the default convention.`,
+      ),
+    );
+    return corrected;
+  }
+  return trimmed;
 }
