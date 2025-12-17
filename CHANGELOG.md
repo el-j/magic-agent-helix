@@ -1,3 +1,16 @@
+## [4.0.0-beta.2](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2025-12-17)
+
+### Features
+
+* Add comprehensive instructions for Tailwind CSS, TypeScript, Vitest, PrimeVue, and Vue 3 ([29983c0](https://github.com/el-j/magic-agent-helix/commit/29983c081ee1a47a2b730fc39e5b5158de381bfc))
+* add recursive polyglot detection and complete language support ([03d7660](https://github.com/el-j/magic-agent-helix/commit/03d766001f30454bda041e853a30a1f4f1388d4f))
+* add recursive polyglot detection and complete language support ([a0d1850](https://github.com/el-j/magic-agent-helix/commit/a0d185092a568732943f50a040a87d6739e926ac)), closes [#1](https://github.com/el-j/magic-agent-helix/issues/1)
+
+### Bug Fixes
+
+* **cpp:** improve parsing of lib_deps for multiline entries ([27f9e15](https://github.com/el-j/magic-agent-helix/commit/27f9e15a011b5ad4bae575b5733caa24ce469da1))
+* **cpp:** improve readability of lib_deps condition in CppPlugin ([8360f93](https://github.com/el-j/magic-agent-helix/commit/8360f93e234c3b9ea35ae42d4f4e27c9cbd0aeeb))
+
 ## [3.1.0](https://github.com/el-j/magic-agent-helix/compare/v3.0.1-beta.1...v3.1.0) (2025-12-16)
 
 ### Features
