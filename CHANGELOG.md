@@ -1,3 +1,9 @@
+## [4.0.0-beta.4](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.3...v4.0.0-beta.4) (2025-12-18)
+
+### Bug Fixes
+
+* remove duplicate templates and fix plugin filename generation ([a69fd11](https://github.com/el-j/magic-agent-helix/commit/a69fd11ad48775008ab49c902b031e0db708e695))
+
 ## [4.0.0-beta.3](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2025-12-18)
 
 ### ⚠ BREAKING CHANGES
