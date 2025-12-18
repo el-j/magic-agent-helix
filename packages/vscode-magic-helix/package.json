@@ -296,8 +296,9 @@
     }
   },
   "scripts": {
-    "build": "tsc --build",
-    "package": "vsce package --no-yarn"
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
+    "build": "npm run clean && tsc",
+    "package": "npm run build && vsce package --no-yarn"
   },
   "dependencies": {
     "@el-j/magic-helix-core": "*",

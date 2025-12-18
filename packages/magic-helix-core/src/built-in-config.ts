@@ -46,20 +46,15 @@ export const BUILT_IN_CONFIG: MergedConfig = {
   },
 
   configFileTagMap: {
-    // Detect key configs
+    // Detect key configs - removed language-specific entries, now handled by plugins
     'tailwind.config.js': 'style-tailwind',
     'tailwind.config.ts': 'style-tailwind',
     'vite.config.ts': 'build-vite',
     'vite.config.js': 'build-vite',
-    'tsconfig.json': 'lang-typescript',
   },
 
   fileGlobTagMap: {
-    // Detect file types
-    'src/**/*.vue': 'framework-vue',
-    'src/**/*.tsx': 'framework-react',
-    'src/**/*.go': 'lang-go',
-    'src/**/*.py': 'lang-python',
+    // Detect file types - removed language-specific entries, now handled by plugins
   },
 
   tagTemplateMap: {
@@ -132,21 +127,6 @@ export const BUILT_IN_CONFIG: MergedConfig = {
         suffix: 'playwright.instructions.md',
       },
     ],
-    'lang-typescript': [
-      {
-        template: 'generic/lang-typescript.md',
-        suffix: 'typescript.instructions.md',
-      },
-    ],
-    'lang-python': [
-      { template: 'python/lang-python.md', suffix: 'python.instructions.md' },
-    ],
-    'lang-go': [{ template: 'go/lang-go.md', suffix: 'go.instructions.md' }],
-    'state-rxjs': [
-      { template: 'generic/state-rxjs.md', suffix: 'rxjs.instructions.md' },
-    ],
-    'state-redux': [
-      { template: 'generic/state-redux.md', suffix: 'redux.instructions.md' },
-    ],
+    // Language-specific templates removed - now provided by language plugins
   },
 };

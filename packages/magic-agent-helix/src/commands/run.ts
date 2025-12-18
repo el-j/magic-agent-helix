@@ -528,7 +528,10 @@ async function getPluginTemplates(): Promise<Record<string, TemplateSource[]>> {
     }
 
     for (const tmpl of templates) {
-      const suffix = `${tmpl.name}.md`;
+      // Convert template name to suffix: 'lang-typescript' → 'typescript.instructions.md'
+      // 'react-core' → 'react.instructions.md', etc.
+      const baseName = tmpl.name.replace(/^lang-/, '').replace(/-core$/, '');
+      const suffix = `${baseName}.instructions.md`;
       let content: string | null = null;
       try {
         content =
