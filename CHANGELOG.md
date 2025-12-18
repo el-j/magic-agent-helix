@@ -12,6 +12,21 @@
 
 ## [Unreleased]
 
+### Features
+
+* **plugins:** Add support for 8 additional programming languages
+  - Elixir (Phoenix framework support)
+  - Dart/Flutter (mobile/cross-platform development)
+  - Scala (Akka, Play, ZIO, Cats)
+  - Kotlin (Ktor, Spring Boot, Coroutines)
+  - Lua (LuaRocks, OpenResty)
+  - R (Tidyverse, Shiny, statistical computing)
+  - Perl (CPAN, Mojolicious)
+  - Shell (Bash/Zsh scripting)
+  - Total language coverage: 18 languages (previously 10)
+  - Automatic plugin discovery and template generation
+  - Framework and library detection for each language
+
 ### Bug Fixes
 
 * **vscode:** Prepare VS Code extension for stable release
