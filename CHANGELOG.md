@@ -1,3 +1,9 @@
+## [4.0.0-beta.5](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.4...v4.0.0-beta.5) (2025-12-18)
+
+### Bug Fixes
+
+* VS Code extension use [@beta](https://github.com/beta) tag instead of [@latest](https://github.com/latest) ([d6dceaa](https://github.com/el-j/magic-agent-helix/commit/d6dceaab2cad49d6030e085b0313bbbe74c5cf27))
+
 ## [Unreleased]
 
 ### Bug Fixes

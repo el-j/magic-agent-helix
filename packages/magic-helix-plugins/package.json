@@ -1,6 +1,6 @@
 {
   "name": "@el-j/magic-helix-plugins",
-  "version": "4.0.0-beta.4",
+  "version": "4.0.0-beta.5",
   "description": "Official language detection plugins for MagicAgentHelix",
   "type": "module",
   "main": "./dist/index.js",
