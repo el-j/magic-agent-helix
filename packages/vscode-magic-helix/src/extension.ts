@@ -451,16 +451,16 @@ async function runMagicHelix(
         type: 'info',
       });
     } else {
-      // Production mode: use npx
-      commandStr = `npx @el-j/magic-agent-helix ${command} ${mergedOptions.join(' ')}`;
-      outputChannel.appendLine('Mode: Production (using npx)');
+      // Production mode: use npx with @beta tag
+      commandStr = `npx @el-j/magic-agent-helix@beta ${command} ${mergedOptions.join(' ')}`;
+      outputChannel.appendLine('Mode: Production (using npx @beta)');
       outputChannel.appendLine('⚠️ Local CLI not found. Using npx instead.');
       outputChannel.appendLine(
         'Note: Package must be published to npm for this to work.',
       );
       sendProgressUpdate(panel, {
         stage: 'Configuration',
-        message: 'Using npx to run @el-j/magic-agent-helix',
+        message: 'Using npx to run @el-j/magic-agent-helix@beta',
         progress: 10,
         type: 'warning',
       });
