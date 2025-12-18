@@ -9,7 +9,7 @@
  * - .cpp/.h files
  */
 
-import type { ProjectMetadata, TemplateDefinition } from '../../types';
+import type { ProjectMetadata, TemplateDefinition } from '@el-j/magic-helix-core';
 import { BasePlugin } from '../base/BasePlugin';
 
 interface PlatformIOConfig {

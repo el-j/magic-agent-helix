@@ -14,8 +14,16 @@ export default defineConfig({
         'ruby/index': resolve(__dirname, 'src/ruby/index.ts'),
         'php/index': resolve(__dirname, 'src/php/index.ts'),
         'csharp/index': resolve(__dirname, 'src/csharp/index.ts'),
+        'cpp/index': resolve(__dirname, 'src/cpp/index.ts'),
+        'swift/index': resolve(__dirname, 'src/swift/index.ts'),
       },
       formats: ['es', 'cjs'],
+      fileName: (format, entryName) => {
+        if (format === 'es') {
+          return `${entryName}.mjs`;
+        }
+        return `${entryName}.cjs`;
+      },
     },
     rollupOptions: {
       external: ['@el-j/magic-helix-core', 'node:fs', 'node:path', 'glob'],

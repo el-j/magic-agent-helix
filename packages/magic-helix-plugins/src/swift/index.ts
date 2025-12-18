@@ -4,7 +4,7 @@
  * Detects Swift projects via Package.swift, .xcodeproj, or .xcworkspace
  */
 
-import type { ProjectMetadata, TemplateDefinition } from '../../types';
+import type { ProjectMetadata, TemplateDefinition } from '@el-j/magic-helix-core';
 import { BasePlugin } from '../base/BasePlugin';
 
 export class SwiftPlugin extends BasePlugin {

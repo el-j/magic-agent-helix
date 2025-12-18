@@ -9,7 +9,6 @@ import type {
 } from '@el-j/magic-helix-core';
 import {
   type AssistantTarget,
-  BUILT_IN_TEMPLATE_DIR,
   PluginRegistry,
   type ProjectMetadata,
   type TemplateDefinition,
@@ -357,15 +356,10 @@ export async function run(options: CliOptions = {}) {
 
       for (const t of templates) {
         totalTemplates++;
-        // Check for template in user's dir *first*, then fall back to built-in
-        let templateContent =
+        // Use plugin inline content or user custom templates
+        const templateContent =
           t.inlineContent ?? readTemplate(userTemplateDir, t.template);
-        let source = t.inlineContent ? 'Plugin (inline)' : 'Custom';
-
-        if (!templateContent) {
-          templateContent = readTemplate(BUILT_IN_TEMPLATE_DIR, t.template);
-          source = 'Built-in';
-        }
+        const source = t.inlineContent ? 'Plugin' : 'Custom';
 
         if (!templateContent) {
           console.warn(pc.yellow(`    ⚠️  Template not found: ${t.template}`));

@@ -51,6 +51,16 @@
       "import": "./dist/csharp/index.mjs",
       "require": "./dist/csharp/index.cjs",
       "types": "./dist/csharp/index.d.ts"
+    },
+    "./cpp": {
+      "import": "./dist/cpp/index.mjs",
+      "require": "./dist/cpp/index.cjs",
+      "types": "./dist/cpp/index.d.ts"
+    },
+    "./swift": {
+      "import": "./dist/swift/index.mjs",
+      "require": "./dist/swift/index.cjs",
+      "types": "./dist/swift/index.d.ts"
     }
   },
   "files": [
@@ -59,7 +69,7 @@
   ],
   "scripts": {
     "build": "npm run build:types && npm run build:bundle && npm run copy:templates",
-    "build:types": "tsc --project tsconfig.json",
+    "build:types": "tsc --project tsconfig.declarations.json --outDir dist",
     "build:bundle": "vite build",
     "copy:templates": "node scripts/copy-templates.js",
     "dev": "vite build --watch",

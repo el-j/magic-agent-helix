@@ -94,9 +94,6 @@ export {
 
 export * from './types';
 
-// Export the path to the built-in templates directory
-export const BUILT_IN_TEMPLATE_DIR = resolve(__dirname, 'default_templates');
-
 // Telemetry (Phase 6)
 export { createTelemetry, TelemetryClient } from './telemetry';
 export type {

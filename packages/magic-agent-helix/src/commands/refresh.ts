@@ -8,7 +8,6 @@ import type {
 } from '@el-j/magic-helix-core';
 import {
   type AssistantTarget,
-  BUILT_IN_TEMPLATE_DIR,
   getFormatter,
   loadUserConfig,
   mergeConfigs,
@@ -139,14 +138,9 @@ export async function refresh(options: CliOptions = {}) {
           continue;
         }
 
-        // Read template
-        let templateContent = readTemplate(userTemplateDir, t.template);
-        let source = 'Custom';
-
-        if (!templateContent) {
-          templateContent = readTemplate(BUILT_IN_TEMPLATE_DIR, t.template);
-          source = 'Built-in';
-        }
+        // Read template from user custom directory
+        const templateContent = readTemplate(userTemplateDir, t.template);
+        const source = 'Custom';
 
         if (!templateContent) {
           console.warn(pc.yellow(`    ⚠️  Template not found: ${t.template}`));

@@ -42,17 +42,19 @@ export class PluginLoader {
     const results: PluginLoadResult[] = [];
 
     try {
-      // Import built-in plugins from local builtin-plugins directory
-      const { NodeJSPlugin } = await import('./builtin-plugins/nodejs/index');
-      const { GoPlugin } = await import('./builtin-plugins/go/index');
-      const { PythonPlugin } = await import('./builtin-plugins/python/index');
-      const { RustPlugin } = await import('./builtin-plugins/rust/index');
-      const { JavaPlugin } = await import('./builtin-plugins/java/index');
-      const { RubyPlugin } = await import('./builtin-plugins/ruby/index');
-      const { PHPPlugin } = await import('./builtin-plugins/php/index');
-      const { CSharpPlugin } = await import('./builtin-plugins/csharp/index');
-      const { SwiftPlugin } = await import('./builtin-plugins/swift/index');
-      const { CppPlugin } = await import('./builtin-plugins/cpp/index');
+      // Import built-in plugins from @el-j/magic-helix-plugins package
+      const {
+        NodeJSPlugin,
+        GoPlugin,
+        PythonPlugin,
+        RustPlugin,
+        JavaPlugin,
+        RubyPlugin,
+        PHPPlugin,
+        CSharpPlugin,
+        SwiftPlugin,
+        CppPlugin,
+      } = await import('@el-j/magic-helix-plugins');
 
       const builtinPlugins = [
         NodeJSPlugin,
@@ -81,7 +83,7 @@ export class PluginLoader {
           source: {
             type: 'builtin',
             identifier: plugin.name,
-            packageName: 'magic-helix-plugins',
+            packageName: '@el-j/magic-helix-plugins',
           },
           loadTime: Date.now() - startTime,
         };
@@ -96,7 +98,7 @@ export class PluginLoader {
       this.handleLoadError(
         {
           type: 'builtin',
-          identifier: 'magic-helix-plugins',
+          identifier: '@el-j/magic-helix-plugins',
         },
         error as Error,
       );

@@ -17,15 +17,14 @@
     "node": "^20.11.1 || >=22.0.0"
   },
   "scripts": {
-    "build": "npm run build:types && npm run build:bundle && npm run build:templates",
+    "build": "npm run build:types && npm run build:bundle",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:combiner": "vitest run src/pattern-combiner.test.ts --reporter=verbose",
     "test:integration": "vitest run src/integration.test.ts --reporter=verbose",
     "build:types": "tsc --project tsconfig.declarations.json --outDir dist",
-    "build:bundle": "vite build",
-    "build:templates": "node ./scripts/copy-templates.js"
+    "build:bundle": "vite build"
   },
   "keywords": [
     "magic-agent-helix",
@@ -39,6 +38,7 @@
     "access": "public"
   },
   "dependencies": {
+    "@el-j/magic-helix-plugins": "*",
     "@iarna/toml": "^3.0.0",
     "commander": "^14.0.2",
     "glob": "^13.0.0",

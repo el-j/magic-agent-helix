@@ -1,0 +1,20 @@
+# Testing: Jest
+- **ALWAYS** use descriptive test names that explain what is being tested.
+- **ALWAYS** follow the "Arrange, Act, Assert" pattern in tests.
+- **ALWAYS** use `describe` blocks to group related tests.
+- **ALWAYS** use `beforeEach` and `afterEach` for test setup and teardown.
+- **ALWAYS** mock external dependencies with `jest.mock()` or `jest.fn()`.
+- **ALWAYS** use `expect.assertions()` to ensure assertions are called.
+- **ALWAYS** test both success and error cases.
+- **ALWAYS** use `test.each` for parameterized tests.
+- **ALWAYS** avoid testing implementation details - test behavior.
+- **ALWAYS** use `jest.clearAllMocks()` in `beforeEach` for clean tests.
+- **ALWAYS** use meaningful assertion messages with `expect().toBe(expected, message)`.
+- **ALWAYS** test async code with `async/await` and proper error handling.
+- **ALWAYS** use `jest.spyOn()` for spying on object methods.
+- **ALWAYS** group mocks in a `mocks` directory with descriptive names.
+- **ALWAYS** use `jest.setTimeout()` for long-running async tests.
+- **ALWAYS** test edge cases and boundary conditions.
+- **ALWAYS** use `test.todo()` for planned tests.
+- **ALWAYS** maintain test coverage above 80%.
+- **ALWAYS** run tests in CI/CD pipelines with `--coverage` flag.

@@ -1,0 +1,21 @@
+# Testing: Playwright
+- **ALWAYS** use semantic locators like `getByRole()`, `getByLabel()`, `getByText()`.
+- **ALWAYS** use `data-testid` attributes as fallback for complex selectors.
+- **ALWAYS** use page object model for reusable selectors and actions.
+- **ALWAYS** use `page.route()` for API mocking and network interception.
+- **ALWAYS** use `expect().toBeVisible()` and `expect().toBeHidden()` for visibility checks.
+- **ALWAYS** use `page.waitForLoadState('networkidle')` for page load completion.
+- **ALWAYS** test cross-browser compatibility with different browser contexts.
+- **ALWAYS** use `test.describe()` for grouping related tests.
+- **ALWAYS** use `test.beforeEach()` for test setup and navigation.
+- **ALWAYS** use `page.context().storageState()` for authentication persistence.
+- **ALWAYS** use `page.screenshot()` for visual regression testing.
+- **ALWAYS** use `test.use()` for configuring test fixtures.
+- **ALWAYS** use `page.pause()` during development for debugging.
+- **ALWAYS** use `test.skip()` and `test.only()` for test management.
+- **ALWAYS** use `expect().toMatchSnapshot()` for visual comparisons.
+- **ALWAYS** use `page.keyboard` and `page.mouse` for complex interactions.
+- **ALWAYS** use `page.waitForFunction()` for custom wait conditions.
+- **ALWAYS** run tests in parallel with `workers` configuration.
+- **ALWAYS** use `testInfo.attachments` for test artifacts.
+- **ALWAYS** maintain test execution time under 30 seconds per test.

@@ -1,3 +1,37 @@
+## [4.0.0](https://github.com/el-j/magic-agent-helix/compare/v3.1.0...v4.0.0) (2025-12-18)
+
+### ⚠ BREAKING CHANGES
+
+* **architecture:** Plugin consolidation - all language plugins and templates moved to dedicated `@el-j/magic-helix-plugins` package
+  - Removed `BUILT_IN_TEMPLATE_DIR` export from `@el-j/magic-helix-core`
+  - Plugin templates now distributed via `@el-j/magic-helix-plugins` package
+  - Pattern templates load from plugins package instead of core package
+  - Cleaner separation between core engine and language-specific plugins
+
+### Features
+
+* **plugins:** Consolidate all plugins and templates into dedicated package ([#XX](https://github.com/el-j/magic-agent-helix/issues/XX))
+  - New `@el-j/magic-helix-plugins@4.0.0-beta.1` package with all language plugins
+  - 10 language plugins: NodeJS, Go, Python, Rust, Java, Ruby, PHP, C#, C++, Swift
+  - 100+ instruction templates covering frameworks, styles, testing, CI/CD, patterns
+  - 33 meta-pattern templates for AI instruction composition
+  - Plugin-centric architecture improves modularity and extensibility
+
+### Code Refactoring
+
+* **core:** Remove duplicate template storage from core package
+  - Deleted `packages/magic-helix-core/src/builtin-plugins/`
+  - Deleted `packages/magic-helix-core/src/default_templates/`
+  - Pattern combiner now loads templates from `@el-j/magic-helix-plugins`
+  - CLI commands updated to use plugin-provided templates only
+
+### Tests
+
+* **core:** All 118 core tests passing
+  - Pattern combiner tests updated for new plugin-based template loading
+  - Integration tests verify full workflow with consolidated plugins
+  - Build system validated across all packages
+
 ## [3.1.0](https://github.com/el-j/magic-agent-helix/compare/v3.0.1-beta.1...v3.1.0) (2025-12-16)
 
 ### Features
