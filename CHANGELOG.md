@@ -1,3 +1,9 @@
+## [4.0.0-beta.7](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.6...v4.0.0-beta.7) (2025-12-18)
+
+### Features
+
+* add 8 new language plugins - Elixir, Dart/Flutter, Scala, Kotlin, Lua, R, Perl, Shell ([b0200c5](https://github.com/el-j/magic-agent-helix/commit/b0200c5e2aeeeb33c13b02902f269d317a123391))
+
 ## [4.0.0-beta.6](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.5...v4.0.0-beta.6) (2025-12-18)
 
 ### Bug Fixes
