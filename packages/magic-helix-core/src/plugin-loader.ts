@@ -34,7 +34,8 @@ export class PluginLoader {
   }
 
   /**
-   * Load built-in plugins from the magic-helix-plugins package
+   * Load built-in plugins from the @el-j/magic-helix-plugins package
+   * Loads all exported plugin classes from the package
    */
   async loadBuiltinPlugins(
     pluginNames?: string[],
@@ -42,34 +43,27 @@ export class PluginLoader {
     const results: PluginLoadResult[] = [];
 
     try {
-      // Import built-in plugins from @el-j/magic-helix-plugins package
-      const {
-        NodeJSPlugin,
-        GoPlugin,
-        PythonPlugin,
-        RustPlugin,
-        JavaPlugin,
-        RubyPlugin,
-        PHPPlugin,
-        CSharpPlugin,
-        SwiftPlugin,
-        CppPlugin,
-      } = await import('@el-j/magic-helix-plugins');
+      // Dynamically import the plugins package
+      // This avoids the circular dependency at build time
+      const pluginModule = await this.tryImport('@el-j/magic-helix-plugins');
+      
+      if (!pluginModule) {
+        // Package not installed, silently return empty array
+        return results;
+      }
 
-      const builtinPlugins = [
-        NodeJSPlugin,
-        GoPlugin,
-        PythonPlugin,
-        RustPlugin,
-        JavaPlugin,
-        RubyPlugin,
-        PHPPlugin,
-        CSharpPlugin,
-        SwiftPlugin,
-        CppPlugin,
-      ] as (new () => LanguagePlugin)[];
+      // Extract all plugin classes (filter out BasePlugin which is not a language plugin)
+      const pluginClasses = Object.entries(pluginModule)
+        .filter(([name, value]) => {
+          return (
+            name !== 'BasePlugin' &&
+            typeof value === 'function' &&
+            name.endsWith('Plugin')
+          );
+        })
+        .map(([_, PluginClass]) => PluginClass as new () => LanguagePlugin);
 
-      for (const PluginClass of builtinPlugins) {
+      for (const PluginClass of pluginClasses) {
         const plugin = new PluginClass();
 
         // Filter by requested plugin names if specified
@@ -77,15 +71,14 @@ export class PluginLoader {
           continue;
         }
 
-        const startTime = Date.now();
         const result: PluginLoadResult = {
           plugin,
           source: {
-            type: 'builtin',
+            type: 'npm',
             identifier: plugin.name,
             packageName: '@el-j/magic-helix-plugins',
           },
-          loadTime: Date.now() - startTime,
+          loadTime: 0,
         };
 
         this.loadedPlugins.set(plugin.name, result);
@@ -97,8 +90,9 @@ export class PluginLoader {
     } catch (error) {
       this.handleLoadError(
         {
-          type: 'builtin',
+          type: 'npm',
           identifier: '@el-j/magic-helix-plugins',
+          packageName: '@el-j/magic-helix-plugins',
         },
         error as Error,
       );

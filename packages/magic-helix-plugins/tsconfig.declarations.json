@@ -3,6 +3,7 @@
 	"compilerOptions": {
 		"declaration": true,
 		"emitDeclarationOnly": true,
-		"composite": false
+		"composite": false,
+		"skipLibCheck": true
 	}
 }

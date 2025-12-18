@@ -1,3 +1,30 @@
+## [4.0.0-beta.3](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2025-12-18)
+
+### Bug Fixes
+
+* **build:** Fix circular dependency between core and plugins packages ([#XX](https://github.com/el-j/magic-agent-helix/issues/XX))
+  - Changed plugin loading in core to use dynamic imports instead of static imports
+  - Core package now builds independently without requiring plugins at build time
+  - Proper dependency flow: Plugins → Core → CLI → VS Code
+  - Resolves "Cannot find module '@el-j/magic-helix-plugins'" build errors
+
+* **plugins:** Fix template loading for all language plugins
+  - All language plugins now load comprehensive templates from .md files instead of inline strings
+  - Go, Python, Rust, Java, Ruby, PHP, C#, Swift plugins now use `loadTemplateFromFile()`
+  - Template sizes increased from ~200 chars (fallback) to 300-900+ chars (comprehensive)
+  - Maintains fallback templates for error handling
+
+* **tests:** Fix Vite test runner resolution for glob package
+  - Added explicit alias to glob ESM build in vitest.config.ts
+  - Resolved "Failed to resolve entry for package 'glob'" errors
+  - All 168 tests now passing across 29 test files
+
+### Build System
+
+* **dependencies:** Correct build order in root package.json
+  - Build script now executes: plugins → core → CLI → VS Code extension
+  - Template files properly copied to dist during plugins build
+
 ## [4.0.0-beta.2](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2025-12-17)
 
 ### Features

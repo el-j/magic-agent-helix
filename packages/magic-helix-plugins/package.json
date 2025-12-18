@@ -68,7 +68,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "npm run build:types && npm run build:bundle && npm run copy:templates",
+    "build": "npm run build:bundle && npm run copy:templates",
     "build:types": "tsc --project tsconfig.declarations.json --outDir dist",
     "build:bundle": "vite build",
     "copy:templates": "node scripts/copy-templates.js",

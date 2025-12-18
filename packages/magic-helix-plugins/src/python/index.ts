@@ -5,6 +5,7 @@
  * Supports Poetry, pip, and setuptools project formats
  */
 
+import * as path from 'node:path';
 import type { ProjectMetadata, TemplateDefinition } from '@el-j/magic-helix-core';
 import { BasePlugin } from '../base/BasePlugin';
 
@@ -44,7 +45,9 @@ export class PythonPlugin extends BasePlugin {
       {
         name: 'python-core',
         tags: ['python'],
-        content: this.getPythonTemplate(),
+        content: () => this.loadTemplateFromFile(
+          path.join(__dirname, 'templates/lang-python.md')
+        ).then(c => c || this.getPythonFallbackTemplate()),
       },
     ];
   }
@@ -126,7 +129,7 @@ export class PythonPlugin extends BasePlugin {
     };
   }
 
-  private getPythonTemplate(): string {
+  private getPythonFallbackTemplate(): string {
     return `# Python Development Guidelines
 
 This project uses Python.

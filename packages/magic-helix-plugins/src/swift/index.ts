@@ -4,6 +4,7 @@
  * Detects Swift projects via Package.swift, .xcodeproj, or .xcworkspace
  */
 
+import * as path from 'node:path';
 import type { ProjectMetadata, TemplateDefinition } from '@el-j/magic-helix-core';
 import { BasePlugin } from '../base/BasePlugin';
 
@@ -48,7 +49,15 @@ export class SwiftPlugin extends BasePlugin {
       {
         name: 'swift-core',
         tags: ['swift'],
-        content: `# Swift Development Guidelines
+        content: () => this.loadTemplateFromFile(
+          path.join(__dirname, 'templates/lang-swift.md')
+        ).then(c => c || this.getSwiftFallbackTemplate()),
+      },
+    ];
+  }
+
+  private getSwiftFallbackTemplate(): string {
+    return `# Swift Development Guidelines
 
 This project uses Swift.
 
@@ -79,9 +88,7 @@ This project uses Swift.
 - Write XCTest unit tests
 - Use Quick/Nimble for BDD-style tests (if applicable)
 - Mock dependencies appropriately
-- Test async code with expectations`,
-      },
-    ];
+- Test async code with expectations`;
   }
 
   getDependencyTagMap() {

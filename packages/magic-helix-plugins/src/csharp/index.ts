@@ -4,6 +4,7 @@
  * Detects C# projects via .csproj files
  */
 
+import * as path from 'node:path';
 import type { ProjectMetadata, TemplateDefinition } from '@el-j/magic-helix-core';
 import { BasePlugin } from '../base/BasePlugin';
 
@@ -47,7 +48,15 @@ export class CSharpPlugin extends BasePlugin {
       {
         name: 'csharp-core',
         tags: ['csharp', 'dotnet'],
-        content: `# C# / .NET Development Guidelines
+        content: () => this.loadTemplateFromFile(
+          path.join(__dirname, 'templates/lang-csharp.md')
+        ).then(c => c || this.getCSharpFallbackTemplate()),
+      },
+    ];
+  }
+
+  private getCSharpFallbackTemplate(): string {
+    return `# C# / .NET Development Guidelines
 
 This project uses C# and .NET.
 
@@ -64,9 +73,7 @@ This project uses C# and .NET.
 ## Testing
 - Write xUnit/NUnit tests
 - Use proper assertions
-- Aim for good coverage`,
-      },
-    ];
+- Aim for good coverage`;
   }
 
   getDependencyTagMap() {

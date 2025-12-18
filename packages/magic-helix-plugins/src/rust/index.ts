@@ -5,6 +5,7 @@
  * Supports Cargo workspaces for monorepo detection
  */
 
+import * as path from 'node:path';
 import type { ProjectMetadata, TemplateDefinition } from '@el-j/magic-helix-core';
 import { BasePlugin } from '../base/BasePlugin';
 
@@ -73,7 +74,15 @@ export class RustPlugin extends BasePlugin {
       {
         name: 'rust-core',
         tags: ['rust'],
-        content: `# Rust Development Guidelines
+        content: () => this.loadTemplateFromFile(
+          path.join(__dirname, 'templates/lang-rust.md')
+        ).then(c => c || this.getRustFallbackTemplate()),
+      },
+    ];
+  }
+
+  private getRustFallbackTemplate(): string {
+    return `# Rust Development Guidelines
 
 This project uses Rust.
 
@@ -100,9 +109,7 @@ This project uses Rust.
 ## Dependencies
 - Manage with Cargo.toml
 - Review crate security
-- Keep dependencies updated`,
-      },
-    ];
+- Keep dependencies updated`;
   }
 
   getDependencyTagMap() {

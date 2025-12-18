@@ -14,7 +14,7 @@
     "node": "^20.11.1 || >=22.0.0"
   },
   "scripts": {
-    "build": "npm run build --workspace=@el-j/magic-helix-core && npm run build --workspace=@el-j/magic-agent-helix && npm run build --workspace=magic-helix-vscode && npm run build --workspace=@el-j/magic-helix-plugins",
+    "build": "npm run build --workspace=@el-j/magic-helix-plugins && npm run build --workspace=@el-j/magic-helix-core && npm run build --workspace=@el-j/magic-agent-helix && npm run build --workspace=magic-helix-vscode",
     "build:core": "npm run build --workspace=@el-j/magic-helix-core",
     "build:cli": "npm run build --workspace=@el-j/magic-agent-helix",
     "build:vscode": "npm run build --workspace=magic-helix-vscode",

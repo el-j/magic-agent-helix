@@ -240,13 +240,8 @@ export class PluginRegistry {
       await this.loader.loadBuiltinPlugins();
     }
 
-    // Auto-load @el-j/magic-helix-plugins npm package if available
-    // This allows users to get external language plugins without manual config
-    if (!disabled.includes('@el-j/magic-helix-plugins')) {
-      await this.loader.loadNpmPlugin('@el-j/magic-helix-plugins').catch(() => {
-        // Silently ignore if package not installed; users can install it separately
-      });
-    }
+    // Note: loadBuiltinPlugins now delegates to loadNpmPlugin('@el-j/magic-helix-plugins')
+    // so no need to load it again here
 
     // Load npm plugins
     for (const packageName of npm) {

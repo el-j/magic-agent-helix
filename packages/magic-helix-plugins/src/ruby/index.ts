@@ -4,6 +4,7 @@
  * Detects Ruby projects via Gemfile
  */
 
+import * as path from 'node:path';
 import type { ProjectMetadata, TemplateDefinition } from '@el-j/magic-helix-core';
 import { BasePlugin } from '../base/BasePlugin';
 
@@ -42,7 +43,15 @@ export class RubyPlugin extends BasePlugin {
       {
         name: 'ruby-core',
         tags: ['ruby'],
-        content: `# Ruby Development Guidelines
+        content: () => this.loadTemplateFromFile(
+          path.join(__dirname, 'templates/lang-ruby.md')
+        ).then(c => c || this.getRubyFallbackTemplate()),
+      },
+    ];
+  }
+
+  private getRubyFallbackTemplate(): string {
+    return `# Ruby Development Guidelines
 
 This project uses Ruby.
 
@@ -59,9 +68,7 @@ This project uses Ruby.
 ## Testing
 - Write tests with RSpec/Minitest
 - Use fixtures and factories
-- Aim for good coverage`,
-      },
-    ];
+- Aim for good coverage`;
   }
 
   getDependencyTagMap() {

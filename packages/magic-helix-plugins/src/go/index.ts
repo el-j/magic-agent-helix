@@ -5,6 +5,7 @@
  * Parses module dependencies from go.mod
  */
 
+import * as path from 'node:path';
 import type { ProjectMetadata, TemplateDefinition } from '@el-j/magic-helix-core';
 import { BasePlugin } from '../base/BasePlugin';
 
@@ -69,7 +70,9 @@ export class GoPlugin extends BasePlugin {
       {
         name: 'go-core',
         tags: ['go'],
-        content: this.getGoTemplate(),
+        content: () => this.loadTemplateFromFile(
+          path.join(__dirname, 'templates/lang-go.md')
+        ).then(c => c || this.getGoFallbackTemplate()),
       },
     ];
   }
@@ -83,7 +86,7 @@ export class GoPlugin extends BasePlugin {
     };
   }
 
-  private getGoTemplate(): string {
+  private getGoFallbackTemplate(): string {
     return `# Go Development Guidelines
 
 This project uses Go.
