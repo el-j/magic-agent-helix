@@ -1,36 +1,15 @@
-## [4.0.0](https://github.com/el-j/magic-agent-helix/compare/v3.1.0...v4.0.0) (2025-12-18)
-
-### ⚠ BREAKING CHANGES
-
-* **architecture:** Plugin consolidation - all language plugins and templates moved to dedicated `@el-j/magic-helix-plugins` package
-  - Removed `BUILT_IN_TEMPLATE_DIR` export from `@el-j/magic-helix-core`
-  - Plugin templates now distributed via `@el-j/magic-helix-plugins` package
-  - Pattern templates load from plugins package instead of core package
-  - Cleaner separation between core engine and language-specific plugins
+## [4.0.0-beta.2](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2025-12-17)
 
 ### Features
 
-* **plugins:** Consolidate all plugins and templates into dedicated package ([#XX](https://github.com/el-j/magic-agent-helix/issues/XX))
-  - New `@el-j/magic-helix-plugins@4.0.0-beta.1` package with all language plugins
-  - 10 language plugins: NodeJS, Go, Python, Rust, Java, Ruby, PHP, C#, C++, Swift
-  - 100+ instruction templates covering frameworks, styles, testing, CI/CD, patterns
-  - 33 meta-pattern templates for AI instruction composition
-  - Plugin-centric architecture improves modularity and extensibility
+* Add comprehensive instructions for Tailwind CSS, TypeScript, Vitest, PrimeVue, and Vue 3 ([29983c0](https://github.com/el-j/magic-agent-helix/commit/29983c081ee1a47a2b730fc39e5b5158de381bfc))
+* add recursive polyglot detection and complete language support ([03d7660](https://github.com/el-j/magic-agent-helix/commit/03d766001f30454bda041e853a30a1f4f1388d4f))
+* add recursive polyglot detection and complete language support ([a0d1850](https://github.com/el-j/magic-agent-helix/commit/a0d185092a568732943f50a040a87d6739e926ac)), closes [#1](https://github.com/el-j/magic-agent-helix/issues/1)
 
-### Code Refactoring
+### Bug Fixes
 
-* **core:** Remove duplicate template storage from core package
-  - Deleted `packages/magic-helix-core/src/builtin-plugins/`
-  - Deleted `packages/magic-helix-core/src/default_templates/`
-  - Pattern combiner now loads templates from `@el-j/magic-helix-plugins`
-  - CLI commands updated to use plugin-provided templates only
-
-### Tests
-
-* **core:** All 118 core tests passing
-  - Pattern combiner tests updated for new plugin-based template loading
-  - Integration tests verify full workflow with consolidated plugins
-  - Build system validated across all packages
+* **cpp:** improve parsing of lib_deps for multiline entries ([27f9e15](https://github.com/el-j/magic-agent-helix/commit/27f9e15a011b5ad4bae575b5733caa24ce469da1))
+* **cpp:** improve readability of lib_deps condition in CppPlugin ([8360f93](https://github.com/el-j/magic-agent-helix/commit/8360f93e234c3b9ea35ae42d4f4e27c9cbd0aeeb))
 
 ## [3.1.0](https://github.com/el-j/magic-agent-helix/compare/v3.0.1-beta.1...v3.1.0) (2025-12-16)
 
