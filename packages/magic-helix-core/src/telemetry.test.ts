@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { TelemetryClient, createTelemetry } from './telemetry';
+import { createTelemetry } from './telemetry';
 
 describe('telemetry', () => {
   it('should not write when disabled', () => {

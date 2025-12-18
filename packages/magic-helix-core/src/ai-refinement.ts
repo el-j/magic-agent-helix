@@ -67,7 +67,7 @@ function applyQualityFilter(content: string, quality: string): string {
       const sections = content.split(/\n(?=##? )/); // Split on headers
       return sections
         .filter((section) => {
-          const lower = section.toLowerCase();
+          const _lower = section.toLowerCase();
           const firstLine = section.split('\n')[0].toLowerCase();
           return (
             firstLine.includes('# ') || // Keep top-level headers

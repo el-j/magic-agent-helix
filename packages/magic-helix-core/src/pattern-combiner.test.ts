@@ -72,7 +72,7 @@ describe('pattern-combiner', () => {
       };
 
       const selected = selectPatterns(allPatterns, context);
-      const hasVuePattern = selected.some((p) => p.name.includes('vue'));
+      const _hasVuePattern = selected.some((p) => p.name.includes('vue'));
 
       // Note: We may not have vue-specific patterns yet, so this might be false
       // Just checking the selection logic works
@@ -111,7 +111,7 @@ describe('pattern-combiner', () => {
       };
 
       const selected = selectPatterns(allPatterns, context);
-      const hasShadcnPattern = selected.some((p) => p.name.includes('shadcn'));
+      const _hasShadcnPattern = selected.some((p) => p.name.includes('shadcn'));
 
       // shadcn-ui file uses hyphen in name
       expect(selected.some((p) => p.name === 'shadcn-ui')).toBe(true);

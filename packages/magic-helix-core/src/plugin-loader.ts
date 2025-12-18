@@ -46,7 +46,7 @@ export class PluginLoader {
       // Dynamically import the plugins package
       // This avoids the circular dependency at build time
       const pluginModule = await this.tryImport('@el-j/magic-helix-plugins');
-      
+
       if (!pluginModule) {
         // Package not installed, silently return empty array
         return results;
@@ -373,11 +373,11 @@ export class PluginLoader {
         });
 
         // Check if this directory has any manifest files
-        let hasManifest = false;
+        let _hasManifest = false;
         for (const entry of entries) {
           if (!entry.isDirectory() && MANIFEST_FILES.includes(entry.name)) {
             projectPaths.add(dirPath);
-            hasManifest = true;
+            _hasManifest = true;
             break;
           }
         }
@@ -389,7 +389,7 @@ export class PluginLoader {
             await scanDir(subPath, depth + 1);
           }
         }
-      } catch (error) {
+      } catch (_error) {
         // Skip directories we can't read
         return;
       }

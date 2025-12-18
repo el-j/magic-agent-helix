@@ -19,6 +19,17 @@
   - Resolved "Failed to resolve entry for package 'glob'" errors
   - All 168 tests now passing across 29 test files
 
+* **lint:** Resolve all Biome linter warnings
+  - Fixed 13 unused variable/import warnings across 12 files
+  - Refactored plugin-registry.ts to avoid O(n²) spread operator in reduce
+  - Added biome-ignore comment for legitimate GitHub Actions `${{}}` syntax
+  - Clean lint with no warnings or errors
+
+* **build:** Fix package.json export conditions order
+  - Moved "types" condition before "import" and "require" in all exports
+  - Resolved 11 Vite warnings about unreachable TypeScript declarations
+  - Proper export resolution for all language plugin subpaths
+
 ### Build System
 
 * **dependencies:** Correct build order in root package.json

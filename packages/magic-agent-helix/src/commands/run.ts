@@ -10,7 +10,6 @@ import type {
 import {
   type AssistantTarget,
   PluginRegistry,
-  type ProjectMetadata,
   type TemplateDefinition,
   getFormatter,
   loadUserConfig,

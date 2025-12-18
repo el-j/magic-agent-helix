@@ -688,7 +688,7 @@ function updateStatusBar(update: ProgressUpdate) {
 }
 
 async function showPluginStatusPanel(
-  context: vscode.ExtensionContext,
+  _context: vscode.ExtensionContext,
 ): Promise<void> {
   try {
     // Import PluginRegistry dynamically

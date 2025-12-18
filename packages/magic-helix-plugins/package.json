@@ -8,59 +8,59 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs"
     },
     "./nodejs": {
+      "types": "./dist/nodejs/index.d.ts",
       "import": "./dist/nodejs/index.mjs",
-      "require": "./dist/nodejs/index.cjs",
-      "types": "./dist/nodejs/index.d.ts"
+      "require": "./dist/nodejs/index.cjs"
     },
     "./go": {
+      "types": "./dist/go/index.d.ts",
       "import": "./dist/go/index.mjs",
-      "require": "./dist/go/index.cjs",
-      "types": "./dist/go/index.d.ts"
+      "require": "./dist/go/index.cjs"
     },
     "./python": {
+      "types": "./dist/python/index.d.ts",
       "import": "./dist/python/index.mjs",
-      "require": "./dist/python/index.cjs",
-      "types": "./dist/python/index.d.ts"
+      "require": "./dist/python/index.cjs"
     },
     "./rust": {
+      "types": "./dist/rust/index.d.ts",
       "import": "./dist/rust/index.mjs",
-      "require": "./dist/rust/index.cjs",
-      "types": "./dist/rust/index.d.ts"
+      "require": "./dist/rust/index.cjs"
     },
     "./java": {
+      "types": "./dist/java/index.d.ts",
       "import": "./dist/java/index.mjs",
-      "require": "./dist/java/index.cjs",
-      "types": "./dist/java/index.d.ts"
+      "require": "./dist/java/index.cjs"
     },
     "./ruby": {
+      "types": "./dist/ruby/index.d.ts",
       "import": "./dist/ruby/index.mjs",
-      "require": "./dist/ruby/index.cjs",
-      "types": "./dist/ruby/index.d.ts"
+      "require": "./dist/ruby/index.cjs"
     },
     "./php": {
+      "types": "./dist/php/index.d.ts",
       "import": "./dist/php/index.mjs",
-      "require": "./dist/php/index.cjs",
-      "types": "./dist/php/index.d.ts"
+      "require": "./dist/php/index.cjs"
     },
     "./csharp": {
+      "types": "./dist/csharp/index.d.ts",
       "import": "./dist/csharp/index.mjs",
-      "require": "./dist/csharp/index.cjs",
-      "types": "./dist/csharp/index.d.ts"
+      "require": "./dist/csharp/index.cjs"
     },
     "./cpp": {
+      "types": "./dist/cpp/index.d.ts",
       "import": "./dist/cpp/index.mjs",
-      "require": "./dist/cpp/index.cjs",
-      "types": "./dist/cpp/index.d.ts"
+      "require": "./dist/cpp/index.cjs"
     },
     "./swift": {
+      "types": "./dist/swift/index.d.ts",
       "import": "./dist/swift/index.mjs",
-      "require": "./dist/swift/index.cjs",
-      "types": "./dist/swift/index.d.ts"
+      "require": "./dist/swift/index.cjs"
     }
   },
   "files": [
