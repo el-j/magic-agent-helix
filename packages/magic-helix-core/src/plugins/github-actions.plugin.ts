@@ -100,7 +100,8 @@ export class GitHubActionsPlugin implements DetectionPlugin {
     }
 
     // biome-ignore lint/suspicious/noTemplateCurlyInString: GitHub Actions syntax requires literal ${{ }}
-    content += "\n---\n\n**When editing workflows:**\n* Be mindful of secrets (e.g., `${{ secrets.MY_SECRET }}`). Never log them.\n* Ensure changes are tested, as they affect the project's integration and deployment.\n";
+    content +=
+      "\n---\n\n**When editing workflows:**\n* Be mindful of secrets (e.g., `${{ secrets.MY_SECRET }}`). Never log them.\n* Ensure changes are tested, as they affect the project's integration and deployment.\n";
 
     return [
       {

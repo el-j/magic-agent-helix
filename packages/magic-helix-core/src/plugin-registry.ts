@@ -376,7 +376,10 @@ export class PluginRegistry {
         // Merge configs by mutating accumulator to avoid O(n²) spread
         merged.plugins = mergedPlugins;
         merged.templates = mergedTemplates;
-        Object.assign(merged, config, { plugins: mergedPlugins, templates: mergedTemplates });
+        Object.assign(merged, config, {
+          plugins: mergedPlugins,
+          templates: mergedTemplates,
+        });
         return merged;
       },
       { workspacePath } as RegistryConfig,
