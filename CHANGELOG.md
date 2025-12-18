@@ -8,12 +8,13 @@
 
 ### Bug Fixes
 
-* **vscode:** Fix VS Code extension to use `@beta` tag when calling npx
-  - Changed npx command from `@el-j/magic-agent-helix` to `@el-j/magic-agent-helix@beta`
-  - Ensures extension always uses latest beta version instead of outdated `@latest` (beta.1)
-  - Fixes ENOENT errors caused by extension calling old version from npm
+* **vscode:** Prepare VS Code extension for stable release
+  - Changed npx command to use `@el-j/magic-agent-helix` (defaults to @latest)
+  - Ensures extension works with stable releases without requiring global npm installation
+  - npx automatically downloads and caches the package on first use
+  - Works out of the box in any workspace opened with VS Code
 
-## [4.0.0-beta.4](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.3...v4.0.0-beta.4) (2025-12-18)
+## [4.0.0-beta.5](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.4...v4.0.0-beta.5) (2025-12-18)
 
 ### Bug Fixes
 
