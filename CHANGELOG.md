@@ -1,5 +1,24 @@
 ## [4.0.0-beta.3](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2025-12-18)
 
+### ⚠ BREAKING CHANGES
+
+* All language plugins and templates moved to @el-j/magic-helix-plugins package
+
+- Deleted packages/magic-helix-core/src/builtin-plugins/ directory
+- Deleted packages/magic-helix-core/src/default_templates/ directory
+- Removed BUILT_IN_TEMPLATE_DIR export from core package
+- Updated pattern-combiner to load from @el-j/magic-helix-plugins
+- Updated CLI commands to use plugin-provided templates only
+- All 118 core tests passing
+- Clean separation between engine and language plugins
+- Improved modularity and maintainability
+
+### Features
+
+* consolidate plugins and templates into dedicated package ([5d3da4b](https://github.com/el-j/magic-agent-helix/commit/5d3da4be22372810c5ffc70b92cefe0ac89bf2e1))
+
+## [4.0.0-beta.3](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2025-12-18)
+
 ### Bug Fixes
 
 * **build:** Fix circular dependency between core and plugins packages ([#XX](https://github.com/el-j/magic-agent-helix/issues/XX))
