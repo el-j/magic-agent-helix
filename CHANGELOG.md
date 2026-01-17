@@ -1,3 +1,9 @@
+## [4.0.0-beta.8](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.7...v4.0.0-beta.8) (2026-01-17)
+
+### Features
+
+* Enhance multi-language support and improve monorepo detection ([c1ff763](https://github.com/el-j/magic-agent-helix/commit/c1ff763bf2b1df80a7e3617071fe5c8b2c35d203))
+
 ## [4.0.0-beta.8] (Unreleased)
 
 ### Major Improvements
