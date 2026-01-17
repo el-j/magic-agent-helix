@@ -1,15 +1,29 @@
 <template>
-  <div class="min-h-screen bg-gray-900 p-4 md:p-8">
-    <div class="max-w-6xl mx-auto">
-      <header class="flex items-center justify-between mb-8">
-        <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">
-          ✨ MagicAgentHelix Playground
-        </h1>
-      </header>
+  <div class="min-h-screen bg-gray-900">
+    <!-- Hero Section -->
+    <HeroSection />
 
-      <!-- Load Options -->
-      <div class="bg-gray-800 rounded-lg p-6 mb-6 shadow-lg">
-        <h2 class="text-xl font-semibold text-white mb-4">Load Project</h2>
+    <!-- Features Section -->
+    <FeaturesSection />
+
+    <!-- Languages Section -->
+    <LanguagesSection />
+
+    <!-- Live Demo Section -->
+    <div id="live-demo" class="demo-section">
+      <div class="max-w-6xl mx-auto px-4 md:px-8 py-16">
+        <div class="section-header">
+          <span class="section-badge">Try It Now</span>
+          <h2 class="section-title">Live Demo</h2>
+          <p class="section-description">
+            Upload your project or paste a GitHub URL to see MagicAgentHelix in action. 
+            Analyze languages, detect frameworks, and generate instruction files instantly.
+          </p>
+        </div>
+
+        <!-- Load Options -->
+        <div class="demo-card">
+          <h3 class="demo-card-title">Load Project</h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Local Folder -->
@@ -18,7 +32,7 @@
             <Button
               label="Select Project Folder"
               icon="pi pi-folder-open"
-              @click="handleSelectProject"
+              @click="_handleSelectProject"
               :loading="isLoading"
               class="w-full bg-green-500 hover:bg-green-600 border-green-500"
             />
@@ -36,20 +50,20 @@
               />
               <Button
                 icon="pi pi-download"
-                @click="handleLoadFromGit"
+                @click="_handleLoadFromGit"
                 :loading="isLoadingGit"
                 :disabled="!gitUrl || isLoading"
                 class="bg-blue-500 hover:bg-blue-600 border-blue-500"
               />
             </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <Message v-if="error" severity="error" :closable="false">{{ error }}</Message>
-      <Message v-if="errorGit" severity="error" :closable="false">{{ errorGit }}</Message>
+        <Message v-if="error" severity="error" :closable="false">{{ error }}</Message>
+        <Message v-if="errorGit" severity="error" :closable="false">{{ errorGit }}</Message>
 
-      <div v-if="analysisResult" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div v-if="analysisResult" class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
 
         <!-- Column 1: Project Info & Tags -->
         <div class="md:col-span-1">
@@ -67,14 +81,14 @@
               <Button
                 label="Download All as ZIP"
                 icon="pi pi-download"
-                @click="handleDownloadZip"
+                @click="_handleDownloadZip"
                 class="bg-blue-500 hover:bg-blue-600 border-blue-500"
                 :disabled="!generatedFiles.length"
               />
               <Button
                 label="Download Individual Files"
                 icon="pi pi-file"
-                @click="handleDownloadAll"
+                @click="_handleDownloadAll"
                 class="bg-green-500 hover:bg-green-600 border-green-500"
                 :disabled="!generatedFiles.length"
               />
@@ -86,8 +100,8 @@
                   <InstructionFileEditor
                     :file="file"
                     :index="index"
-                    @download="handleDownloadFile"
-                    @reset="handleResetFile"
+                    @download="_handleDownloadFile"
+                    @reset="_handleResetFile"
                   />
                 </AccordionContent>
               </AccordionPanel>
@@ -98,20 +112,45 @@
           </Panel>
         </div>
 
+        <div v-if="isAnyLoading" class="flex flex-col items-center justify-center p-16 bg-gray-800 rounded-lg shadow-lg mt-8">
+          <ProgressSpinner strokeWidth="4" class="w-16 h-16 text-green-500" />
+          <p class="mt-4 text-xl text-gray-300">{{ currentlyProcessing || 'Loading...' }}</p>
+        </div>
       </div>
-
-      <div v-if="isAnyLoading" class="flex flex-col items-center justify-center p-16 bg-gray-800 rounded-lg shadow-lg mt-8">
-        <ProgressSpinner strokeWidth="4" class="w-16 h-16 text-green-500" />
-        <p class="mt-4 text-xl text-gray-300">{{ currentlyProcessing || 'Loading...' }}</p>
-      </div>
-
     </div>
+
+    <!-- Download Section -->
+    <DownloadSection />
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="https://github.com/el-j/magic-agent-helix" target="_blank">
+            <i class="pi pi-github"></i> GitHub
+          </a>
+          <a href="https://www.npmjs.com/package/@el-j/magic-agent-helix" target="_blank">
+            <i class="pi pi-box"></i> NPM
+          </a>
+          <a href="https://github.com/el-j/magic-agent-helix/blob/main/README.md" target="_blank">
+            <i class="pi pi-book"></i> Docs
+          </a>
+        </div>
+        <p class="footer-text">
+          Built with ❤️ by el-j • Open Source MIT License • © 2025
+        </p>
+      </div>
+    </footer>
   </div>
 </template>
 
 <script setup lang="ts">
 
 import { ref, watch } from "vue";
+import HeroSection from "./components/HeroSection.vue";
+import FeaturesSection from "./components/FeaturesSection.vue";
+import LanguagesSection from "./components/LanguagesSection.vue";
+import DownloadSection from "./components/DownloadSection.vue";
 import InstructionFileEditor from "./components/InstructionFileEditor.vue";
 import ProjectInfoCard from "./components/ProjectInfoCard.vue";
 import { useFileManagement } from "./composables/useFileManagement";
@@ -199,3 +238,100 @@ const _handleResetFile = (index: number) => {
 	}
 };
 </script>
+
+<style scoped>
+.demo-section {
+  background: linear-gradient(180deg, rgba(31, 41, 55, 0.5) 0%, transparent 100%);
+  border-top: 1px solid rgb(55, 65, 81);
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.section-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: rgba(249, 115, 22, 0.1);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  border-radius: 9999px;
+  color: rgb(251, 146, 60);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  color: white;
+  margin-bottom: 1.5rem;
+}
+
+.section-description {
+  font-size: 1.25rem;
+  color: rgb(156, 163, 175);
+  max-width: 48rem;
+  margin: 0 auto;
+  line-height: 1.8;
+}
+
+.demo-card {
+  background: rgba(31, 41, 55, 0.6);
+  border: 2px solid rgb(55, 65, 81);
+  border-radius: 1rem;
+  padding: 2rem;
+  backdrop-filter: blur(8px);
+  margin-bottom: 1.5rem;
+}
+
+.demo-card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 1.5rem;
+}
+
+.footer {
+  background: rgba(17, 24, 39, 0.8);
+  border-top: 1px solid rgb(55, 65, 81);
+  padding: 3rem 2rem;
+  margin-top: 4rem;
+}
+
+.footer-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgb(156, 163, 175);
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-size: 1.125rem;
+}
+
+.footer-links a:hover {
+  color: rgb(96, 165, 250);
+}
+
+.footer-text {
+  color: rgb(107, 114, 128);
+  font-size: 0.875rem;
+}
+</style>
