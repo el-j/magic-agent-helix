@@ -14,7 +14,6 @@ export class ShellPlugin extends BasePlugin {
   displayName = 'Shell';
   version = '1.0.0';
   priority = 60;
-
   async detect(projectPath: string): Promise<ProjectMetadata | null> {
     const files = this.listFiles(projectPath);
     const hasShellFiles = files?.some(f => 
@@ -49,12 +48,13 @@ export class ShellPlugin extends BasePlugin {
   }
 
   getTemplates(): TemplateDefinition[] {
+    const dirname = this.getDirname(import.meta.url);
     return [
       {
         name: 'shell-core',
         tags: ['shell'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/lang-shell.md')
+          path.join(dirname, 'templates/lang-shell.md')
         ).then(c => c || this.getShellFallbackTemplate()),
       },
     ];

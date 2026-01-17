@@ -1,6 +1,5 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { glob } from 'glob';
 
 /**
  * Meta-instruction system (Phase 4)
@@ -64,13 +63,36 @@ export function loadOverrideInstructions(
     return overrides;
   }
 
-  const files = glob.sync('**/*.md', { cwd: overridesDir, absolute: true });
+  try {
+    // Recursively find all .md files
+    const findMdFiles = (dir: string): string[] => {
+      const results: string[] = [];
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          results.push(...findMdFiles(fullPath));
+        } else if (entry.isFile() && entry.name.endsWith('.md')) {
+          results.push(fullPath);
+        }
+      }
+      
+      return results;
+    };
 
-  for (const file of files) {
-    // Use filename (without .md) as tag
-    const tag = path.basename(file, '.md');
-    const content = fs.readFileSync(file, 'utf-8');
-    overrides.set(tag, content);
+    const files = findMdFiles(overridesDir);
+
+    for (const file of files) {
+      // Use filename (without .md) as tag
+      const tag = path.basename(file, '.md');
+      const content = fs.readFileSync(file, 'utf-8');
+      overrides.set(tag, content);
+    }
+  } catch (error) {
+    console.warn(
+      `Failed to load override instructions: ${(error as Error).message}`,
+    );
   }
 
   return overrides;

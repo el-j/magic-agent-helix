@@ -13,7 +13,6 @@ export class SwiftPlugin extends BasePlugin {
   displayName = 'Swift';
   version = '3.0.0';
   priority = 75;
-
   async detect(projectPath: string): Promise<ProjectMetadata | null> {
     // Check for Swift Package Manager
     if (this.fileExists(projectPath, 'Package.swift')) {
@@ -45,12 +44,13 @@ export class SwiftPlugin extends BasePlugin {
   }
 
   getTemplates(): TemplateDefinition[] {
+    const dirname = this.getDirname(import.meta.url);
     return [
       {
         name: 'swift-core',
         tags: ['swift'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/lang-swift.md')
+          path.join(dirname, 'templates/lang-swift.md')
         ).then(c => c || this.getSwiftFallbackTemplate()),
       },
     ];

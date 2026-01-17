@@ -26,6 +26,15 @@ export const BUILT_IN_CONFIG: MergedConfig = {
     '@angular/core': 'framework-angular',
     '@nestjs/core': 'framework-nestjs',
 
+    // Python frameworks
+    django: 'framework-django',
+    flask: 'framework-flask',
+    fastapi: 'framework-fastapi',
+
+    // Go frameworks
+    'github.com/gin-gonic/gin': 'framework-gin',
+    'github.com/gofiber/fiber': 'framework-fiber',
+
     // Styling
     tailwindcss: 'style-tailwind',
     primevue: 'style-primevue',
@@ -37,6 +46,7 @@ export const BUILT_IN_CONFIG: MergedConfig = {
     jest: 'test-jest',
     cypress: 'test-cypress',
     playwright: 'test-playwright',
+    pytest: 'test-pytest',
 
     // State
     rxjs: 'state-rxjs',
@@ -58,19 +68,10 @@ export const BUILT_IN_CONFIG: MergedConfig = {
   },
 
   tagTemplateMap: {
-    // Vue Projects
-    'framework-vue': [
-      { template: 'vue/vue-core.md', suffix: 'vue.instructions.md' },
-    ],
-    'state-pinia': [
-      { template: 'vue/vue-pinia.md', suffix: 'vue-pinia.instructions.md' },
-    ],
-    'style-primevue': [
-      {
-        template: 'vue/style-primevue.md',
-        suffix: 'vue-primevue.instructions.md',
-      },
-    ],
+    // Vue Projects - templates now provided by plugins
+    'framework-vue': [],
+    'state-pinia': [],
+    'style-primevue': [],
     'style-quasar': [
       { template: 'vue/style-quasar.md', suffix: 'vue-quasar.instructions.md' },
     ],
@@ -99,19 +100,12 @@ export const BUILT_IN_CONFIG: MergedConfig = {
       },
     ],
 
-    // Generic
-    'style-tailwind': [
-      {
-        template: 'generic/style-tailwind.md',
-        suffix: 'tailwind.instructions.md',
-      },
-    ],
+    // Generic - templates now provided by plugins
+    'style-tailwind': [],
     'style-mui': [
       { template: 'generic/style-mui.md', suffix: 'mui.instructions.md' },
     ],
-    'test-vitest': [
-      { template: 'generic/test-vitest.md', suffix: 'vitest.instructions.md' },
-    ],
+    'test-vitest': [],
     'test-jest': [
       { template: 'generic/test-jest.md', suffix: 'jest.instructions.md' },
     ],

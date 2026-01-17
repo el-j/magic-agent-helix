@@ -13,7 +13,6 @@ export class PerlPlugin extends BasePlugin {
   displayName = 'Perl';
   version = '1.0.0';
   priority = 70;
-
   async detect(projectPath: string): Promise<ProjectMetadata | null> {
     if (this.fileExists(projectPath, 'Makefile.PL') ||
         this.fileExists(projectPath, 'Build.PL') ||
@@ -37,12 +36,13 @@ export class PerlPlugin extends BasePlugin {
   }
 
   getTemplates(): TemplateDefinition[] {
+    const dirname = this.getDirname(import.meta.url);
     return [
       {
         name: 'perl-core',
         tags: ['perl'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/lang-perl.md')
+          path.join(dirname, 'templates/lang-perl.md')
         ).then(c => c || this.getPerlFallbackTemplate()),
       },
     ];

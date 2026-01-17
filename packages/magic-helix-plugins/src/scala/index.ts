@@ -14,7 +14,6 @@ export class ScalaPlugin extends BasePlugin {
   displayName = 'Scala';
   version = '1.0.0';
   priority = 80;
-
   async detect(projectPath: string): Promise<ProjectMetadata | null> {
     // Check for sbt
     if (this.fileExists(projectPath, 'build.sbt')) {
@@ -30,12 +29,13 @@ export class ScalaPlugin extends BasePlugin {
   }
 
   getTemplates(): TemplateDefinition[] {
+    const dirname = this.getDirname(import.meta.url);
     return [
       {
         name: 'scala-core',
         tags: ['scala'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/lang-scala.md')
+          path.join(dirname, 'templates/lang-scala.md')
         ).then(c => c || this.getScalaFallbackTemplate()),
       },
     ];
@@ -59,7 +59,6 @@ export class ScalaPlugin extends BasePlugin {
 
     if (content) {
       const nameMatch = content.match(/name\s*:=\s*"([^"]+)"/);
-      const versionMatch = content.match(/version\s*:=\s*"([^"]+)"/);
       
       // Detect Akka
       if (content.includes('akka-actor') || content.includes('com.typesafe.akka')) {
@@ -86,7 +85,6 @@ export class ScalaPlugin extends BasePlugin {
       return {
         language: 'Scala',
         name: nameMatch?.[1] || this.getProjectName(projectPath),
-        version: versionMatch?.[1] || '0.1.0',
         dependencies,
         manifestFile: 'build.sbt',
         projectPath,

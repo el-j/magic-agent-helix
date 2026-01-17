@@ -14,7 +14,6 @@ export class DartPlugin extends BasePlugin {
   displayName = 'Dart';
   version = '1.0.0';
   priority = 80;
-
   async detect(projectPath: string): Promise<ProjectMetadata | null> {
     if (!this.fileExists(projectPath, 'pubspec.yaml')) {
       return null;
@@ -66,19 +65,20 @@ export class DartPlugin extends BasePlugin {
   }
 
   getTemplates(): TemplateDefinition[] {
+    const dirname = this.getDirname(import.meta.url);
     return [
       {
         name: 'dart-core',
         tags: ['dart'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/lang-dart.md')
+          path.join(dirname, 'templates/lang-dart.md')
         ).then(c => c || this.getDartFallbackTemplate()),
       },
       {
         name: 'flutter-core',
         tags: ['flutter'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/flutter.md')
+          path.join(dirname, 'templates/flutter.md')
         ).then(c => c || this.getFlutterFallbackTemplate()),
       },
     ];

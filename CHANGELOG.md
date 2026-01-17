@@ -1,3 +1,43 @@
+## [4.0.0-beta.8] (Unreleased)
+
+### Major Improvements
+
+* **detection:** Dramatically improved monorepo and multi-language project detection
+  - Fixed workspace glob pattern resolution (`apps/*`, `packages/*` now properly expanded)
+  - Multi-plugin detection: projects with multiple languages (e.g., Node.js + Python) now detected properly
+  - Increased max recursion depth from 5 to 10 for deeply nested monorepos
+  - Enhanced skip directory logic (added `.turbo`, `.next`, `.nuxt`, etc.)
+  - Projects like LoveMyCar turbo monorepo now fully detected (15+ projects vs 1 before)
+
+* **tags:** Plugin tag enrichment and aggregation
+  - All language plugins now populate `metadata.tags` from dependencies and config files
+  - Tags aggregated across multiple plugin detections per project path
+  - Python plugin: auto-tags `fastapi`, `django`, `flask`, `pytest`
+  - Go plugin: auto-tags `gin`, `fiber`, framework dependencies
+  - NodeJS plugin: enriched tag detection from dependencies AND config files
+
+* **templates:** Multi-language template generation
+  - Projects with multiple languages now generate instruction files for ALL detected languages
+  - Example: Node.js monorepo with Python microservice gets both TypeScript AND Python instructions
+  - Enhanced dependency tag mapping (added Python/Go frameworks)
+
+### Bug Fixes
+
+* **nodejs:** Fixed workspace member discovery to use glob expansion instead of simple string replacement
+* **detection:** Fixed single-plugin-per-path limitation (now runs all plugins on each discovered path)
+* **analysis:** Fixed `analyzeProject()` to aggregate tags from all detected plugins instead of first match only
+* **run:** Fixed `findProjects()` to group multi-plugin results by path with tag aggregation
+
+### Performance
+
+* Improved SKIP_DIRS reduces unnecessary scanning of build artifacts
+* Multi-plugin detection adds 2-3x overhead for large monorepos but now actually works correctly
+
+### Documentation
+
+* Added comprehensive root cause analysis and fix documentation in `agent_docs/MONOREPO-DETECTION-FIXES.md`
+* Added test script for validating monorepo detection improvements
+
 ## [4.0.0-beta.7](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.6...v4.0.0-beta.7) (2025-12-18)
 
 ### Features

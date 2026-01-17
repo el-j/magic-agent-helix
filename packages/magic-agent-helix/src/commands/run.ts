@@ -373,9 +373,13 @@ export async function run(options: CliOptions = {}) {
         );
         const fullContent = `${header}\n${formattedContent}`;
 
-        // Use just the suffix as the filename (e.g., "typescript.instructions.md")
-        // This follows GitHub Copilot's naming convention for path-specific instructions
-        const outputFilename = t.suffix;
+        // For monorepos: prefix filename with project name to avoid overwrites
+        // Format: <project-name>.<tag>.instructions.md (e.g., "love-my-car-admin-dashboard.vue.instructions.md")
+        // Single repos get just the tag name (e.g., "vue.instructions.md")
+        const projectPrefix = projects.length > 1 
+          ? `${project.name.replace(/[@\/]/g, '-')}.` 
+          : '';
+        const outputFilename = `${projectPrefix}${t.suffix}`;
         const outputPath = path.join(targetDir, outputFilename);
 
         generatedFiles.push(outputFilename);
@@ -562,7 +566,6 @@ async function getPluginTemplates(): Promise<Record<string, TemplateSource[]>> {
 
 async function findProjects(): Promise<Project[]> {
   await ensureRegistryInitialized();
-  const projects: Project[] = [];
   const rootPath = process.cwd();
 
   // Initialize plugin registry and detect projects
@@ -573,18 +576,46 @@ async function findProjects(): Promise<Project[]> {
     return [];
   }
 
+  // Group detections by project path to aggregate multi-language/multi-plugin results
+  const projectMap = new Map<string, {
+    name: string;
+    path: string;
+    tags: Set<string>;
+    allMetadata: ProjectMetadata[];
+  }>();
+
   for (const result of detectedProjects) {
     const relativePath = path.relative(rootPath, result.metadata.projectPath);
-    projects.push({
-      name: sanitizeProjectName(
-        result.metadata.name || path.basename(result.metadata.projectPath),
-      ),
-      path: relativePath || '.',
-      tags: new Set<string>(),
-    });
+    const projectKey = relativePath || '.';
+    
+    if (!projectMap.has(projectKey)) {
+      projectMap.set(projectKey, {
+        name: sanitizeProjectName(
+          result.metadata.name || path.basename(result.metadata.projectPath),
+        ),
+        path: projectKey,
+        tags: new Set<string>(),
+        allMetadata: [],
+      });
+    }
+
+    const project = projectMap.get(projectKey)!;
+    project.allMetadata.push(result.metadata);
+
+    // Aggregate tags from this plugin's detection
+    if (result.metadata.tags?.length) {
+      for (const tag of result.metadata.tags) {
+        project.tags.add(tag);
+      }
+    }
   }
 
-  return projects;
+  // Convert map to array
+  return Array.from(projectMap.values()).map(({ name, path: projectPath, tags }) => ({
+    name,
+    path: projectPath,
+    tags,
+  }));
 }
 
 /**
@@ -611,19 +642,23 @@ async function analyzeProject(
   await ensureRegistryInitialized();
   const projectRoot = path.resolve(process.cwd(), project.path);
 
-  // Strategy 1: Analyze dependencies from any manifest file
+  // Strategy 1: Analyze via plugins (tags already populated in findProjects, but let's enrich further)
   try {
     const registry = PluginRegistry.getInstance();
     const detectedProjects = await registry.detectAllProjects(projectRoot);
-    if (detectedProjects.length > 0) {
-      const projectMetadata = detectedProjects[0].metadata; // Use first match
+    
+    // Aggregate tags from ALL detected plugins at this path
+    for (const detected of detectedProjects) {
+      const projectMetadata = detected.metadata;
 
+      // Add plugin-provided tags
       if (projectMetadata.tags?.length) {
         for (const tag of projectMetadata.tags) {
           project.tags.add(tag);
         }
       }
 
+      // Add tags from dependency mapping (from built-in config)
       for (const dep in projectMetadata.dependencies) {
         // Check both the full dependency name and the package/module name
         if (depMap[dep]) {

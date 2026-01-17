@@ -7,6 +7,7 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type {
   LanguagePlugin,
   ProjectMetadata,
@@ -94,6 +95,24 @@ export abstract class BasePlugin implements LanguagePlugin {
    */
   protected getProjectName(projectPath: string): string {
     return path.basename(projectPath);
+  }
+
+  /**
+   * List entries in a project directory (non-recursive)
+   */
+  protected listFiles(projectPath: string): string[] {
+    try {
+      return fs.readdirSync(projectPath);
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Get the directory name from import.meta.url (ES module alternative to __dirname)
+   */
+  protected getDirname(importMetaUrl: string): string {
+    return path.dirname(fileURLToPath(importMetaUrl));
   }
 
   /**

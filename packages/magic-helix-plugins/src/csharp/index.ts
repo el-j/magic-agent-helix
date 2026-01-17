@@ -13,7 +13,6 @@ export class CSharpPlugin extends BasePlugin {
   displayName = 'C#';
   version = '3.0.0';
   priority = 60;
-
   async detect(projectPath: string): Promise<ProjectMetadata | null> {
     const csprojFiles = await this.findFiles(projectPath, '*.csproj');
     
@@ -44,12 +43,13 @@ export class CSharpPlugin extends BasePlugin {
   }
 
   getTemplates(): TemplateDefinition[] {
+    const dirname = this.getDirname(import.meta.url);
     return [
       {
         name: 'csharp-core',
         tags: ['csharp', 'dotnet'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/lang-csharp.md')
+          path.join(dirname, 'templates/lang-csharp.md')
         ).then(c => c || this.getCSharpFallbackTemplate()),
       },
     ];

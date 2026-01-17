@@ -26,7 +26,7 @@ export default defineConfig({
       },
     },
     rollupOptions: {
-      external: ['@el-j/magic-helix-core', 'node:fs', 'node:path', 'glob'],
+      external: ['@el-j/magic-helix-core', 'node:fs', 'node:path', 'node:url', 'glob'],
     },
   },
 });

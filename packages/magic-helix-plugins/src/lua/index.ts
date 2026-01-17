@@ -14,7 +14,6 @@ export class LuaPlugin extends BasePlugin {
   displayName = 'Lua';
   version = '1.0.0';
   priority = 75;
-
   async detect(projectPath: string): Promise<ProjectMetadata | null> {
     // Check for .rockspec files
     const files = this.listFiles(projectPath);
@@ -37,12 +36,13 @@ export class LuaPlugin extends BasePlugin {
   }
 
   getTemplates(): TemplateDefinition[] {
+    const dirname = this.getDirname(import.meta.url);
     return [
       {
         name: 'lua-core',
         tags: ['lua'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/lang-lua.md')
+          path.join(dirname, 'templates/lang-lua.md')
         ).then(c => c || this.getLuaFallbackTemplate()),
       },
     ];

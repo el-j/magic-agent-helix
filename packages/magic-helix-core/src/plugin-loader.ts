@@ -317,7 +317,7 @@ export class PluginLoader {
    */
   private async scanForProjects(
     rootPath: string,
-    maxDepth: number = 5,
+    maxDepth: number = 10, // Increased depth for complex monorepos
   ): Promise<string[]> {
     const projectPaths = new Set<string>();
     const visited = new Set<string>();
@@ -340,6 +340,10 @@ export class PluginLoader {
       'CMakeLists.txt',
       'Makefile',
       'platformio.ini',
+      'Dockerfile',
+      'docker-compose.yml',
+      'turbo.json',
+      'nx.json',
     ];
 
     // Directories to skip
@@ -348,6 +352,7 @@ export class PluginLoader {
       'target',
       'dist',
       'build',
+      'out',
       '.git',
       '.svn',
       '.hg',
@@ -358,6 +363,15 @@ export class PluginLoader {
       'env',
       '.cargo',
       '.gradle',
+      '.turbo',
+      '.next',
+      '.nuxt',
+      'coverage',
+      '.cache',
+      '.pytest_cache',
+      '.mypy_cache',
+      'bin',
+      'obj',
     ]);
 
     const scanDir = async (dirPath: string, depth: number): Promise<void> => {
@@ -402,6 +416,7 @@ export class PluginLoader {
   /**
    * Detect all projects in a directory (for monorepo support)
    * Enhanced version that recursively scans for ALL project types
+   * Now runs ALL plugins on each discovered path for multi-language support
    */
   async detectAllProjects(rootPath: string): Promise<
     Array<{
@@ -413,56 +428,75 @@ export class PluginLoader {
       metadata: ProjectMetadata;
       plugin: LanguagePlugin;
     }> = [];
-    const detected = new Set<string>(); // Track detected paths to avoid duplicates
+    const detectedPaths = new Set<string>(); // Track detected paths
+    const projectPathsToScan = new Set<string>();
     const plugins = this.getAllPlugins();
+
+    // Add root path to scan list
+    projectPathsToScan.add(rootPath);
 
     // Phase 1: Try detecting at the root level with workspace support
     for (const plugin of plugins) {
       try {
         const metadata = await plugin.detect(rootPath);
         if (metadata) {
-          detected.add(metadata.projectPath);
-          results.push({ metadata, plugin });
+          const key = `${metadata.projectPath}:${plugin.name}`;
+          if (!detectedPaths.has(key)) {
+            detectedPaths.add(key);
+            results.push({ metadata, plugin });
+          }
 
-          // If this plugin found workspace members, detect those too
+          // If this plugin found workspace members, add them to scan list
           if (
             metadata.workspaceMembers &&
             metadata.workspaceMembers.length > 0
           ) {
             for (const memberPath of metadata.workspaceMembers) {
               const fullPath = path.resolve(rootPath, memberPath);
-              if (!detected.has(fullPath)) {
-                const memberResult = await this.detectProject(fullPath);
-                if (memberResult) {
-                  detected.add(memberResult.metadata.projectPath);
-                  results.push(memberResult);
-                }
-              }
+              projectPathsToScan.add(fullPath);
             }
           }
         }
       } catch (error) {
         this.logWarning(
-          `Plugin ${plugin.name} failed: ${(error as Error).message}`,
+          `Plugin ${plugin.name} failed at root: ${(error as Error).message}`,
         );
       }
     }
 
-    // Phase 2: Recursively scan for additional projects not covered by workspaces
+    // Phase 2: Recursively scan for additional projects
     try {
-      const projectPaths = await this.scanForProjects(rootPath);
-
-      for (const projectPath of projectPaths) {
-        if (!detected.has(projectPath)) {
-          const result = await this.detectProject(projectPath);
-          if (result) {
-            detected.add(result.metadata.projectPath);
-            results.push(result);
-          }
-        }
+      const discoveredPaths = await this.scanForProjects(rootPath);
+      for (const projectPath of discoveredPaths) {
+        projectPathsToScan.add(projectPath);
       }
     } catch (error) {
       this.logWarning(`Recursive scan failed: ${(error as Error).message}`);
+    }
+
+    // Phase 3: Run ALL plugins on each discovered path for multi-language support
+    for (const projectPath of projectPathsToScan) {
+      if (projectPath === rootPath) continue; // Already scanned in Phase 1
+
+      for (const plugin of plugins) {
+        try {
+          const metadata = await plugin.detect(projectPath);
+          if (metadata) {
+            const key = `${metadata.projectPath}:${plugin.name}`;
+            if (!detectedPaths.has(key)) {
+              detectedPaths.add(key);
+              results.push({ metadata, plugin });
+              this.log(
+                `  ✓ Detected ${plugin.displayName} at ${path.relative(rootPath, projectPath)}`,
+              );
+            }
+          }
+        } catch (error) {
+          this.logWarning(
+            `Plugin ${plugin.name} failed at ${projectPath}: ${(error as Error).message}`,
+          );
+        }
+      }
     }
 
     return results;

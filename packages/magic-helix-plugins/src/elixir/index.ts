@@ -14,7 +14,6 @@ export class ElixirPlugin extends BasePlugin {
   displayName = 'Elixir';
   version = '1.0.0';
   priority = 80;
-
   async detect(projectPath: string): Promise<ProjectMetadata | null> {
     if (!this.fileExists(projectPath, 'mix.exs')) {
       return null;
@@ -62,12 +61,13 @@ export class ElixirPlugin extends BasePlugin {
   }
 
   getTemplates(): TemplateDefinition[] {
+    const dirname = this.getDirname(import.meta.url);
     return [
       {
         name: 'elixir-core',
         tags: ['elixir'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/lang-elixir.md')
+          path.join(dirname, 'templates/lang-elixir.md')
         ).then(c => c || this.getElixirFallbackTemplate()),
       },
     ];

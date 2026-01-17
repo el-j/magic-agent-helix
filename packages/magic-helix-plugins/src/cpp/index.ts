@@ -25,7 +25,6 @@ export class CppPlugin extends BasePlugin {
   displayName = 'C/C++';
   version = '3.0.0';
   priority = 85;
-
   async detect(projectPath: string): Promise<ProjectMetadata | null> {
     const tags: string[] = [];
     const dependencies: Record<string, string> = {};
@@ -196,6 +195,7 @@ export class CppPlugin extends BasePlugin {
   }
 
   getTemplates(): TemplateDefinition[] {
+    const dirname = this.getDirname(import.meta.url);
     return [
       {
         name: 'cpp-core',

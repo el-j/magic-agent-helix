@@ -13,7 +13,6 @@ export class JavaPlugin extends BasePlugin {
   displayName = 'Java';
   version = '3.0.0';
   priority = 75;
-
   async detect(projectPath: string): Promise<ProjectMetadata | null> {
     // Check for Maven
     if (this.fileExists(projectPath, 'pom.xml')) {
@@ -29,12 +28,13 @@ export class JavaPlugin extends BasePlugin {
   }
 
   getTemplates(): TemplateDefinition[] {
+    const dirname = this.getDirname(import.meta.url);
     return [
       {
         name: 'java-core',
         tags: ['java'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/lang-java.md')
+          path.join(dirname, 'templates/lang-java.md')
         ).then(c => c || this.getJavaFallbackTemplate()),
       },
     ];

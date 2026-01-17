@@ -14,7 +14,6 @@ export class RPlugin extends BasePlugin {
   displayName = 'R';
   version = '1.0.0';
   priority = 75;
-
   async detect(projectPath: string): Promise<ProjectMetadata | null> {
     const files = this.listFiles(projectPath);
     const hasRproj = files?.some(f => f.endsWith('.Rproj'));
@@ -26,7 +25,6 @@ export class RPlugin extends BasePlugin {
       const content = this.readFile(projectPath, 'DESCRIPTION');
       if (content) {
         const nameMatch = content.match(/Package:\s*(.+)/);
-        const versionMatch = content.match(/Version:\s*(.+)/);
         
         // Check for common packages
         if (content.includes('tidyverse') || content.includes('dplyr')) {
@@ -40,7 +38,6 @@ export class RPlugin extends BasePlugin {
         return {
           language: 'R',
           name: nameMatch?.[1]?.trim() || this.getProjectName(projectPath),
-          version: versionMatch?.[1]?.trim() || '0.1.0',
           dependencies,
           manifestFile: 'DESCRIPTION',
           projectPath,
@@ -62,12 +59,13 @@ export class RPlugin extends BasePlugin {
   }
 
   getTemplates(): TemplateDefinition[] {
+    const dirname = this.getDirname(import.meta.url);
     return [
       {
         name: 'r-core',
         tags: ['r'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/lang-r.md')
+          path.join(dirname, 'templates/lang-r.md')
         ).then(c => c || this.getRFallbackTemplate()),
       },
     ];

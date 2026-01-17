@@ -14,7 +14,6 @@ export class KotlinPlugin extends BasePlugin {
   displayName = 'Kotlin';
   version = '1.0.0';
   priority = 85;
-
   async detect(projectPath: string): Promise<ProjectMetadata | null> {
     const hasKotlinGradle = 
       this.fileExists(projectPath, 'build.gradle.kts') ||
@@ -63,12 +62,13 @@ export class KotlinPlugin extends BasePlugin {
   }
 
   getTemplates(): TemplateDefinition[] {
+    const dirname = this.getDirname(import.meta.url);
     return [
       {
         name: 'kotlin-core',
         tags: ['kotlin'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/lang-kotlin.md')
+          path.join(dirname, 'templates/lang-kotlin.md')
         ).then(c => c || this.getKotlinFallbackTemplate()),
       },
     ];
