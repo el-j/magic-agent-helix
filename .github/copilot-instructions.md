@@ -7,16 +7,16 @@ applyTo: "**/*"
 - Keep edits minimal and aligned with the existing CLI/core/plugin architectures; avoid inventing new behaviors unless asked.
 
 ## Architecture Map
-- Packages: `packages/magic-helix-core` (analysis, templates, plugin system, validation), `packages/magic-agent-helix` (CLI wrapper), `packages/vscode-magic-helix` (VS Code command runner), `packages/magic-helix-plugins` (builtin language plugins), `playground/` (Vue demo of the engine).
-- Core config lives in `packages/magic-helix-core/src/built-in-config.ts`; maps dependencies/config/globs → tags → templates. Built-in templates sit under `packages/magic-helix-core/src/default_templates/` and are located at runtime via `BUILT_IN_TEMPLATE_DIR`.
-- CLI entry `packages/magic-agent-helix/src/cli.ts` wires `run`, `refresh`, `list`, `validate`, `clean`, `init`, `plugins` commands. The `run` command loads configs, resolves formatter by target, finds projects via the plugin registry, derives `applyTo` globs with `buildPreciseGlobPattern`, then writes `<project>.<suffix>.md` into `.github/instructions` (default) with frontmatter `applyTo: "<glob>"`.
-- Plugin system v3: `packages/magic-helix-core/src/plugin-registry.ts` + `plugin-loader.ts` load builtin plugins (NodeJS, Go, Python, Rust, Java, Ruby, PHP, C#) and optional npm/local/workspace plugins; configurable via `.magic-helix.json` or `~/.magic-helix/config.json`.
+- Packages: `packages/magic-helix-core` (analysis, templates, plugin system, validation), `packages/magic-agent-helix` (CLI wrapper), `packages/vscode-magic-helix` (VS Code command runner), `packages/magic-helix-plugins` (builtin language plugins with templates), `playground/` (Vue demo of the engine).
+- Core config lives in `packages/magic-helix-core/src/built-in-config.ts`; maps dependencies/config/globs → tags. All language plugins and templates live in `packages/magic-helix-plugins/src/` with each plugin providing its own templates via `getTemplates()`.
+- CLI entry `packages/magic-agent-helix/src/cli.ts` wires `run`, `refresh`, `list`, `validate`, `clean`, `init`, `plugins` commands. The `run` command loads configs, resolves formatter by target, finds projects via the plugin registry, derives `applyTo` globs with `buildPreciseGlobPattern`, then writes `<suffix>.md` files into `.github/instructions` (default) with frontmatter `applyTo: "<glob>"`.
+- Plugin system v3: `packages/magic-helix-core/src/plugin-registry.ts` + `plugin-loader.ts` load builtin plugins from `@el-j/magic-helix-plugins` (NodeJS, Go, Python, Rust, Java, Ruby, PHP, C#, C++, Swift) and optional npm/local/workspace plugins; configurable via `.magic-helix.json` or `~/.magic-helix/config.json`.
 - Pattern + quality system: pattern templates catalog in `packages/magic-helix-core/PATTERN-TEMPLATES.md`; instruction validator rules in `INSTRUCTION-VALIDATION.md` and `src/instruction-validator.ts` (expects frontmatter, tool docs/examples, role/tone/safety checkpoints).
 
 ## Development Workflows
 - Install once at root: `npm install` (Node 20+). Lint/format with Biome: `npm run lint`, `npm run format`. Tests: `npm test`, `npm run test:core`, `npm run test:coverage`. Builds: `npm run build` (all) or `build:core|cli|vscode|playground`.
 - CLI smoke: `npm run build:cli && node packages/magic-agent-helix/dist/cli.mjs run --dry-run` (adds `--project <name>` or `--template <pattern>` filters). Validate generated files: `npm run validate:instructions` or `magic-helix validate`.
-- VS Code extension dev: run "Run VS Code Extension (Dev Mode)" launch config; extension shells out to `npx @magic-helix/agent run` in the target workspace.
+- VS Code extension dev: run "Run VS Code Extension (Dev Mode)" launch config; extension shells out to `npx @el-j/magic-agent-helix run` in the target workspace.
 
 ## File-Type Guidance
 - TypeScript-first repo; keep `tsconfig.base.json` settings intact. Favor small, pure functions and keep CLI logging style (picocolors gradients, ora spinners) consistent. In `run.ts`, preserve dry-run/force/skip-pruning behaviors and tag → template filtering.

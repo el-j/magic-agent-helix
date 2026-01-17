@@ -8,8 +8,8 @@ A powerful tool that inspects your project and generates granular, path-specific
 
 This is a monorepo containing:
 
-* **`packages/magic-helix-core`**: The core library with analysis and configuration logic (published to NPM as `@magic-helix/core`).
-* **`packages/magic-agent-helix`**: The CLI tool (published to NPM as `@magic-helix/agent`).
+* **`packages/magic-helix-core`**: The core library with analysis and configuration logic (published to NPM as `@el-j/magic-helix-core`).
+* **`packages/magic-agent-helix`**: The CLI tool (published to NPM as `@el-j/magic-agent-helix`).
 * **`packages/vscode-magic-helix`**: The VS Code extension that provides a "Run" command.
 * **`playground/`**: A browser-based playground for testing the core engine (not published to NPM).
 
@@ -19,10 +19,10 @@ This is a monorepo containing:
 
 ```bash
 # Install globally
-npm install -g @magic-helix/agent
+npm install -g @el-j/magic-agent-helix
 
 # Or use with npx
-npx @magic-helix/agent run
+npx @el-j/magic-agent-helix run
 ```
 
 ### Available Commands
@@ -91,7 +91,7 @@ Magic-Agent-Helix Phase 5 introduces a sophisticated pattern template system bas
 
 - **Context-Aware Selection**: Automatically chooses relevant patterns based on your project:
   ```typescript
-  import { generateInstructions } from '@magic-helix/core';
+  import { generateInstructions } from '@el-j/magic-helix-core';
 
   const instructions = generateInstructions({
     framework: 'react',
@@ -172,13 +172,13 @@ npm install
 npm run build
 ```
 
-This builds: `@magic-helix/core`, `@magic-helix/agent`, and `@magic-helix/vscode`.
+This builds: `@el-j/magic-helix-core`, `@el-j/magic-agent-helix`, and `@magic-helix/vscode`.
 
 ### 3. Build Individual Packages
 
 ```bash
-npm run build:core      # Build @magic-helix/core
-npm run build:cli       # Build @magic-helix/agent CLI
+npm run build:core      # Build @el-j/magic-helix-core
+npm run build:cli       # Build @el-j/magic-agent-helix CLI
 npm run build:vscode    # Build @magic-helix/vscode extension
 npm run build:playground # Build playground (separately)
 ```
@@ -206,7 +206,7 @@ This is the best way to test the CLI in a real-world scenario.
 5.  A new VS Code window (the "Extension Development Host") will open with the extension installed.
 6.  Open any test project in this new window.
 7.  Open Command Palette (Ctrl+Shift+P) and run: **"MagicAgentHelix: Align Conventions"**.
-8.  The extension will execute `npx @magic-helix/agent run` in your test project.
+8.  The extension will execute `npx @el-j/magic-agent-helix run` in your test project.
 
 ### Testing the CLI Directly
 
@@ -292,7 +292,7 @@ Create `magic-helix.config.json` in your project root (legacy `ai-aligner.config
 
 ## 🚀 Publishing
 
-Releases are automated via semantic-release. Both `@magic-helix/core` and `@magic-helix/agent` are published to NPM when pushing to `main`.
+Releases are automated via semantic-release. Both `@el-j/magic-helix-core` and `@el-j/magic-agent-helix` are published to NPM when pushing to `main`.
 
 ### Release Configuration
 
@@ -311,8 +311,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed release guidelines.
 3. Semantic-release analyzes commits and determines version
 4. Bumps version numbers in package.json files
 5. Updates CHANGELOG.md
-6. Publishes `@magic-helix/core` to NPM
-7. Publishes `@magic-helix/agent` to NPM
+6. Publishes `@el-j/magic-helix-core` to NPM
+7. Publishes `@el-j/magic-agent-helix` to NPM
 8. Creates GitHub Release with changelog and assets
 
 ### Manual Publishing (if needed)

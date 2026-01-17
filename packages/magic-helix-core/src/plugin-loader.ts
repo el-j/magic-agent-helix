@@ -34,7 +34,8 @@ export class PluginLoader {
   }
 
   /**
-   * Load built-in plugins from the magic-helix-plugins package
+   * Load built-in plugins from the @el-j/magic-helix-plugins package
+   * Loads all exported plugin classes from the package
    */
   async loadBuiltinPlugins(
     pluginNames?: string[],
@@ -42,30 +43,27 @@ export class PluginLoader {
     const results: PluginLoadResult[] = [];
 
     try {
-      // Import built-in plugins from local builtin-plugins directory
-      const { NodeJSPlugin } = await import('./builtin-plugins/nodejs/index');
-      const { GoPlugin } = await import('./builtin-plugins/go/index');
-      const { PythonPlugin } = await import('./builtin-plugins/python/index');
-      const { RustPlugin } = await import('./builtin-plugins/rust/index');
-      const { JavaPlugin } = await import('./builtin-plugins/java/index');
-      const { RubyPlugin } = await import('./builtin-plugins/ruby/index');
-      const { PHPPlugin } = await import('./builtin-plugins/php/index');
-      const { CSharpPlugin } = await import('./builtin-plugins/csharp/index');
-      const { SwiftPlugin } = await import('./builtin-plugins/swift/index');
+      // Dynamically import the plugins package
+      // This avoids the circular dependency at build time
+      const pluginModule = await this.tryImport('@el-j/magic-helix-plugins');
 
-      const builtinPlugins = [
-        NodeJSPlugin,
-        GoPlugin,
-        PythonPlugin,
-        RustPlugin,
-        JavaPlugin,
-        RubyPlugin,
-        PHPPlugin,
-        CSharpPlugin,
-        SwiftPlugin,
-      ] as (new () => LanguagePlugin)[];
+      if (!pluginModule) {
+        // Package not installed, silently return empty array
+        return results;
+      }
 
-      for (const PluginClass of builtinPlugins) {
+      // Extract all plugin classes (filter out BasePlugin which is not a language plugin)
+      const pluginClasses = Object.entries(pluginModule)
+        .filter(([name, value]) => {
+          return (
+            name !== 'BasePlugin' &&
+            typeof value === 'function' &&
+            name.endsWith('Plugin')
+          );
+        })
+        .map(([_, PluginClass]) => PluginClass as new () => LanguagePlugin);
+
+      for (const PluginClass of pluginClasses) {
         const plugin = new PluginClass();
 
         // Filter by requested plugin names if specified
@@ -73,15 +71,14 @@ export class PluginLoader {
           continue;
         }
 
-        const startTime = Date.now();
         const result: PluginLoadResult = {
           plugin,
           source: {
-            type: 'builtin',
+            type: 'npm',
             identifier: plugin.name,
-            packageName: 'magic-helix-plugins',
+            packageName: '@el-j/magic-helix-plugins',
           },
-          loadTime: Date.now() - startTime,
+          loadTime: 0,
         };
 
         this.loadedPlugins.set(plugin.name, result);
@@ -93,8 +90,9 @@ export class PluginLoader {
     } catch (error) {
       this.handleLoadError(
         {
-          type: 'builtin',
-          identifier: 'magic-helix-plugins',
+          type: 'npm',
+          identifier: '@el-j/magic-helix-plugins',
+          packageName: '@el-j/magic-helix-plugins',
         },
         error as Error,
       );
@@ -315,7 +313,110 @@ export class PluginLoader {
   }
 
   /**
+   * Recursively scan directories for project manifests
+   */
+  private async scanForProjects(
+    rootPath: string,
+    maxDepth: number = 10, // Increased depth for complex monorepos
+  ): Promise<string[]> {
+    const projectPaths = new Set<string>();
+    const visited = new Set<string>();
+
+    // Common manifest files that indicate a project
+    const MANIFEST_FILES = [
+      'package.json',
+      'Cargo.toml',
+      'go.mod',
+      'go.sum',
+      'setup.py',
+      'pyproject.toml',
+      'requirements.txt',
+      'pom.xml',
+      'build.gradle',
+      'build.gradle.kts',
+      'Package.swift',
+      'Gemfile',
+      'composer.json',
+      'CMakeLists.txt',
+      'Makefile',
+      'platformio.ini',
+      'Dockerfile',
+      'docker-compose.yml',
+      'turbo.json',
+      'nx.json',
+    ];
+
+    // Directories to skip
+    const SKIP_DIRS = new Set([
+      'node_modules',
+      'target',
+      'dist',
+      'build',
+      'out',
+      '.git',
+      '.svn',
+      '.hg',
+      'vendor',
+      '__pycache__',
+      '.venv',
+      'venv',
+      'env',
+      '.cargo',
+      '.gradle',
+      '.turbo',
+      '.next',
+      '.nuxt',
+      'coverage',
+      '.cache',
+      '.pytest_cache',
+      '.mypy_cache',
+      'bin',
+      'obj',
+    ]);
+
+    const scanDir = async (dirPath: string, depth: number): Promise<void> => {
+      if (depth > maxDepth) return;
+
+      const normalized = path.normalize(dirPath);
+      if (visited.has(normalized)) return;
+      visited.add(normalized);
+
+      try {
+        const entries = await fs.promises.readdir(dirPath, {
+          withFileTypes: true,
+        });
+
+        // Check if this directory has any manifest files
+        let _hasManifest = false;
+        for (const entry of entries) {
+          if (!entry.isDirectory() && MANIFEST_FILES.includes(entry.name)) {
+            projectPaths.add(dirPath);
+            _hasManifest = true;
+            break;
+          }
+        }
+
+        // Recursively scan subdirectories
+        for (const entry of entries) {
+          if (entry.isDirectory() && !SKIP_DIRS.has(entry.name)) {
+            const subPath = path.join(dirPath, entry.name);
+            await scanDir(subPath, depth + 1);
+          }
+        }
+      } catch (_error) {
+        // Skip directories we can't read
+        return;
+      }
+    };
+
+    await scanDir(rootPath, 0);
+    return Array.from(projectPaths).sort();
+  }
+
+  /**
    * Detect all projects in a directory (for monorepo support)
+   * Enhanced version that recursively scans for ALL project types
+   * Now runs ALL plugins on each discovered path for multi-language support
    */
   async detectAllProjects(rootPath: string): Promise<
     Array<{
@@ -327,32 +428,74 @@ export class PluginLoader {
       metadata: ProjectMetadata;
       plugin: LanguagePlugin;
     }> = [];
+    const detectedPaths = new Set<string>(); // Track detected paths
+    const projectPathsToScan = new Set<string>();
     const plugins = this.getAllPlugins();
 
+    // Add root path to scan list
+    projectPathsToScan.add(rootPath);
+
+    // Phase 1: Try detecting at the root level with workspace support
     for (const plugin of plugins) {
       try {
         const metadata = await plugin.detect(rootPath);
         if (metadata) {
-          results.push({ metadata, plugin });
+          const key = `${metadata.projectPath}:${plugin.name}`;
+          if (!detectedPaths.has(key)) {
+            detectedPaths.add(key);
+            results.push({ metadata, plugin });
+          }
 
-          // If this plugin found workspace members, detect those too
+          // If this plugin found workspace members, add them to scan list
           if (
             metadata.workspaceMembers &&
             metadata.workspaceMembers.length > 0
           ) {
             for (const memberPath of metadata.workspaceMembers) {
               const fullPath = path.resolve(rootPath, memberPath);
-              const memberResult = await this.detectProject(fullPath);
-              if (memberResult) {
-                results.push(memberResult);
-              }
+              projectPathsToScan.add(fullPath);
             }
           }
         }
       } catch (error) {
         this.logWarning(
-          `Plugin ${plugin.name} failed: ${(error as Error).message}`,
+          `Plugin ${plugin.name} failed at root: ${(error as Error).message}`,
         );
+      }
+    }
+
+    // Phase 2: Recursively scan for additional projects
+    try {
+      const discoveredPaths = await this.scanForProjects(rootPath);
+      for (const projectPath of discoveredPaths) {
+        projectPathsToScan.add(projectPath);
+      }
+    } catch (error) {
+      this.logWarning(`Recursive scan failed: ${(error as Error).message}`);
+    }
+
+    // Phase 3: Run ALL plugins on each discovered path for multi-language support
+    for (const projectPath of projectPathsToScan) {
+      if (projectPath === rootPath) continue; // Already scanned in Phase 1
+
+      for (const plugin of plugins) {
+        try {
+          const metadata = await plugin.detect(projectPath);
+          if (metadata) {
+            const key = `${metadata.projectPath}:${plugin.name}`;
+            if (!detectedPaths.has(key)) {
+              detectedPaths.add(key);
+              results.push({ metadata, plugin });
+              this.log(
+                `  ✓ Detected ${plugin.displayName} at ${path.relative(rootPath, projectPath)}`,
+              );
+            }
+          }
+        } catch (error) {
+          this.logWarning(
+            `Plugin ${plugin.name} failed at ${projectPath}: ${(error as Error).message}`,
+          );
+        }
       }
     }
 

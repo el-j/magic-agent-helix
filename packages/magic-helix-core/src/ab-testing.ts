@@ -1,10 +1,6 @@
 import { validateInstructions } from './instruction-validator';
-import type { PatternContext, PatternTemplate } from './pattern-combiner';
-import {
-  generateInstructions,
-  loadPatternTemplates,
-  selectPatterns,
-} from './pattern-combiner';
+import type { PatternContext } from './pattern-combiner';
+import { generateInstructions } from './pattern-combiner';
 import type { InstructionValidationEvent, TelemetryClient } from './telemetry';
 
 export interface ABVariant {

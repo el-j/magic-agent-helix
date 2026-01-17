@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import type { Config } from '@magic-helix/core';
+import type { Config } from '@el-j/magic-helix-core';
 import gradient from 'gradient-string';
 import inquirer from 'inquirer';
 import ora from 'ora';
@@ -119,6 +119,6 @@ export async function init() {
     `  2. Add your custom .md instruction files to ${pc.bold(DEFAULT_TEMPLATE_DIR)}.`,
   );
   console.log(
-    `  3. Run ${pc.bold('npx @magic-helix/agent run')} to generate your files.`,
+    `  3. Run ${pc.bold('npx @el-j/magic-agent-helix run')} to generate your files.`,
   );
 }

@@ -1,6 +1,6 @@
 // Core exports for MagicAgentHelix
 
-import { dirname, resolve } from 'node:path';
+import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -93,9 +93,6 @@ export {
 } from './meta-instructions';
 
 export * from './types';
-
-// Export the path to the built-in templates directory
-export const BUILT_IN_TEMPLATE_DIR = resolve(__dirname, 'default_templates');
 
 // Telemetry (Phase 6)
 export { createTelemetry, TelemetryClient } from './telemetry';

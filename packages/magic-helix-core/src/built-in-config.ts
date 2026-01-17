@@ -26,6 +26,15 @@ export const BUILT_IN_CONFIG: MergedConfig = {
     '@angular/core': 'framework-angular',
     '@nestjs/core': 'framework-nestjs',
 
+    // Python frameworks
+    django: 'framework-django',
+    flask: 'framework-flask',
+    fastapi: 'framework-fastapi',
+
+    // Go frameworks
+    'github.com/gin-gonic/gin': 'framework-gin',
+    'github.com/gofiber/fiber': 'framework-fiber',
+
     // Styling
     tailwindcss: 'style-tailwind',
     primevue: 'style-primevue',
@@ -37,6 +46,7 @@ export const BUILT_IN_CONFIG: MergedConfig = {
     jest: 'test-jest',
     cypress: 'test-cypress',
     playwright: 'test-playwright',
+    pytest: 'test-pytest',
 
     // State
     rxjs: 'state-rxjs',
@@ -46,78 +56,71 @@ export const BUILT_IN_CONFIG: MergedConfig = {
   },
 
   configFileTagMap: {
-    // Detect key configs
+    // Detect key configs - removed language-specific entries, now handled by plugins
     'tailwind.config.js': 'style-tailwind',
     'tailwind.config.ts': 'style-tailwind',
     'vite.config.ts': 'build-vite',
     'vite.config.js': 'build-vite',
-    'tsconfig.json': 'lang-typescript',
   },
 
   fileGlobTagMap: {
-    // Detect file types
-    'src/**/*.vue': 'framework-vue',
-    'src/**/*.tsx': 'framework-react',
-    'src/**/*.go': 'lang-go',
-    'src/**/*.py': 'lang-python',
+    // Detect file types - removed language-specific entries, now handled by plugins
   },
 
   tagTemplateMap: {
-    // Vue Projects
-    'framework-vue': [{ template: 'vue/vue-core.md', suffix: 'vue-core.md' }],
-    'state-pinia': [{ template: 'vue/vue-pinia.md', suffix: 'vue-pinia.md' }],
-    'style-primevue': [
-      { template: 'vue/style-primevue.md', suffix: 'vue-style-primevue.md' },
-    ],
+    // Vue Projects - templates now provided by plugins
+    'framework-vue': [],
+    'state-pinia': [],
+    'style-primevue': [],
     'style-quasar': [
-      { template: 'vue/style-quasar.md', suffix: 'vue-style-quasar.md' },
+      { template: 'vue/style-quasar.md', suffix: 'vue-quasar.instructions.md' },
     ],
 
     // React Projects
     'framework-react': [
-      { template: 'react/react-core.md', suffix: 'react-core.md' },
+      { template: 'react/react-core.md', suffix: 'react.instructions.md' },
     ],
     'state-zustand': [
-      { template: 'react/react-zustand.md', suffix: 'react-zustand.md' },
+      {
+        template: 'react/react-zustand.md',
+        suffix: 'react-zustand.instructions.md',
+      },
     ],
 
     // NestJS Projects
     'framework-nestjs': [
-      { template: 'nestjs/nestjs-core.md', suffix: 'nestjs-core.md' },
+      { template: 'nestjs/nestjs-core.md', suffix: 'nestjs.instructions.md' },
     ],
 
     // Angular Projects
     'framework-angular': [
-      { template: 'angular/angular-core.md', suffix: 'angular-core.md' },
+      {
+        template: 'angular/angular-core.md',
+        suffix: 'angular.instructions.md',
+      },
     ],
 
-    // Generic
-    'style-tailwind': [
-      { template: 'generic/style-tailwind.md', suffix: 'style-tailwind.md' },
+    // Generic - templates now provided by plugins
+    'style-tailwind': [],
+    'style-mui': [
+      { template: 'generic/style-mui.md', suffix: 'mui.instructions.md' },
     ],
-    'style-mui': [{ template: 'generic/style-mui.md', suffix: 'style-mui.md' }],
-    'test-vitest': [
-      { template: 'generic/test-vitest.md', suffix: 'test-vitest.md' },
+    'test-vitest': [],
+    'test-jest': [
+      { template: 'generic/test-jest.md', suffix: 'jest.instructions.md' },
     ],
-    'test-jest': [{ template: 'generic/test-jest.md', suffix: 'test-jest.md' }],
     'test-cypress': [
-      { template: 'generic/test-cypress.md', suffix: 'test-cypress.md' },
+      {
+        template: 'generic/test-cypress.md',
+        suffix: 'cypress.instructions.md',
+      },
     ],
     'test-playwright': [
-      { template: 'generic/test-playwright.md', suffix: 'test-playwright.md' },
+      {
+        template: 'generic/test-playwright.md',
+        suffix: 'playwright.instructions.md',
+      },
     ],
-    'lang-typescript': [
-      { template: 'generic/lang-typescript.md', suffix: 'lang-typescript.md' },
-    ],
-    'lang-python': [
-      { template: 'python/lang-python.md', suffix: 'lang-python.md' },
-    ],
-    'lang-go': [{ template: 'go/lang-go.md', suffix: 'lang-go.md' }],
-    'state-rxjs': [
-      { template: 'generic/state-rxjs.md', suffix: 'state-rxjs.md' },
-    ],
-    'state-redux': [
-      { template: 'generic/state-redux.md', suffix: 'state-redux.md' },
-    ],
+    // Language-specific templates removed - now provided by language plugins
   },
 };

@@ -1,0 +1,21 @@
+# Testing: Cypress
+- **ALWAYS** use `data-cy` attributes for element selection.
+- **ALWAYS** avoid using CSS selectors - prefer `data-cy` attributes.
+- **ALWAYS** use page object pattern for reusable selectors.
+- **ALWAYS** use `cy.intercept()` for API mocking and spying.
+- **ALWAYS** use `cy.wait()` sparingly - prefer assertions over arbitrary waits.
+- **ALWAYS** use `should()` for assertions instead of `then()`.
+- **ALWAYS** test user journeys, not implementation details.
+- **ALWAYS** use `cy.session()` for authentication state management.
+- **ALWAYS** organize tests in `cypress/e2e/` directory.
+- **ALWAYS** use `describe()` and `it()` for test organization.
+- **ALWAYS** use `beforeEach()` for test setup and navigation.
+- **ALWAYS** test both happy path and error scenarios.
+- **ALWAYS** use `cy.fixture()` for test data management.
+- **ALWAYS** use `cy.viewport()` to test responsive design.
+- **ALWAYS** use `cy.pause()` during development, remove for CI.
+- **ALWAYS** use `cy.debug()` for debugging, remove for production.
+- **ALWAYS** run tests in headless mode for CI/CD.
+- **ALWAYS** use `cy.request()` for API testing when UI testing isn't needed.
+- **ALWAYS** use custom commands for reusable actions.
+- **ALWAYS** maintain test execution time under 2 minutes per spec.

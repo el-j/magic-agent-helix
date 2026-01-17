@@ -5,7 +5,8 @@
  * Supports Poetry, pip, and setuptools project formats
  */
 
-import type { ProjectMetadata, TemplateDefinition } from '@magic-helix/core';
+import * as path from 'node:path';
+import type { ProjectMetadata, TemplateDefinition } from '@el-j/magic-helix-core';
 import { BasePlugin } from '../base/BasePlugin';
 
 export class PythonPlugin extends BasePlugin {
@@ -13,6 +14,7 @@ export class PythonPlugin extends BasePlugin {
   displayName = 'Python';
   version = '3.0.0';
   priority = 85;
+
 
   async detect(projectPath: string): Promise<ProjectMetadata | null> {
     // Check for pyproject.toml (Poetry, modern Python)
@@ -27,12 +29,15 @@ export class PythonPlugin extends BasePlugin {
 
     // Check for setup.py (setuptools)
     if (this.fileExists(projectPath, 'setup.py')) {
+      const deps = {};
+      const tags = await this.enrichTags(projectPath, deps);
       return {
         language: 'Python',
         name: this.getProjectName(projectPath),
-        dependencies: {},
+        dependencies: deps,
         manifestFile: 'setup.py',
         projectPath,
+        tags: Array.from(tags),
       };
     }
 
@@ -40,11 +45,14 @@ export class PythonPlugin extends BasePlugin {
   }
 
   getTemplates(): TemplateDefinition[] {
+    const dirname = this.getDirname(import.meta.url);
     return [
       {
         name: 'python-core',
         tags: ['python'],
-        content: this.getPythonTemplate(),
+        content: () => this.loadTemplateFromFile(
+          path.join(dirname, 'templates/lang-python.md')
+        ).then(c => c || this.getPythonFallbackTemplate()),
       },
     ];
   }
@@ -62,15 +70,17 @@ export class PythonPlugin extends BasePlugin {
 
   // Private helper methods
 
-  private detectFromPyproject(projectPath: string): ProjectMetadata {
+  private async detectFromPyproject(projectPath: string): Promise<ProjectMetadata> {
     const content = this.readFile(projectPath, 'pyproject.toml');
     if (!content) {
+      const tags = await this.enrichTags(projectPath, {});
       return {
         language: 'Python',
         name: this.getProjectName(projectPath),
         dependencies: {},
         manifestFile: 'pyproject.toml',
         projectPath,
+        tags: Array.from(tags),
       };
     }
 
@@ -92,6 +102,8 @@ export class PythonPlugin extends BasePlugin {
       }
     }
 
+    const tags = await this.enrichTags(projectPath, deps);
+
     return {
       language: 'Python',
       name: nameMatch?.[1] || this.getProjectName(projectPath),
@@ -99,10 +111,11 @@ export class PythonPlugin extends BasePlugin {
       dependencies: deps,
       manifestFile: 'pyproject.toml',
       projectPath,
+      tags: Array.from(tags),
     };
   }
 
-  private detectFromRequirements(projectPath: string): ProjectMetadata {
+  private async detectFromRequirements(projectPath: string): Promise<ProjectMetadata> {
     const content = this.readFile(projectPath, 'requirements.txt');
     const deps: Record<string, string> = {};
 
@@ -117,16 +130,39 @@ export class PythonPlugin extends BasePlugin {
       }
     }
 
+    const tags = await this.enrichTags(projectPath, deps);
+
     return {
       language: 'Python',
       name: this.getProjectName(projectPath),
       dependencies: deps,
       manifestFile: 'requirements.txt',
       projectPath,
+      tags: Array.from(tags),
     };
   }
 
-  private getPythonTemplate(): string {
+  /**
+   * Enrich tags from dependencies
+   */
+  private async enrichTags(
+    projectPath: string,
+    dependencies: Record<string, string>,
+  ): Promise<Set<string>> {
+    const tags = new Set<string>(['python']); // Always include python tag
+
+    // Add tags from dependency map
+    const depTagMap = this.getDependencyTagMap();
+    for (const dep in dependencies) {
+      if (depTagMap[dep]) {
+        tags.add(depTagMap[dep]);
+      }
+    }
+
+    return tags;
+  }
+
+  private getPythonFallbackTemplate(): string {
     return `# Python Development Guidelines
 
 This project uses Python.

@@ -59,4 +59,12 @@ describe('mergeConfigs', () => {
       { template: 'my-vue.md', suffix: 'my-vue.md' },
     ]);
   });
+
+  it('should normalize outputDirectory from singular to plural', () => {
+    const userConfig: Partial<Config> = {
+      outputDirectory: '.github/instruction',
+    };
+    const merged = mergeConfigs(userConfig);
+    expect(merged.outputDirectory).toBe('.github/instructions');
+  });
 });

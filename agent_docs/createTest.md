@@ -1,3 +1,7 @@
+> Note: The output directory is `.github/instructions` by default. If a user config mistakenly sets `.github/instruction`, the core config merger normalizes it to `.github/instructions`. 
+> 
+> **GitHub Copilot Naming Convention**: Files follow the official pattern `NAME.instructions.md` (e.g., `typescript.instructions.md`, `vue.instructions.md`) as specified in the [GitHub Copilot documentation](https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions). This allows multiple instruction files per repository, each with `applyTo` frontmatter specifying which files they apply to.
+
 import { Command } from 'commander';
 import { run } from './commands/run';
 import { init } from './commands/init';
@@ -229,7 +233,7 @@ export async function init() {
   console.log(pc.cyan(`\nNext steps:`));
   console.log(`  1. Edit ${pc.bold(CONFIG_FILENAME)} to define your team's "tags".`);
   console.log(`  2. Add your custom .md instruction files to ${pc.bold(DEFAULT_TEMPLATE_DIR)}.`);
-  console.log(`  3. Run ${pc.bold('npx @magic-helix/agent run')} to generate your files.`);
+  console.log(`  3. Run ${pc.bold('npx @el-j/magic-agent-helix run')} to generate your files.`);
 }
 File 4: /src/commands/init.test.ts (Test Skeleton)import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as fs from 'fs';

@@ -46,6 +46,54 @@ export const TAG_FILE_EXTENSIONS: Record<string, FileExtensionMapping> = {
     extensions: ['py'],
     description: 'Python files',
   },
+  'lang-rust': {
+    extensions: ['rs'],
+    description: 'Rust files',
+  },
+  'rust-embedded': {
+    extensions: ['rs'],
+    description: 'Embedded Rust files',
+  },
+  hardware2rust: {
+    extensions: ['rs'],
+    description: 'Hardware2Rust project files',
+  },
+  'lang-java': {
+    extensions: ['java'],
+    description: 'Java files',
+  },
+  'lang-swift': {
+    extensions: ['swift'],
+    description: 'Swift files',
+  },
+  'lang-ruby': {
+    extensions: ['rb'],
+    description: 'Ruby files',
+  },
+  'lang-php': {
+    extensions: ['php'],
+    description: 'PHP files',
+  },
+  'lang-csharp': {
+    extensions: ['cs'],
+    description: 'C# files',
+  },
+  'lang-cpp': {
+    extensions: ['cpp', 'hpp', 'cc', 'h', 'cxx', 'hxx'],
+    description: 'C++ files',
+  },
+  'lang-c': {
+    extensions: ['c', 'h'],
+    description: 'C files',
+  },
+  'lang-kotlin': {
+    extensions: ['kt', 'kts'],
+    description: 'Kotlin files',
+  },
+  'lang-scala': {
+    extensions: ['scala', 'sc'],
+    description: 'Scala files',
+  },
 
   // Styling
   'style-tailwind': {

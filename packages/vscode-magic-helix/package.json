@@ -2,7 +2,7 @@
   "name": "magic-helix-vscode",
   "displayName": "MagicAgentHelix Runner",
   "description": "Advanced VS Code extension for running MagicAgentHelix CLI with AI-powered refinement, command history, favorites, workspace configuration, and progress tracking.",
-  "version": "3.0.0-beta.1",
+  "version": "4.0.0-beta.8",
   "publisher": "el-j",
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
     "url": "https://github.com/el-j/magic-agent-helix/issues"
   },
   "engines": {
-    "vscode": "^1.85.0"
+    "vscode": "^1.107.0"
   },
   "categories": [
     "Other",
@@ -296,16 +296,19 @@
     }
   },
   "scripts": {
-    "build": "tsc --build",
-    "package": "vsce package --no-yarn"
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
+    "build": "npm run clean && tsc",
+    "package": "npm run build && vsce package --no-yarn"
   },
   "dependencies": {
-    "@types/node": "^20.11.0",
-    "@magic-helix/core": "*"
+    "@el-j/magic-helix-core": "*",
+    "@types/node": "^25.0.2",
+    "commander": "^14.0.2",
+    "inquirer": "^13.1.0"
   },
   "devDependencies": {
-    "@types/vscode": "^1.85.0",
-    "@vscode/vsce": "^3.2.1",
-    "typescript": "^5.0.0"
+    "@types/vscode": "^1.107.0",
+    "@vscode/vsce": "^3.7.1",
+    "typescript": "^5.9.3"
   }
 }

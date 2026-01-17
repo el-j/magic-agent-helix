@@ -6,7 +6,7 @@
  */
 
 import * as path from 'node:path';
-import type { ProjectMetadata, TemplateDefinition } from '@magic-helix/core';
+import type { ProjectMetadata, TemplateDefinition } from '@el-j/magic-helix-core';
 import { BasePlugin } from '../base/BasePlugin';
 
 interface PackageJson {
@@ -37,6 +37,7 @@ export class NodeJSPlugin extends BasePlugin {
         dependencies: {},
         manifestFile: 'package.json',
         projectPath,
+        tags: ['typescript'], // Default to TypeScript for unparseable package.json
       };
     }
 
@@ -46,6 +47,9 @@ export class NodeJSPlugin extends BasePlugin {
       'devDependencies',
     );
 
+    // Enrich tags from dependencies and config files
+    const tags = await this.enrichTags(projectPath, deps);
+
     const metadata: ProjectMetadata = {
       language: 'JavaScript/TypeScript',
       name: pkg.name || this.getProjectName(projectPath),
@@ -53,10 +57,11 @@ export class NodeJSPlugin extends BasePlugin {
       dependencies: deps,
       manifestFile: 'package.json',
       projectPath,
+      tags: Array.from(tags),
     };
 
-    // Check for workspaces (monorepo support)
-    const workspaces = this.extractWorkspaces(pkg);
+    // Check for workspaces (monorepo support) with proper glob expansion
+    const workspaces = await this.extractWorkspaces(projectPath, pkg);
     if (workspaces.length > 0) {
       metadata.workspaceMembers = workspaces;
     }
@@ -65,61 +70,62 @@ export class NodeJSPlugin extends BasePlugin {
   }
 
   getTemplates(): TemplateDefinition[] {
+    const dirname = this.getDirname(import.meta.url);
     return [
       {
         name: 'lang-typescript',
         tags: ['typescript'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/lang-typescript.md')
+          path.join(dirname, 'templates/lang-typescript.md')
         ).then(c => c || this.getTypescriptTemplate()),
       },
       {
         name: 'react-core',
         tags: ['react'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/react-core.md')
+          path.join(dirname, 'templates/react-core.md')
         ).then(c => c || this.getReactTemplate()),
       },
       {
         name: 'react-zustand',
         tags: ['zustand'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/react-zustand.md')
+          path.join(dirname, 'templates/react-zustand.md')
         ).then(c => c || this.getReactZustandTemplate()),
       },
       {
         name: 'vue-core',
         tags: ['vue'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/vue-core.md')
+          path.join(dirname, 'templates/vue-core.md')
         ).then(c => c || this.getVueTemplate()),
       },
       {
         name: 'vue-pinia',
         tags: ['pinia'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/vue-pinia.md')
+          path.join(dirname, 'templates/vue-pinia.md')
         ).then(c => c || this.getVuePiniaTemplate()),
       },
       {
         name: 'nestjs-core',
         tags: ['nestjs'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/nestjs-core.md')
+          path.join(dirname, 'templates/nestjs-core.md')
         ).then(c => c || this.getNestJSTemplate()),
       },
       {
         name: 'style-tailwind',
         tags: ['tailwind'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/style-tailwind.md')
+          path.join(dirname, 'templates/style-tailwind.md')
         ).then(c => c || this.getTailwindTemplate()),
       },
       {
         name: 'test-vitest',
         tags: ['vitest'],
         content: () => this.loadTemplateFromFile(
-          path.join(__dirname, 'templates/test-vitest.md')
+          path.join(dirname, 'templates/test-vitest.md')
         ).then(c => c || this.getVitestTemplate()),
       },
     ];
@@ -152,15 +158,64 @@ export class NodeJSPlugin extends BasePlugin {
 
   // Private helper methods
 
-  private extractWorkspaces(pkg: PackageJson): string[] {
+  private async extractWorkspaces(projectPath: string, pkg: PackageJson): Promise<string[]> {
     if (!pkg.workspaces) return [];
 
     const workspacePatterns = Array.isArray(pkg.workspaces)
       ? pkg.workspaces
       : pkg.workspaces.packages || [];
 
-    // Convert glob patterns to actual paths (simplified - just remove wildcards)
-    return workspacePatterns.map(pattern => pattern.replace(/\/\*$/, ''));
+    // Properly expand glob patterns to actual directories
+    const workspaces: string[] = [];
+    for (const pattern of workspacePatterns) {
+      try {
+        const { glob } = await import('glob');
+        const matches = await glob(pattern, {
+          cwd: projectPath,
+          absolute: false,
+          onlyDirectories: true,
+        });
+        workspaces.push(...matches);
+      } catch {
+        // Fallback: simplified pattern expansion
+        workspaces.push(pattern.replace(/\/\*+$/, ''));
+      }
+    }
+
+    return workspaces;
+  }
+
+  /**
+   * Enrich tags from dependencies and config files
+   */
+  private async enrichTags(
+    projectPath: string,
+    dependencies: Record<string, string>,
+  ): Promise<Set<string>> {
+    const tags = new Set<string>();
+
+    // Always add TypeScript if tsconfig.json exists
+    if (this.fileExists(projectPath, 'tsconfig.json')) {
+      tags.add('typescript');
+    }
+
+    // Add tags from dependency map
+    const depTagMap = this.getDependencyTagMap();
+    for (const dep in dependencies) {
+      if (depTagMap[dep]) {
+        tags.add(depTagMap[dep]);
+      }
+    }
+
+    // Add tags from config file map
+    const configTagMap = this.getConfigFileTagMap();
+    for (const file in configTagMap) {
+      if (this.fileExists(projectPath, file)) {
+        tags.add(configTagMap[file]);
+      }
+    }
+
+    return tags;
   }
 
   // Fallback template content (if files don't exist)

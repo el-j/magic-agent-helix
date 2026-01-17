@@ -1,4 +1,8 @@
 import { defineConfig } from "vitest/config";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
 	test: {
@@ -13,5 +17,14 @@ export default defineConfig({
 			exclude: ["packages/vscode-magic-helix/**"],
 		},
 		globals: true,
+		// Use Node.js environment for proper module resolution
+		environment: "node",
+		pool: "forks",
+	},
+	resolve: {
+		alias: {
+			// Explicitly resolve glob to its ESM build
+			glob: path.resolve(__dirname, "node_modules/glob/dist/esm/index.js"),
+		},
 	},
 });

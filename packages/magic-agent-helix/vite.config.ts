@@ -19,7 +19,7 @@ export default defineConfig({
 				"inquirer",
 				"ora",
 				"picocolors",
-				"@magic-helix/core",
+				"@el-j/magic-helix-core",
 			],
 		},
 		outDir: "dist",

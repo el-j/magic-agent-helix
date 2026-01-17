@@ -6,17 +6,15 @@ import type {
   FileGlobTagMap,
   LanguagePlugin,
   TagTemplateMap,
-} from '@magic-helix/core';
+} from '@el-j/magic-helix-core';
 import {
   type AssistantTarget,
-  BUILT_IN_TEMPLATE_DIR,
   PluginRegistry,
-  type ProjectMetadata,
   type TemplateDefinition,
   getFormatter,
   loadUserConfig,
   mergeConfigs,
-} from '@magic-helix/core';
+} from '@el-j/magic-helix-core';
 import { glob } from 'glob';
 import gradient from 'gradient-string';
 import inquirer from 'inquirer';
@@ -184,7 +182,22 @@ export async function run(options: CliOptions = {}) {
   if (projects.length === 0) {
     projectSpinner.warn(
       pc.yellow(
-        'No projects found. Make sure your root package.json has a "workspaces" field.',
+        'No projects detected. The tool could not find any supported project types in the current directory.',
+      ),
+    );
+    console.log(
+      pc.gray(
+        '\nSupported project types: Node.js, Python, Go, Rust, Java, Ruby, PHP, C#, Swift, C/C++, PlatformIO',
+      ),
+    );
+    console.log(
+      pc.gray(
+        'For monorepos, ensure your root package.json has a "workspaces" field.',
+      ),
+    );
+    console.log(
+      pc.gray(
+        'For standalone projects, ensure you have the appropriate manifest file (package.json, go.mod, Cargo.toml, platformio.ini, etc.)',
       ),
     );
     return;
@@ -270,6 +283,35 @@ export async function run(options: CliOptions = {}) {
     combinedTemplateMap[tag].push(...templates);
   }
 
+  // Debug logging for template maps
+  if (shouldLog('verbose', logLevel)) {
+    console.log(pc.gray('\n--- Template Map Debug ---'));
+    console.log(
+      pc.gray(
+        `Plugin templates: ${Object.keys(pluginTemplateMap).length} tags`,
+      ),
+    );
+    console.log(
+      pc.gray(`  Tags: ${Object.keys(pluginTemplateMap).join(', ')}`),
+    );
+    console.log(
+      pc.gray(
+        `Config templates: ${Object.keys(filteredTagTemplateMap).length} tags`,
+      ),
+    );
+    console.log(
+      pc.gray(`  Tags: ${Object.keys(filteredTagTemplateMap).join(', ')}`),
+    );
+    console.log(
+      pc.gray(
+        `Combined templates: ${Object.keys(combinedTemplateMap).length} tags`,
+      ),
+    );
+    console.log(
+      pc.gray(`  Tags: ${Object.keys(combinedTemplateMap).join(', ')}`),
+    );
+  }
+
   // 5. Generate files
   if (shouldLog('normal', logLevel)) {
     console.log(
@@ -313,15 +355,10 @@ export async function run(options: CliOptions = {}) {
 
       for (const t of templates) {
         totalTemplates++;
-        // Check for template in user's dir *first*, then fall back to built-in
-        let templateContent =
+        // Use plugin inline content or user custom templates
+        const templateContent =
           t.inlineContent ?? readTemplate(userTemplateDir, t.template);
-        let source = t.inlineContent ? 'Plugin (inline)' : 'Custom';
-
-        if (!templateContent) {
-          templateContent = readTemplate(BUILT_IN_TEMPLATE_DIR, t.template);
-          source = 'Built-in';
-        }
+        const source = t.inlineContent ? 'Plugin' : 'Custom';
 
         if (!templateContent) {
           console.warn(pc.yellow(`    ⚠️  Template not found: ${t.template}`));
@@ -336,7 +373,12 @@ export async function run(options: CliOptions = {}) {
         );
         const fullContent = `${header}\n${formattedContent}`;
 
-        const outputFilename = `${project.name}.${t.suffix}`;
+        // For monorepos: prefix filename with project name to avoid overwrites
+        // Format: <project-name>.<tag>.instructions.md (e.g., "love-my-car-admin-dashboard.vue.instructions.md")
+        // Single repos get just the tag name (e.g., "vue.instructions.md")
+        const projectPrefix =
+          projects.length > 1 ? `${project.name.replace(/[@/]/g, '-')}.` : '';
+        const outputFilename = `${projectPrefix}${t.suffix}`;
         const outputPath = path.join(targetDir, outputFilename);
 
         generatedFiles.push(outputFilename);
@@ -452,19 +494,26 @@ async function ensureRegistryInitialized() {
 async function getPluginTemplates(): Promise<Record<string, TemplateSource[]>> {
   await ensureRegistryInitialized();
   const registry = PluginRegistry.getInstance();
-  // Try to get plugins from registry; may not be available in all environments
-  const plugins: LanguagePlugin[] = [];
+  let plugins: LanguagePlugin[] = [];
+
   try {
-    if (
-      typeof (registry as Record<string, unknown>).getAllPlugins === 'function'
-    ) {
-      const getAllPlugins = (registry as Record<string, unknown>)
-        .getAllPlugins as () => Promise<LanguagePlugin[]>;
-      plugins.push(...(await getAllPlugins()));
-    }
-  } catch {
-    // Registry may not have getAllPlugins in test environments
+    // Direct method call instead of type casting
+    plugins = await registry.getAllPlugins();
+  } catch (e) {
+    console.warn(
+      pc.yellow(`⚠️  Failed to get plugins: ${(e as Error).message}`),
+    );
+    console.warn(
+      pc.yellow(
+        `⚠️  Registry type: ${typeof registry}, has getAllPlugins: ${typeof registry?.getAllPlugins}`,
+      ),
+    );
   }
+
+  if (plugins.length === 0) {
+    console.warn(pc.yellow('⚠️  No plugins loaded from registry!'));
+  }
+
   const map: Record<string, TemplateSource[]> = {};
 
   for (const plugin of plugins) {
@@ -482,7 +531,10 @@ async function getPluginTemplates(): Promise<Record<string, TemplateSource[]>> {
     }
 
     for (const tmpl of templates) {
-      const suffix = `${tmpl.name}.md`;
+      // Convert template name to suffix: 'lang-typescript' → 'typescript.instructions.md'
+      // 'react-core' → 'react.instructions.md', etc.
+      const baseName = tmpl.name.replace(/^lang-/, '').replace(/-core$/, '');
+      const suffix = `${baseName}.instructions.md`;
       let content: string | null = null;
       try {
         content =
@@ -513,7 +565,6 @@ async function getPluginTemplates(): Promise<Record<string, TemplateSource[]>> {
 
 async function findProjects(): Promise<Project[]> {
   await ensureRegistryInitialized();
-  const projects: Project[] = [];
   const rootPath = process.cwd();
 
   // Initialize plugin registry and detect projects
@@ -524,16 +575,66 @@ async function findProjects(): Promise<Project[]> {
     return [];
   }
 
+  // Group detections by project path to aggregate multi-language/multi-plugin results
+  const projectMap = new Map<
+    string,
+    {
+      name: string;
+      path: string;
+      tags: Set<string>;
+      allMetadata: ProjectMetadata[];
+    }
+  >();
+
   for (const result of detectedProjects) {
     const relativePath = path.relative(rootPath, result.metadata.projectPath);
-    projects.push({
-      name: result.metadata.name || path.basename(result.metadata.projectPath),
-      path: relativePath || '.',
-      tags: new Set<string>(),
-    });
+    const projectKey = relativePath || '.';
+
+    if (!projectMap.has(projectKey)) {
+      projectMap.set(projectKey, {
+        name: sanitizeProjectName(
+          result.metadata.name || path.basename(result.metadata.projectPath),
+        ),
+        path: projectKey,
+        tags: new Set<string>(),
+        allMetadata: [],
+      });
+    }
+
+    const project = projectMap.get(projectKey)!;
+    project.allMetadata.push(result.metadata);
+
+    // Aggregate tags from this plugin's detection
+    if (result.metadata.tags?.length) {
+      for (const tag of result.metadata.tags) {
+        project.tags.add(tag);
+      }
+    }
   }
 
-  return projects;
+  // Convert map to array
+  return Array.from(projectMap.values()).map(
+    ({ name, path: projectPath, tags }) => ({
+      name,
+      path: projectPath,
+      tags,
+    }),
+  );
+}
+
+/**
+ * Sanitize project names for filesystem-safe output filenames.
+ * - Convert scoped names like "@scope/app" to "scope-app"
+ * - Replace path separators and whitespace with '-'
+ * - Remove leading '@'
+ */
+function sanitizeProjectName(name: string): string {
+  const trimmed = name.trim();
+  // Replace slashes with dashes, remove leading '@'
+  let sanitized = trimmed.replace(/^@/, '').replace(/[\\/\s]+/g, '-');
+  // Collapse multiple dashes
+  sanitized = sanitized.replace(/-+/g, '-');
+  return sanitized;
 }
 
 async function analyzeProject(
@@ -545,19 +646,23 @@ async function analyzeProject(
   await ensureRegistryInitialized();
   const projectRoot = path.resolve(process.cwd(), project.path);
 
-  // Strategy 1: Analyze dependencies from any manifest file
+  // Strategy 1: Analyze via plugins (tags already populated in findProjects, but let's enrich further)
   try {
     const registry = PluginRegistry.getInstance();
     const detectedProjects = await registry.detectAllProjects(projectRoot);
-    if (detectedProjects.length > 0) {
-      const projectMetadata = detectedProjects[0].metadata; // Use first match
 
+    // Aggregate tags from ALL detected plugins at this path
+    for (const detected of detectedProjects) {
+      const projectMetadata = detected.metadata;
+
+      // Add plugin-provided tags
       if (projectMetadata.tags?.length) {
         for (const tag of projectMetadata.tags) {
           project.tags.add(tag);
         }
       }
 
+      // Add tags from dependency mapping (from built-in config)
       for (const dep in projectMetadata.dependencies) {
         // Check both the full dependency name and the package/module name
         if (depMap[dep]) {

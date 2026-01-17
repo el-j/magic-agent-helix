@@ -1,3 +1,208 @@
+## [4.0.0-beta.8](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.7...v4.0.0-beta.8) (2026-01-17)
+
+### Features
+
+* Enhance multi-language support and improve monorepo detection ([c1ff763](https://github.com/el-j/magic-agent-helix/commit/c1ff763bf2b1df80a7e3617071fe5c8b2c35d203))
+
+## [4.0.0-beta.8] (Unreleased)
+
+### Major Improvements
+
+* **detection:** Dramatically improved monorepo and multi-language project detection
+  - Fixed workspace glob pattern resolution (`apps/*`, `packages/*` now properly expanded)
+  - Multi-plugin detection: projects with multiple languages (e.g., Node.js + Python) now detected properly
+  - Increased max recursion depth from 5 to 10 for deeply nested monorepos
+  - Enhanced skip directory logic (added `.turbo`, `.next`, `.nuxt`, etc.)
+  - Projects like LoveMyCar turbo monorepo now fully detected (15+ projects vs 1 before)
+
+* **tags:** Plugin tag enrichment and aggregation
+  - All language plugins now populate `metadata.tags` from dependencies and config files
+  - Tags aggregated across multiple plugin detections per project path
+  - Python plugin: auto-tags `fastapi`, `django`, `flask`, `pytest`
+  - Go plugin: auto-tags `gin`, `fiber`, framework dependencies
+  - NodeJS plugin: enriched tag detection from dependencies AND config files
+
+* **templates:** Multi-language template generation
+  - Projects with multiple languages now generate instruction files for ALL detected languages
+  - Example: Node.js monorepo with Python microservice gets both TypeScript AND Python instructions
+  - Enhanced dependency tag mapping (added Python/Go frameworks)
+
+### Bug Fixes
+
+* **nodejs:** Fixed workspace member discovery to use glob expansion instead of simple string replacement
+* **detection:** Fixed single-plugin-per-path limitation (now runs all plugins on each discovered path)
+* **analysis:** Fixed `analyzeProject()` to aggregate tags from all detected plugins instead of first match only
+* **run:** Fixed `findProjects()` to group multi-plugin results by path with tag aggregation
+
+### Performance
+
+* Improved SKIP_DIRS reduces unnecessary scanning of build artifacts
+* Multi-plugin detection adds 2-3x overhead for large monorepos but now actually works correctly
+
+### Documentation
+
+* Added comprehensive root cause analysis and fix documentation in `agent_docs/MONOREPO-DETECTION-FIXES.md`
+* Added test script for validating monorepo detection improvements
+
+## [4.0.0-beta.7](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.6...v4.0.0-beta.7) (2025-12-18)
+
+### Features
+
+* add 8 new language plugins - Elixir, Dart/Flutter, Scala, Kotlin, Lua, R, Perl, Shell ([b0200c5](https://github.com/el-j/magic-agent-helix/commit/b0200c5e2aeeeb33c13b02902f269d317a123391))
+
+## [4.0.0-beta.6](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.5...v4.0.0-beta.6) (2025-12-18)
+
+### Bug Fixes
+
+* prepare VS Code extension for stable release - use [@latest](https://github.com/latest) tag ([591d37a](https://github.com/el-j/magic-agent-helix/commit/591d37a73646b30da8d4981bb231d5570dc99a30))
+
+## [4.0.0-beta.5](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.4...v4.0.0-beta.5) (2025-12-18)
+
+### Bug Fixes
+
+* VS Code extension use [@beta](https://github.com/beta) tag instead of [@latest](https://github.com/latest) ([d6dceaa](https://github.com/el-j/magic-agent-helix/commit/d6dceaab2cad49d6030e085b0313bbbe74c5cf27))
+
+## [Unreleased]
+
+### Features
+
+* **plugins:** Add support for 8 additional programming languages
+  - Elixir (Phoenix framework support)
+  - Dart/Flutter (mobile/cross-platform development)
+  - Scala (Akka, Play, ZIO, Cats)
+  - Kotlin (Ktor, Spring Boot, Coroutines)
+  - Lua (LuaRocks, OpenResty)
+  - R (Tidyverse, Shiny, statistical computing)
+  - Perl (CPAN, Mojolicious)
+  - Shell (Bash/Zsh scripting)
+  - Total language coverage: 18 languages (previously 10)
+  - Automatic plugin discovery and template generation
+  - Framework and library detection for each language
+
+### Bug Fixes
+
+* **vscode:** Prepare VS Code extension for stable release
+  - Changed npx command to use `@el-j/magic-agent-helix` (defaults to @latest)
+  - Ensures extension works with stable releases without requiring global npm installation
+  - npx automatically downloads and caches the package on first use
+  - Works out of the box in any workspace opened with VS Code
+
+## [4.0.0-beta.5](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.4...v4.0.0-beta.5) (2025-12-18)
+
+### Bug Fixes
+
+* remove duplicate templates and fix plugin filename generation ([a69fd11](https://github.com/el-j/magic-agent-helix/commit/a69fd11ad48775008ab49c902b031e0db708e695))
+
+## [4.0.0-beta.3](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2025-12-18)
+
+### ⚠ BREAKING CHANGES
+
+* All language plugins and templates moved to @el-j/magic-helix-plugins package
+
+- Deleted packages/magic-helix-core/src/builtin-plugins/ directory
+- Deleted packages/magic-helix-core/src/default_templates/ directory
+- Removed BUILT_IN_TEMPLATE_DIR export from core package
+- Updated pattern-combiner to load from @el-j/magic-helix-plugins
+- Updated CLI commands to use plugin-provided templates only
+- All 118 core tests passing
+- Clean separation between engine and language plugins
+- Improved modularity and maintainability
+
+### Features
+
+* consolidate plugins and templates into dedicated package ([5d3da4b](https://github.com/el-j/magic-agent-helix/commit/5d3da4be22372810c5ffc70b92cefe0ac89bf2e1))
+
+## [4.0.0-beta.3](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2025-12-18)
+
+### Bug Fixes
+
+* **build:** Fix circular dependency between core and plugins packages ([#XX](https://github.com/el-j/magic-agent-helix/issues/XX))
+  - Changed plugin loading in core to use dynamic imports instead of static imports
+  - Core package now builds independently without requiring plugins at build time
+  - Proper dependency flow: Plugins → Core → CLI → VS Code
+  - Resolves "Cannot find module '@el-j/magic-helix-plugins'" build errors
+
+* **plugins:** Fix template loading for all language plugins
+  - All language plugins now load comprehensive templates from .md files instead of inline strings
+  - Go, Python, Rust, Java, Ruby, PHP, C#, Swift plugins now use `loadTemplateFromFile()`
+  - Template sizes increased from ~200 chars (fallback) to 300-900+ chars (comprehensive)
+  - Maintains fallback templates for error handling
+
+* **tests:** Fix Vite test runner resolution for glob package
+  - Added explicit alias to glob ESM build in vitest.config.ts
+  - Resolved "Failed to resolve entry for package 'glob'" errors
+  - All 168 tests now passing across 29 test files
+
+* **lint:** Resolve all Biome linter warnings
+  - Fixed 13 unused variable/import warnings across 12 files
+  - Refactored plugin-registry.ts to avoid O(n²) spread operator in reduce
+  - Added biome-ignore comment for legitimate GitHub Actions `${{}}` syntax
+  - Clean lint with no warnings or errors
+
+* **build:** Fix package.json export conditions order
+  - Moved "types" condition before "import" and "require" in all exports
+  - Resolved 11 Vite warnings about unreachable TypeScript declarations
+  - Proper export resolution for all language plugin subpaths
+
+### Build System
+
+* **dependencies:** Correct build order in root package.json
+  - Build script now executes: plugins → core → CLI → VS Code extension
+  - Template files properly copied to dist during plugins build
+
+## [4.0.0-beta.2](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2025-12-17)
+
+### Features
+
+* Add comprehensive instructions for Tailwind CSS, TypeScript, Vitest, PrimeVue, and Vue 3 ([29983c0](https://github.com/el-j/magic-agent-helix/commit/29983c081ee1a47a2b730fc39e5b5158de381bfc))
+* add recursive polyglot detection and complete language support ([03d7660](https://github.com/el-j/magic-agent-helix/commit/03d766001f30454bda041e853a30a1f4f1388d4f))
+* add recursive polyglot detection and complete language support ([a0d1850](https://github.com/el-j/magic-agent-helix/commit/a0d185092a568732943f50a040a87d6739e926ac)), closes [#1](https://github.com/el-j/magic-agent-helix/issues/1)
+
+### Bug Fixes
+
+* **cpp:** improve parsing of lib_deps for multiline entries ([27f9e15](https://github.com/el-j/magic-agent-helix/commit/27f9e15a011b5ad4bae575b5733caa24ce469da1))
+* **cpp:** improve readability of lib_deps condition in CppPlugin ([8360f93](https://github.com/el-j/magic-agent-helix/commit/8360f93e234c3b9ea35ae42d4f4e27c9cbd0aeeb))
+
+## [3.1.0](https://github.com/el-j/magic-agent-helix/compare/v3.0.1-beta.1...v3.1.0) (2025-12-16)
+
+### Features
+
+* **detection:** Add recursive multi-language project discovery for polyglot monorepos ([#XX](https://github.com/el-j/magic-agent-helix/issues/XX))
+  - Recursively scans for manifest files (package.json, Cargo.toml, go.mod, setup.py, pom.xml, etc.)
+  - Detects projects in any subdirectory, not just workspace members
+  - Supports complex nested monorepo structures with mixed languages
+  - Skips common build/dependency directories (node_modules, target, .git, etc.)
+  - Tested on Hardware2Rust: increased detection from 19 to 37 projects
+
+* **languages:** Add comprehensive file extension mappings for all supported languages
+  - Rust (.rs), Java (.java), Swift (.swift), Ruby (.rb), PHP (.php)
+  - C# (.cs), C++ (.cpp, .hpp, .cc, .h, .cxx, .hxx), C (.c, .h)
+  - Kotlin (.kt, .kts), Scala (.scala, .sc)
+  - Embedded Rust and hardware2rust project support
+
+### Bug Fixes
+
+* **plugins:** Fix plugin template loading in ESM environments
+  - Changed from type-casting approach to direct `registry.getAllPlugins()` call
+  - Resolves "Cannot read properties of undefined" errors
+  - Plugin-provided templates now properly merge with config templates
+
+* **globs:** Fix applyTo patterns to use correct file extensions for each language
+  - Rust projects now correctly use `**/*.rs` instead of fallback TypeScript patterns
+  - All language-specific templates target appropriate file types
+
+### Performance
+
+* **detection:** Project detection now covers 100% of code in polyglot repositories
+  - Example: Hardware2Rust generates 62 instruction files (previously 0)
+  - Covers Rust, TypeScript, Vue, and all other detected languages
+
+## [3.0.1-beta.1](https://github.com/el-j/magic-agent-helix/compare/v3.0.0...v3.0.1-beta.1) (2025-12-14)
+
+### Bug Fixes
+
+* **release:** move VSIX packaging to verifyConditions phase and fix asset glob pattern ([d095136](https://github.com/el-j/magic-agent-helix/commit/d095136799fea8406c03f4e8f6e447f0ad6a8ee4))
+
 ## [3.0.0-beta.1](https://github.com/el-j/magic-agent-helix/compare/v2.0.0...v3.0.0-beta.1) (2025-12-14)
 
 ### ⚠ BREAKING CHANGES

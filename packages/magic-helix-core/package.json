@@ -1,6 +1,6 @@
 {
-  "name": "@magic-helix/core",
-  "version": "3.0.0-beta.1",
+  "name": "@el-j/magic-helix-core",
+  "version": "4.0.0-beta.8",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -17,15 +17,14 @@
     "node": "^20.11.1 || >=22.0.0"
   },
   "scripts": {
-    "build": "npm run build:types && npm run build:bundle && npm run build:templates",
+    "build": "npm run build:types && npm run build:bundle",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:combiner": "vitest run src/pattern-combiner.test.ts --reporter=verbose",
     "test:integration": "vitest run src/integration.test.ts --reporter=verbose",
     "build:types": "tsc --project tsconfig.declarations.json --outDir dist",
-    "build:bundle": "vite build",
-    "build:templates": "node ./scripts/copy-templates.js"
+    "build:bundle": "vite build"
   },
   "keywords": [
     "magic-agent-helix",
@@ -39,18 +38,19 @@
     "access": "public"
   },
   "dependencies": {
-    "commander": "^12.1.0",
-    "glob": "^11.0.3",
-    "gradient-string": "^3.0.0",
-    "inquirer": "^12.11.0",
-    "js-yaml": "^4.1.0",
+    "@el-j/magic-helix-plugins": "*",
     "@iarna/toml": "^3.0.0",
+    "commander": "^14.0.2",
+    "glob": "^13.0.0",
+    "gradient-string": "^3.0.0",
+    "inquirer": "^13.1.0",
+    "js-yaml": "^4.1.1",
     "ora": "^9.0.0",
-    "picocolors": "^1.0.1"
+    "picocolors": "^1.1.1"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
-    "vite": "^5.3.5"
+    "vite": "^7.3.0"
   },
   "files": [
     "dist/**/*",

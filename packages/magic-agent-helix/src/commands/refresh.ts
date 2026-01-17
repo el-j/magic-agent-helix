@@ -5,15 +5,14 @@ import type {
   DependencyTagMap,
   FileGlobTagMap,
   TagTemplateMap,
-} from '@magic-helix/core';
+} from '@el-j/magic-helix-core';
 import {
   type AssistantTarget,
-  BUILT_IN_TEMPLATE_DIR,
   getFormatter,
   loadUserConfig,
   mergeConfigs,
-} from '@magic-helix/core';
-import { PluginRegistry } from '@magic-helix/core';
+} from '@el-j/magic-helix-core';
+import { PluginRegistry } from '@el-j/magic-helix-core';
 import ora from 'ora';
 import pc from 'picocolors';
 import { buildPreciseGlobPattern } from '../utils/file-extensions';
@@ -139,14 +138,9 @@ export async function refresh(options: CliOptions = {}) {
           continue;
         }
 
-        // Read template
-        let templateContent = readTemplate(userTemplateDir, t.template);
-        let source = 'Custom';
-
-        if (!templateContent) {
-          templateContent = readTemplate(BUILT_IN_TEMPLATE_DIR, t.template);
-          source = 'Built-in';
-        }
+        // Read template from user custom directory
+        const templateContent = readTemplate(userTemplateDir, t.template);
+        const source = 'Custom';
 
         if (!templateContent) {
           console.warn(pc.yellow(`    ⚠️  Template not found: ${t.template}`));

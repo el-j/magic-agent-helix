@@ -34,10 +34,13 @@ export interface PatternTemplate {
 }
 
 /**
- * Loads all pattern templates from the default_templates/patterns directory
+ * Loads all pattern templates from the plugins package patterns directory
  */
 export function loadPatternTemplates(): Map<string, PatternTemplate> {
-  const templatesDir = path.join(__dirname, 'default_templates', 'patterns');
+  // Load from plugins package (node_modules in production, workspace in dev)
+  const pluginsPackageRoot = require.resolve('@el-j/magic-helix-plugins');
+  const pluginsDistDir = path.dirname(pluginsPackageRoot);
+  const templatesDir = path.join(pluginsDistDir, 'patterns');
   const patterns = new Map<string, PatternTemplate>();
 
   const categories = [
@@ -287,7 +290,7 @@ function extractContent(markdown: string): string {
 
   // Extract examples section (most valuable)
   const examplesMatch = content.match(
-    /## Examples\n([\s\S]+?)(?=\n## |\n---|\Z)/,
+    /## Examples\n([\s\S]+?)(?=\n## |\n---|Z)/,
   );
   if (examplesMatch) {
     return examplesMatch[1].trim();

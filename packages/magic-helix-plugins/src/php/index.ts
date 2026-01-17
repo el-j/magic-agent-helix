@@ -4,7 +4,8 @@
  * Detects PHP projects via composer.json
  */
 
-import type { ProjectMetadata, TemplateDefinition } from '@magic-helix/core';
+import * as path from 'node:path';
+import type { ProjectMetadata, TemplateDefinition } from '@el-j/magic-helix-core';
 import { BasePlugin } from '../base/BasePlugin';
 
 export class PHPPlugin extends BasePlugin {
@@ -12,7 +13,6 @@ export class PHPPlugin extends BasePlugin {
   displayName = 'PHP';
   version = '3.0.0';
   priority = 65;
-
   async detect(projectPath: string): Promise<ProjectMetadata | null> {
     if (!this.fileExists(projectPath, 'composer.json')) {
       return null;
@@ -51,11 +51,20 @@ export class PHPPlugin extends BasePlugin {
   }
 
   getTemplates(): TemplateDefinition[] {
+    const dirname = this.getDirname(import.meta.url);
     return [
       {
         name: 'php-core',
         tags: ['php'],
-        content: `# PHP Development Guidelines
+        content: () => this.loadTemplateFromFile(
+          path.join(dirname, 'templates/lang-php.md')
+        ).then(c => c || this.getPHPFallbackTemplate()),
+      },
+    ];
+  }
+
+  private getPHPFallbackTemplate(): string {
+    return `# PHP Development Guidelines
 
 This project uses PHP.
 
@@ -72,9 +81,7 @@ This project uses PHP.
 ## Testing
 - Write PHPUnit tests
 - Use proper assertions
-- Aim for good coverage`,
-      },
-    ];
+- Aim for good coverage`;
   }
 
   getDependencyTagMap() {

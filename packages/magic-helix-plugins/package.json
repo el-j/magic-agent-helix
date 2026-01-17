@@ -1,6 +1,6 @@
 {
-  "name": "@magic-helix/plugins",
-  "version": "3.0.0-beta.1",
+  "name": "@el-j/magic-helix-plugins",
+  "version": "4.0.0-beta.8",
   "description": "Official language detection plugins for MagicAgentHelix",
   "type": "module",
   "main": "./dist/index.js",
@@ -8,49 +8,59 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs"
     },
     "./nodejs": {
+      "types": "./dist/nodejs/index.d.ts",
       "import": "./dist/nodejs/index.mjs",
-      "require": "./dist/nodejs/index.cjs",
-      "types": "./dist/nodejs/index.d.ts"
+      "require": "./dist/nodejs/index.cjs"
     },
     "./go": {
+      "types": "./dist/go/index.d.ts",
       "import": "./dist/go/index.mjs",
-      "require": "./dist/go/index.cjs",
-      "types": "./dist/go/index.d.ts"
+      "require": "./dist/go/index.cjs"
     },
     "./python": {
+      "types": "./dist/python/index.d.ts",
       "import": "./dist/python/index.mjs",
-      "require": "./dist/python/index.cjs",
-      "types": "./dist/python/index.d.ts"
+      "require": "./dist/python/index.cjs"
     },
     "./rust": {
+      "types": "./dist/rust/index.d.ts",
       "import": "./dist/rust/index.mjs",
-      "require": "./dist/rust/index.cjs",
-      "types": "./dist/rust/index.d.ts"
+      "require": "./dist/rust/index.cjs"
     },
     "./java": {
+      "types": "./dist/java/index.d.ts",
       "import": "./dist/java/index.mjs",
-      "require": "./dist/java/index.cjs",
-      "types": "./dist/java/index.d.ts"
+      "require": "./dist/java/index.cjs"
     },
     "./ruby": {
+      "types": "./dist/ruby/index.d.ts",
       "import": "./dist/ruby/index.mjs",
-      "require": "./dist/ruby/index.cjs",
-      "types": "./dist/ruby/index.d.ts"
+      "require": "./dist/ruby/index.cjs"
     },
     "./php": {
+      "types": "./dist/php/index.d.ts",
       "import": "./dist/php/index.mjs",
-      "require": "./dist/php/index.cjs",
-      "types": "./dist/php/index.d.ts"
+      "require": "./dist/php/index.cjs"
     },
     "./csharp": {
+      "types": "./dist/csharp/index.d.ts",
       "import": "./dist/csharp/index.mjs",
-      "require": "./dist/csharp/index.cjs",
-      "types": "./dist/csharp/index.d.ts"
+      "require": "./dist/csharp/index.cjs"
+    },
+    "./cpp": {
+      "types": "./dist/cpp/index.d.ts",
+      "import": "./dist/cpp/index.mjs",
+      "require": "./dist/cpp/index.cjs"
+    },
+    "./swift": {
+      "types": "./dist/swift/index.d.ts",
+      "import": "./dist/swift/index.mjs",
+      "require": "./dist/swift/index.cjs"
     }
   },
   "files": [
@@ -58,8 +68,8 @@
     "README.md"
   ],
   "scripts": {
-    "build": "npm run build:types && npm run build:bundle && npm run copy:templates",
-    "build:types": "tsc --project tsconfig.json",
+    "build": "npm run build:bundle && npm run copy:templates",
+    "build:types": "tsc --project tsconfig.declarations.json --outDir dist",
     "build:bundle": "vite build",
     "copy:templates": "node scripts/copy-templates.js",
     "dev": "vite build --watch",
@@ -81,16 +91,18 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@magic-helix/core": "^2.0.0"
+    "@el-j/magic-helix-core": "^2.0.0"
   },
   "dependencies": {
-    "glob": "^10.3.10"
+    "commander": "^14.0.2",
+    "glob": "^13.0.0",
+    "inquirer": "^13.1.0"
   },
   "devDependencies": {
-    "@types/node": "^20.11.0",
-    "@magic-helix/core": "*",
-    "typescript": "^5.5.4",
-    "vite": "^5.4.0",
-    "vitest": "^1.6.0"
+    "@el-j/magic-helix-core": "*",
+    "@types/node": "^25.0.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.0",
+    "vitest": "^4.0.15"
   }
 }

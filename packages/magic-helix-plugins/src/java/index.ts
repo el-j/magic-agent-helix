@@ -4,7 +4,8 @@
  * Detects Java projects via pom.xml (Maven) or build.gradle (Gradle)
  */
 
-import type { ProjectMetadata, TemplateDefinition } from '@magic-helix/core';
+import * as path from 'node:path';
+import type { ProjectMetadata, TemplateDefinition } from '@el-j/magic-helix-core';
 import { BasePlugin } from '../base/BasePlugin';
 
 export class JavaPlugin extends BasePlugin {
@@ -12,7 +13,6 @@ export class JavaPlugin extends BasePlugin {
   displayName = 'Java';
   version = '3.0.0';
   priority = 75;
-
   async detect(projectPath: string): Promise<ProjectMetadata | null> {
     // Check for Maven
     if (this.fileExists(projectPath, 'pom.xml')) {
@@ -28,11 +28,20 @@ export class JavaPlugin extends BasePlugin {
   }
 
   getTemplates(): TemplateDefinition[] {
+    const dirname = this.getDirname(import.meta.url);
     return [
       {
         name: 'java-core',
         tags: ['java'],
-        content: `# Java Development Guidelines
+        content: () => this.loadTemplateFromFile(
+          path.join(dirname, 'templates/lang-java.md')
+        ).then(c => c || this.getJavaFallbackTemplate()),
+      },
+    ];
+  }
+
+  private getJavaFallbackTemplate(): string {
+    return `# Java Development Guidelines
 
 This project uses Java.
 
@@ -54,9 +63,7 @@ This project uses Java.
 ## Testing
 - Write JUnit tests
 - Use Mockito for mocking
-- Aim for good test coverage`,
-      },
-    ];
+- Aim for good test coverage`;
   }
 
   getDependencyTagMap() {

@@ -25,7 +25,7 @@ function getVersion(): string {
     const packageJsonPath = join(__dirname, '..', 'package.json');
     const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
     return packageJson.version;
-  } catch (error) {
+  } catch (_error) {
     return '2.0.0-beta.1'; // Fallback version
   }
 }
