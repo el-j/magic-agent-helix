@@ -1,3 +1,51 @@
+## [4.0.0](https://github.com/el-j/magic-agent-helix/compare/v3.0.0...v4.0.0) (2026-01-17)
+
+### ⚠ BREAKING CHANGES
+
+* All language plugins and templates moved to @el-j/magic-helix-plugins package
+
+- Deleted packages/magic-helix-core/src/builtin-plugins/ directory
+- Deleted packages/magic-helix-core/src/default_templates/ directory
+- Removed BUILT_IN_TEMPLATE_DIR export from core package
+- Updated pattern-combiner to load from @el-j/magic-helix-plugins
+- Updated CLI commands to use plugin-provided templates only
+- All 118 core tests passing
+- Clean separation between engine and language plugins
+- Improved modularity and maintainability
+* All packages now published under @el-j scope
+
+- Migrate @magic-helix/* to @el-j/* organization
+- Add npm provenance attestations for supply chain security
+- Configure OIDC authentication for GitHub Actions
+- Update semantic-release configuration for scoped publishing
+- Enable tarball distribution for all npm packages
+
+This is the first release of scoped packages:
+- @el-j/magic-helix-core
+- @el-j/magic-agent-helix
+- @el-j/magic-helix-plugins
+
+### Features
+
+* add 8 new language plugins - Elixir, Dart/Flutter, Scala, Kotlin, Lua, R, Perl, Shell ([b0200c5](https://github.com/el-j/magic-agent-helix/commit/b0200c5e2aeeeb33c13b02902f269d317a123391))
+* Add comprehensive instructions for Tailwind CSS, TypeScript, Vitest, PrimeVue, and Vue 3 ([29983c0](https://github.com/el-j/magic-agent-helix/commit/29983c081ee1a47a2b730fc39e5b5158de381bfc))
+* add recursive polyglot detection and complete language support ([03d7660](https://github.com/el-j/magic-agent-helix/commit/03d766001f30454bda041e853a30a1f4f1388d4f))
+* add recursive polyglot detection and complete language support ([a0d1850](https://github.com/el-j/magic-agent-helix/commit/a0d185092a568732943f50a040a87d6739e926ac)), closes [#1](https://github.com/el-j/magic-agent-helix/issues/1)
+* consolidate plugins and templates into dedicated package ([5d3da4b](https://github.com/el-j/magic-agent-helix/commit/5d3da4be22372810c5ffc70b92cefe0ac89bf2e1))
+* Enhance multi-language support and improve monorepo detection ([c1ff763](https://github.com/el-j/magic-agent-helix/commit/c1ff763bf2b1df80a7e3617071fe5c8b2c35d203))
+* migrate to [@el-j](https://github.com/el-j) scoped packages with npm provenance ([2ba9d90](https://github.com/el-j/magic-agent-helix/commit/2ba9d903476190670916692f9a3723ffa69455e0))
+
+### Bug Fixes
+
+* **cpp:** improve parsing of lib_deps for multiline entries ([27f9e15](https://github.com/el-j/magic-agent-helix/commit/27f9e15a011b5ad4bae575b5733caa24ce469da1))
+* **cpp:** improve readability of lib_deps condition in CppPlugin ([8360f93](https://github.com/el-j/magic-agent-helix/commit/8360f93e234c3b9ea35ae42d4f4e27c9cbd0aeeb))
+* prepare VS Code extension for stable release - use [@latest](https://github.com/latest) tag ([591d37a](https://github.com/el-j/magic-agent-helix/commit/591d37a73646b30da8d4981bb231d5570dc99a30))
+* **release:** move VSIX packaging to verifyConditions phase and fix asset glob pattern ([d095136](https://github.com/el-j/magic-agent-helix/commit/d095136799fea8406c03f4e8f6e447f0ad6a8ee4))
+* remove duplicate templates and fix plugin filename generation ([a69fd11](https://github.com/el-j/magic-agent-helix/commit/a69fd11ad48775008ab49c902b031e0db708e695))
+* VS Code extension use [@beta](https://github.com/beta) tag instead of [@latest](https://github.com/latest) ([d6dceaa](https://github.com/el-j/magic-agent-helix/commit/d6dceaab2cad49d6030e085b0313bbbe74c5cf27))
+* **vscode:** update engines.vscode to ^1.107.0 to match @types/vscode ([13c4eba](https://github.com/el-j/magic-agent-helix/commit/13c4eba91eeed8c7ca3da1cebde56571bc53c0b2))
+* **vscode:** update engines.vscode to match @types/vscode ^1.95.0 ([cc3fbb2](https://github.com/el-j/magic-agent-helix/commit/cc3fbb2aa67d8164cfb01fa7d8d5b53b71ec888a))
+
 ## [4.0.0-beta.8](https://github.com/el-j/magic-agent-helix/compare/v4.0.0-beta.7...v4.0.0-beta.8) (2026-01-17)
 
 ### Features
