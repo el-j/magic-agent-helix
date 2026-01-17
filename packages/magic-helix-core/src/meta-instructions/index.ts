@@ -68,7 +68,7 @@ export function loadOverrideInstructions(
     const findMdFiles = (dir: string): string[] => {
       const results: string[] = [];
       const entries = fs.readdirSync(dir, { withFileTypes: true });
-      
+
       for (const entry of entries) {
         const fullPath = path.join(dir, entry.name);
         if (entry.isDirectory()) {
@@ -77,7 +77,7 @@ export function loadOverrideInstructions(
           results.push(fullPath);
         }
       }
-      
+
       return results;
     };
 

@@ -376,9 +376,8 @@ export async function run(options: CliOptions = {}) {
         // For monorepos: prefix filename with project name to avoid overwrites
         // Format: <project-name>.<tag>.instructions.md (e.g., "love-my-car-admin-dashboard.vue.instructions.md")
         // Single repos get just the tag name (e.g., "vue.instructions.md")
-        const projectPrefix = projects.length > 1 
-          ? `${project.name.replace(/[@\/]/g, '-')}.` 
-          : '';
+        const projectPrefix =
+          projects.length > 1 ? `${project.name.replace(/[@/]/g, '-')}.` : '';
         const outputFilename = `${projectPrefix}${t.suffix}`;
         const outputPath = path.join(targetDir, outputFilename);
 
@@ -577,17 +576,20 @@ async function findProjects(): Promise<Project[]> {
   }
 
   // Group detections by project path to aggregate multi-language/multi-plugin results
-  const projectMap = new Map<string, {
-    name: string;
-    path: string;
-    tags: Set<string>;
-    allMetadata: ProjectMetadata[];
-  }>();
+  const projectMap = new Map<
+    string,
+    {
+      name: string;
+      path: string;
+      tags: Set<string>;
+      allMetadata: ProjectMetadata[];
+    }
+  >();
 
   for (const result of detectedProjects) {
     const relativePath = path.relative(rootPath, result.metadata.projectPath);
     const projectKey = relativePath || '.';
-    
+
     if (!projectMap.has(projectKey)) {
       projectMap.set(projectKey, {
         name: sanitizeProjectName(
@@ -611,11 +613,13 @@ async function findProjects(): Promise<Project[]> {
   }
 
   // Convert map to array
-  return Array.from(projectMap.values()).map(({ name, path: projectPath, tags }) => ({
-    name,
-    path: projectPath,
-    tags,
-  }));
+  return Array.from(projectMap.values()).map(
+    ({ name, path: projectPath, tags }) => ({
+      name,
+      path: projectPath,
+      tags,
+    }),
+  );
 }
 
 /**
@@ -646,7 +650,7 @@ async function analyzeProject(
   try {
     const registry = PluginRegistry.getInstance();
     const detectedProjects = await registry.detectAllProjects(projectRoot);
-    
+
     // Aggregate tags from ALL detected plugins at this path
     for (const detected of detectedProjects) {
       const projectMetadata = detected.metadata;
