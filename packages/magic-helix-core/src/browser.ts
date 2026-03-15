@@ -9,6 +9,8 @@ export {
   GitHubCopilotFormatter,
   ClaudeFormatter,
   CopilotChatFormatter,
+  CursorFormatter,
+  WindsurfFormatter,
   GenericFormatter,
 } from './formatters';
 export * from './types';

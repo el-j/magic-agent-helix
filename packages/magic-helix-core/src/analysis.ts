@@ -6,19 +6,56 @@ import type {
 
 /**
  * Converts a glob pattern to a regular expression.
- * Simplified implementation for the specific patterns used in tests.
+ *
+ * Supports:
+ *  - `**`      — matches zero or more path segments (including empty)
+ *  - `*`       — matches any characters within a single path segment (no `/`)
+ *  - `{a,b}`   — matches any of the comma-separated alternatives
+ *  - All other regex-special characters are escaped literally
+ *
+ * Replaces the previous implementation that hardcoded two special cases
+ * (`src/**\/*.ts` and `src/**\/*.vue`) and had an escaping bug in the fallback.
  */
 function globToRegex(pattern: string): RegExp {
-  // For the test patterns, use working regexes
-  if (pattern === 'src/**/*.ts') {
-    return /^src\/.*\.ts$/;
+  const parts: string[] = [];
+  let i = 0;
+  while (i < pattern.length) {
+    const c = pattern[i];
+    if (c === '*' && i + 1 < pattern.length && pattern[i + 1] === '*') {
+      // ** matches zero or more path segments (the empty case covers foo/bar.ts
+      // where ** sits between two slashes with nothing between them)
+      parts.push('(.*/)?');
+      i += 2;
+      // consume the trailing slash that typically follows **
+      if (i < pattern.length && pattern[i] === '/') i++;
+    } else if (c === '*') {
+      // * matches any characters except the path separator
+      parts.push('[^/]*');
+      i++;
+    } else if (c === '{') {
+      // {a,b,c} — match any alternative; escape regex specials inside each part
+      const end = pattern.indexOf('}', i + 1);
+      if (end !== -1) {
+        const choices = pattern
+          .slice(i + 1, end)
+          .split(',')
+          .map((p) => p.replace(/[.+^$()|[\]\\]/g, '\\$&'));
+        parts.push(`(${choices.join('|')})`);
+        i = end + 1;
+      } else {
+        parts.push('\\{');
+        i++;
+      }
+    } else if (/[.+^$()|[\]\\]/.test(c)) {
+      // Escape all remaining regex-special characters literally
+      parts.push(`\\${c}`);
+      i++;
+    } else {
+      parts.push(c);
+      i++;
+    }
   }
-  if (pattern === 'src/**/*.vue') {
-    return /^src\/.*\.vue$/;
-  }
-  // Fallback: simple conversion that works for most cases
-  const regexStr = pattern.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*');
-  return new RegExp(`^${regexStr.replace(/[.+^${}()|[\]\\]/g, '\\$&')}$`);
+  return new RegExp(`^${parts.join('')}$`);
 }
 
 /**

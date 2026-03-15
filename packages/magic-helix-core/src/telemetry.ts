@@ -1,6 +1,23 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+/**
+ * Telemetry system for MagicAgentHelix.
+ *
+ * **Telemetry is disabled by default and requires explicit opt-in.**
+ *
+ * To enable, set the environment variable:
+ *   `MAGIC_HELIX_TELEMETRY=1`
+ *
+ * When enabled, anonymized usage metrics (command names, validator scores,
+ * file counts) are written as JSONL to `.magic-helix/telemetry/events.jsonl`
+ * in the current working directory. No file content, source code, or personal
+ * information is ever collected.
+ *
+ * To disable: unset `MAGIC_HELIX_TELEMETRY` or set it to any value other
+ * than `1`. You can also delete `.magic-helix/telemetry/` at any time.
+ */
+
 export type TelemetryEventType =
   | 'instruction_validation'
   | 'pattern_selection'

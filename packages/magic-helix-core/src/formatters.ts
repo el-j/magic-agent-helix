@@ -7,6 +7,8 @@ export type AssistantTarget =
   | 'github-copilot'
   | 'claude'
   | 'copilot-chat'
+  | 'cursor'
+  | 'windsurf'
   | 'generic';
 
 export interface InstructionFormatter {
@@ -52,8 +54,12 @@ applyTo: "${_filePath}"
  */
 export class ClaudeFormatter implements InstructionFormatter {
   format(content: string, _filePath: string, _projectName: string): string {
-    // Claude prefers more structured, conversational instructions
-    return content.replace(/- \*\*([^*]+)\*\*/g, '- **$1** (important)');
+    // Mark only ALWAYS and NEVER directives with visual emphasis.
+    // Previously this appended "(important)" to ALL bold spans — a bug
+    // that mutated semantically neutral markers like **PREFER** or **AVOID**.
+    return content
+      .replace(/- \*\*ALWAYS\*\*/g, '- **ALWAYS** ⚠️')
+      .replace(/- \*\*NEVER\*\*/g, '- **NEVER** 🚫');
   }
 
   getFileExtension(): string {
@@ -113,6 +119,50 @@ applyTo: "${_filePath}"
 }
 
 /**
+ * Cursor formatter
+ * Generates rules in Cursor's .cursor/rules/ directory format.
+ * Files use the .mdc extension with Cursor-specific frontmatter.
+ */
+export class CursorFormatter implements InstructionFormatter {
+  format(content: string, _filePath: string, _projectName: string): string {
+    return content;
+  }
+
+  getFileExtension(): string {
+    return '.mdc';
+  }
+
+  getFrontmatter(filePath: string, _projectName: string): string {
+    return `---
+description: Instructions for files matching ${filePath}
+globs: ${filePath}
+alwaysApply: false
+---\n\n`;
+  }
+}
+
+/**
+ * Windsurf formatter
+ * Generates rules in Windsurf's .windsurf/rules/ directory format.
+ */
+export class WindsurfFormatter implements InstructionFormatter {
+  format(content: string, _filePath: string, _projectName: string): string {
+    return content;
+  }
+
+  getFileExtension(): string {
+    return '.md';
+  }
+
+  getFrontmatter(filePath: string, _projectName: string): string {
+    return `---
+trigger: glob_match
+globs: ${filePath}
+---\n\n`;
+  }
+}
+
+/**
  * Factory function to get the appropriate formatter for an assistant
  */
 export function getFormatter(target: AssistantTarget): InstructionFormatter {
@@ -123,6 +173,10 @@ export function getFormatter(target: AssistantTarget): InstructionFormatter {
       return new ClaudeFormatter();
     case 'copilot-chat':
       return new CopilotChatFormatter();
+    case 'cursor':
+      return new CursorFormatter();
+    case 'windsurf':
+      return new WindsurfFormatter();
     case 'generic':
       return new GenericFormatter();
     default:

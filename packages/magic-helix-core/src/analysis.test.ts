@@ -122,3 +122,106 @@ describe('Analysis Module', () => {
     expect(tags.has('framework-angular')).toBe(true);
   });
 });
+
+describe('globToRegex (via analyzeProjectTags)', () => {
+  // All tests exercise the glob pattern matching through the public API
+
+  it('should match files in nested directories with ** pattern', () => {
+    const data: ProjectAnalysisData = {
+      dependencies: {},
+      configFiles: [],
+      projectFiles: [
+        'packages/core/src/index.ts',
+        'packages/cli/src/cli.ts',
+        'packages/core/src/utils/helper.ts',
+      ],
+    };
+    const tags = analyzeProjectTags(data, {}, {}, {
+      'packages/**/*.ts': 'lang-typescript',
+    });
+    expect(tags.has('lang-typescript')).toBe(true);
+  });
+
+  it('should match files in root directory with single * pattern', () => {
+    const data: ProjectAnalysisData = {
+      dependencies: {},
+      configFiles: [],
+      projectFiles: ['index.ts', 'README.md'],
+    };
+    const tags = analyzeProjectTags(data, {}, {}, {
+      '*.ts': 'lang-typescript',
+    });
+    expect(tags.has('lang-typescript')).toBe(true);
+    // *.ts should NOT match nested paths
+    const nestedData: ProjectAnalysisData = {
+      dependencies: {},
+      configFiles: [],
+      projectFiles: ['src/index.ts'],
+    };
+    const nestedTags = analyzeProjectTags(nestedData, {}, {}, {
+      '*.ts': 'lang-typescript',
+    });
+    expect(nestedTags.has('lang-typescript')).toBe(false);
+  });
+
+  it('should match brace-expansion patterns like **/*.{ts,vue}', () => {
+    const data: ProjectAnalysisData = {
+      dependencies: {},
+      configFiles: [],
+      projectFiles: ['src/App.vue', 'src/main.ts', 'src/style.css'],
+    };
+    const tags = analyzeProjectTags(data, {}, {}, {
+      'src/**/*.{ts,vue}': 'ts-or-vue',
+    });
+    expect(tags.has('ts-or-vue')).toBe(true);
+    // CSS file should not trigger the tag
+    const cssOnlyData: ProjectAnalysisData = {
+      dependencies: {},
+      configFiles: [],
+      projectFiles: ['src/style.css'],
+    };
+    const cssTags = analyzeProjectTags(cssOnlyData, {}, {}, {
+      'src/**/*.{ts,vue}': 'ts-or-vue',
+    });
+    expect(cssTags.has('ts-or-vue')).toBe(false);
+  });
+
+  it('should match src/**/*.ts for files directly under src/ (no sub-directory)', () => {
+    const data: ProjectAnalysisData = {
+      dependencies: {},
+      configFiles: [],
+      projectFiles: ['src/index.ts'],
+    };
+    const tags = analyzeProjectTags(data, {}, {}, {
+      'src/**/*.ts': 'lang-typescript',
+    });
+    expect(tags.has('lang-typescript')).toBe(true);
+  });
+
+  it('should not cross-match different extensions', () => {
+    const data: ProjectAnalysisData = {
+      dependencies: {},
+      configFiles: [],
+      projectFiles: ['src/component.tsx', 'src/style.css'],
+    };
+    const tags = analyzeProjectTags(data, {}, {}, {
+      'src/**/*.ts': 'lang-typescript',
+      'src/**/*.vue': 'framework-vue-files',
+    });
+    // .tsx and .css should NOT match .ts or .vue globs
+    expect(tags.has('lang-typescript')).toBe(false);
+    expect(tags.has('framework-vue-files')).toBe(false);
+  });
+
+  it('should handle ** at the start matching any depth', () => {
+    const data: ProjectAnalysisData = {
+      dependencies: {},
+      configFiles: [],
+      projectFiles: ['a/b/c/d/test.spec.ts', 'test.spec.ts'],
+    };
+    const tags = analyzeProjectTags(data, {}, {}, {
+      '**/*.spec.ts': 'test-files',
+    });
+    expect(tags.has('test-files')).toBe(true);
+  });
+});

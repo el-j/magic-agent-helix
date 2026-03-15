@@ -3,6 +3,25 @@ import type { PatternContext } from './pattern-combiner';
 import { generateInstructions } from './pattern-combiner';
 import type { InstructionValidationEvent, TelemetryClient } from './telemetry';
 
+/**
+ * A/B Testing utilities for comparing instruction generation variants.
+ *
+ * These utilities are not automatically invoked during `magic-helix run`.
+ * They are intended for offline quality experiments — generate several
+ * context variants, compare their validator scores, and pick the best one:
+ *
+ * ```typescript
+ * import { generateABVariants, analyzeBestVariant } from '@el-j/magic-helix-core';
+ *
+ * const results = generateABVariants([
+ *   { name: 'comprehensive', context: { ...baseContext, quality: 'comprehensive' } },
+ *   { name: 'standard',      context: { ...baseContext, quality: 'standard' } },
+ * ]);
+ * const best = analyzeBestVariant(results);
+ * console.log(`Best variant: ${best.variant} (score ${best.score})`);
+ * ```
+ */
+
 export interface ABVariant {
   name: string;
   context: PatternContext;

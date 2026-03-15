@@ -11,6 +11,22 @@ import type {
 import { PythonPlugin } from './plugins/python.plugin';
 import { RustPlugin } from './plugins/rust.plugin';
 
+/**
+ * @deprecated AnalysisService wraps the v2 DetectionPlugin interface which is
+ * no longer the main execution path. The canonical way to analyze a project is
+ * via the v3 PluginRegistry:
+ *
+ * ```typescript
+ * import { initializeRegistry, PluginRegistry } from '@el-j/magic-helix-core';
+ *
+ * await initializeRegistry();
+ * const registry = PluginRegistry.getInstance();
+ * const projects = await registry.findProjects(projectRoot);
+ * ```
+ *
+ * AnalysisService is kept for backward compatibility only and will be removed
+ * in a future major version.
+ */
 export class AnalysisService {
   private plugins: DetectionPlugin[];
 
@@ -26,8 +42,8 @@ export class AnalysisService {
       new MonorepoPlugin(), // <-- Add this
       new CodeownersPlugin(),
     ];
-    // TODO: add existing TypeScript/Vue/etc.
-    // logic by wrapping it in a plugin!
+    // TypeScript, Vue, React and other primary language plugins are handled by
+    // the v3 PluginRegistry + magic-helix-plugins package. See class JSDoc above.
   }
 
   /**

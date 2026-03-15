@@ -36,11 +36,13 @@ export interface Config {
   /**
    * The AI agent target. Supported targets:
    * - 'github-copilot': GitHub Copilot (default)
-   * - 'claude': Anthropic Claude/Cursor
+   * - 'claude': Anthropic Claude / Claude Code
    * - 'copilot-chat': GitHub Copilot Chat
+   * - 'cursor': Cursor IDE (.cursor/rules/ format)
+   * - 'windsurf': Windsurf IDE (.windsurf/rules/ format)
    * - 'generic': Generic assistant format
    */
-  target: 'github-copilot' | 'claude' | 'copilot-chat' | 'generic';
+  target: 'github-copilot' | 'claude' | 'copilot-chat' | 'cursor' | 'windsurf' | 'generic';
 
   /**
    * The *user's* local directory where their .md templates are stored

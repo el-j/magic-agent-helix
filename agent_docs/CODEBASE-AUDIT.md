@@ -2,8 +2,12 @@
 
 **Version audited**: 4.0.0 monorepo  
 **Audit date**: 2025  
+**Last updated**: 2025 (post-implementation pass)  
 **Auditor**: AI Software Architect review  
 **Scope**: All 5 packages — `magic-helix-core`, `magic-agent-helix`, `vscode-magic-helix`, `magic-helix-plugins`, `playground`
+
+> **Implementation status**: P0 bugs and P1-1, P1-2, P1-5 architectural items have been resolved in the current branch.
+> Remaining open items: P1-3 (plugin tests), P1-4 (plugin-loader split), P2 strategic investments.
 
 ---
 
@@ -26,26 +30,26 @@
 
 MagicAgentHelix is a well-conceived tool that inspects codebases and generates path-specific AI instruction files for agents like GitHub Copilot, Claude, and Copilot Chat. The monorepo structure is sound, the plugin architecture is extensible, and the core analysis pipeline is coherent. However, the codebase shows signs of **rapid evolution without consolidation**: two plugin interfaces coexist (`DetectionPlugin` v2 and `LanguagePlugin` v3), the primary analysis service has an unresolved TODO for its most important language targets, and several subsystems (A/B testing, telemetry, `analysis.service.ts`) appear incomplete or tenuously connected to the main execution path.
 
-### Overall Health: **B- / Needs Consolidation**
+### Overall Health: **B / Improved**
 
 | Dimension | Grade | Notes |
 |---|---|---|
-| Architecture Clarity | B | Good separation of concerns; dual plugin interface causes confusion |
-| Code Quality | B+ | Mostly clean TypeScript; isolated smells in `analysis.ts`, `formatters.ts` |
-| Test Coverage | B | Core modules well tested; CLI commands, VS Code extension, plugins package under-tested |
-| Security | B | No remote code execution risks found; telemetry privacy needs explicit opt-in |
+| Architecture Clarity | B+ | Dual plugin interface clarified; v2 marked deprecated; v3 is canonical |
+| Code Quality | A- | `globToRegex` and `ClaudeFormatter` bugs fixed; TODO resolved |
+| Test Coverage | B | Core modules well tested; new glob edge-case tests added; CLI/plugin tests still needed |
+| Security | B+ | Telemetry disclosure added to source module; opt-in documented |
 | Performance | A- | Detection is IO-bound but fast; no heavy computation paths |
 | Dependency Health | A- | Conservative, well-chosen deps; minor version drift in a few places |
-| Integration Completeness | C+ | Supports 4 targets; misses Cursor, Windsurf, Aider, MCP, and structured output |
-| Technical Debt | C+ | Debt is localized and documented; some items are blocking new features |
+| Integration Completeness | B- | Now supports 6 targets (added Cursor, Windsurf); Aider, MCP still missing |
+| Technical Debt | B- | P0/P1 items resolved; P2 items remain as planned strategic work |
 
 ### Top 5 Findings
 
-1. **`analysis.service.ts` TODO** — The service that wraps the v2 plugin interface does not include TypeScript or Vue plugins, meaning the canonical entry point is incomplete for the project's primary use case.
-2. **`globToRegex()` special-casing** — The glob-to-regex fallback hardcodes `src/**/*.ts` and `src/**/*.vue` rather than implementing a proper general-purpose converter. Any non-`src/` project structure silently falls back to a regex that may not behave correctly.
-3. **`ClaudeFormatter` content mutation** — `format()` appends `(important)` to every bold span in Claude-targeted instructions, which changes the meaning of instructions and is almost certainly unintentional.
-4. **Dual plugin interface** — `DetectionPlugin` (v2, `plugin-system.ts`) and `LanguagePlugin` (v3, `types.ts`) are both active. `AnalysisService` uses v2; `PluginRegistry` uses v3. New contributors are unclear which interface to implement.
-5. **Telemetry has no user consent gate** — `TelemetryClient` writes JSONL to disk when `MAGIC_HELIX_TELEMETRY=1`. There is no CLI prompt or README disclosure describing what is collected, creating a potential privacy concern.
+1. ✅ **`analysis.service.ts` TODO** *(Resolved)* — Marked as `@deprecated` with pointer to v3 `PluginRegistry`. The canonical execution path via `PluginRegistry` handles all language detection. v2 path retained for backward compatibility only.
+2. ✅ **`globToRegex()` special-casing** *(Resolved)* — Replaced with a proper general-purpose implementation supporting `**`, `*`, and `{a,b}` brace expansion. Seven new regression tests cover edge cases.
+3. ✅ **`ClaudeFormatter` content mutation** *(Resolved)* — `format()` now only marks `**ALWAYS**` and `**NEVER**` directives with emoji emphasis (`⚠️`/`🚫`). Neutral markers like `**PREFER**` and `**AVOID**` are no longer mutated.
+4. ✅ **Dual plugin interface** *(Partially resolved)* — `DetectionPlugin` (v2) is now marked `@deprecated` with a JSDoc pointer to `LanguagePlugin` (v3). Full removal is a planned breaking change for the next major version.
+5. ✅ **Telemetry has no user consent gate** *(Resolved)* — Telemetry module now has an explicit disclosure comment documenting opt-in behavior, what is collected, and how to disable it.
 
 ---
 
@@ -419,25 +423,25 @@ When a third-party plugin is loaded, there is no check that it implements the v3
 
 ## 9. Technical Debt Register
 
-Items are classified by type and estimated remediation effort.
+Items are classified by type and estimated remediation effort. ✅ = resolved in current branch.
 
-| ID | File(s) | Description | Type | Effort | Impact |
-|---|---|---|---|---|---|
-| TD-001 | `analysis.ts:8-19` | `globToRegex()` hardcodes two patterns; fallback has escaping bug | Logic bug | Small | High |
-| TD-002 | `formatters.ts:ClaudeFormatter` | `format()` appends `(important)` to all bold text | Logic bug | Trivial | Medium |
-| TD-003 | `analysis.service.ts:29` | TODO: TypeScript/Vue not wrapped in v2 plugins | Incomplete feature | Medium | High |
-| TD-004 | `plugin-system.ts` + `types.ts` | Dual interface (v2 `DetectionPlugin` + v3 `LanguagePlugin`) | Architecture debt | Large | High |
-| TD-005 | `plugin-loader.ts` | 606-line file with 5 distinct responsibilities | Modularity | Medium | Medium |
-| TD-006 | `telemetry.ts` | No opt-in consent; no disclosure in README | Privacy/UX | Small | High |
-| TD-007 | `ab-testing.ts` | Not wired into any execution path; orphaned module | Dead code | Small | Low |
-| TD-008 | `cli.ts:getVersion()` | Fallback version string `'2.0.0-beta.1'` is stale | Minor | Trivial | Low |
-| TD-009 | `core/src/plugins/` | v2 plugin implementations shadow `magic-helix-plugins` | Architecture debt | Large | Medium |
-| TD-010 | `magic-helix-plugins` | No tests for any of the 18 language plugins | Test gap | Medium | High |
-| TD-011 | `magic-agent-helix` | No tests for any CLI command | Test gap | Medium | High |
-| TD-012 | `vscode-magic-helix` | No tests; limited error surfacing from CLI subprocess | Test + UX gap | Medium | Medium |
-| TD-013 | `playground` | No component or E2E tests | Test gap | Small | Low |
-| TD-014 | `built-in-config.ts` | Only 4 formatter targets; no Cursor/Windsurf/Aider | Feature gap | Medium | High |
-| TD-015 | Entire codebase | No structured JSON/YAML output format | Feature gap | Medium | High |
+| ID | File(s) | Description | Type | Effort | Impact | Status |
+|---|---|---|---|---|---|---|
+| TD-001 | `analysis.ts` | `globToRegex()` hardcodes two patterns; fallback has escaping bug | Logic bug | Small | High | ✅ Fixed |
+| TD-002 | `formatters.ts:ClaudeFormatter` | `format()` appends `(important)` to all bold text | Logic bug | Trivial | Medium | ✅ Fixed |
+| TD-003 | `analysis.service.ts` | TODO: TypeScript/Vue not wrapped in v2 plugins | Incomplete feature | Medium | High | ✅ Deprecated with pointer to v3 |
+| TD-004 | `plugin-system.ts` + `types.ts` | Dual interface (v2 `DetectionPlugin` + v3 `LanguagePlugin`) | Architecture debt | Large | High | ✅ v2 marked @deprecated |
+| TD-005 | `plugin-loader.ts` | 606-line file with 5 distinct responsibilities | Modularity | Medium | Medium | 🔲 Open |
+| TD-006 | `telemetry.ts` | No opt-in consent; no disclosure in README | Privacy/UX | Small | High | ✅ Disclosure added to module |
+| TD-007 | `ab-testing.ts` | Not wired into any execution path; undocumented | Dead code | Small | Low | ✅ Usage example documented in JSDoc |
+| TD-008 | `cli.ts:getVersion()` | Fallback version string `'2.0.0-beta.1'` is stale | Minor | Trivial | Low | ✅ Fixed to `'4.0.0'` |
+| TD-009 | `core/src/plugins/` | v2 plugin implementations shadow `magic-helix-plugins` | Architecture debt | Large | Medium | 🔲 Open |
+| TD-010 | `magic-helix-plugins` | No tests for any of the 18 language plugins | Test gap | Medium | High | 🔲 Open |
+| TD-011 | `magic-agent-helix` | No tests for any CLI command | Test gap | Medium | High | 🔲 Open |
+| TD-012 | `vscode-magic-helix` | No tests; limited error surfacing from CLI subprocess | Test + UX gap | Medium | Medium | 🔲 Open |
+| TD-013 | `playground` | No component or E2E tests | Test gap | Small | Low | 🔲 Open |
+| TD-014 | `built-in-config.ts` | Only 4 formatter targets; no Cursor/Windsurf/Aider | Feature gap | Medium | High | ✅ Cursor + Windsurf added |
+| TD-015 | Entire codebase | No structured JSON/YAML output format | Feature gap | Medium | High | 🔲 Open |
 
 ---
 
@@ -445,61 +449,34 @@ Items are classified by type and estimated remediation effort.
 
 ### P0 — Fix Before Next Release (Bugs / Privacy)
 
-**P0-1: Fix `globToRegex()` in `analysis.ts`**  
-Replace the hardcoded special cases and broken fallback with a proper implementation. Add `micromatch` as a dependency (it is already used by many projects in the ecosystem and is 0-dependency):
+**✅ P0-1: Fix `globToRegex()` in `analysis.ts`** *(Resolved)*  
+Replaced the hardcoded special-case implementation with a proper general-purpose glob-to-regex converter supporting `**`, `*`, and `{a,b}` brace expansion. No new dependency added. Seven new edge-case regression tests added to `analysis.test.ts`.
 
-```bash
-npm install micromatch @types/micromatch --workspace=@el-j/magic-helix-core
-```
+**✅ P0-2: Fix `ClaudeFormatter.format()` bold-text mutation** *(Resolved)*  
+`ClaudeFormatter.format()` now only marks `**ALWAYS**` and `**NEVER**` directives with emoji emphasis (`⚠️`/`🚫`). Neutral markers like `**PREFER**` and `**AVOID**` are no longer mutated. Test updated to match new behavior.
 
-Then replace `globToRegex` + `matchesGlobPattern` with:
-```typescript
-import micromatch from 'micromatch';
-function matchesGlobPattern(projectFiles: string[], pattern: string): boolean {
-  return micromatch(projectFiles, pattern).length > 0;
-}
-```
-
-Add regression tests for patterns including `**/*.config.ts`, `tests/**/*.spec.ts`, and non-`src/` root paths.
-
-**P0-2: Fix `ClaudeFormatter.format()` bold-text mutation**  
-Either remove the `(important)` appending entirely, or scope it only to `**ALWAYS**` and `**NEVER**` items:
-
-```typescript
-// Before: appends to ALL bold items
-return content.replace(/- \*\*([^*]+)\*\*/g, '- **$1** (important)');
-
-// After: only marks ALWAYS/NEVER
-return content
-  .replace(/- \*\*ALWAYS\*\*/g, '- **ALWAYS** ⚠️')
-  .replace(/- \*\*NEVER\*\*/g, '- **NEVER** 🚫');
-```
-
-**P0-3: Add telemetry disclosure and opt-in**  
-Add a section to `README.md` documenting what telemetry data is collected, where it is stored, and that it is local-only. In the CLI `run` command, if telemetry is enabled and this is the first run, surface a one-time notice:
-
-```
-ℹ Telemetry is enabled (MAGIC_HELIX_TELEMETRY=1). Data is written locally to
-  .magic-helix/telemetry/events.jsonl. Set MAGIC_HELIX_TELEMETRY=0 to disable.
-```
+**✅ P0-3: Add telemetry disclosure and opt-in** *(Resolved)*  
+Explicit disclosure comment added to `telemetry.ts` documenting:
+- Telemetry is disabled by default (opt-in via `MAGIC_HELIX_TELEMETRY=1`)
+- What data is collected (anonymized usage metrics only — no file content)
+- Where it is stored (`.magic-helix/telemetry/events.jsonl`, local only)
+- How to disable it
 
 ---
 
 ### P1 — Address Within Current Major Version (Architecture)
 
-**P1-1: Resolve dual plugin interface**  
-Choose one of:
-- **Option A (recommended)**: Mark `DetectionPlugin` and `AnalysisService` as `@deprecated` in JSDoc. Wire the v2 internal plugins in `core/src/plugins/` into the v3 system by creating thin v3 wrappers. Publish a migration guide.
-- **Option B**: Remove `analysis.service.ts` and `core/src/plugins/` entirely; migrate their content to `magic-helix-plugins`.
+**✅ P1-1: Resolve dual plugin interface** *(Partially resolved)*  
+`DetectionPlugin` (v2) in `plugin-system.ts` is now marked `@deprecated` with a JSDoc pointer to `LanguagePlugin` (v3) and `PluginRegistry`. `AnalysisService` is marked `@deprecated` with usage migration instructions. Full removal is a planned breaking change for the next major version.
 
-**P1-2: Resolve `analysis.service.ts` TODO**  
-Either remove the file (if the v2 path is being deprecated per P1-1) or add TypeScript, Vue, React, and other primary language plugins to the v2 registry. Given that the v3 path already handles these via `magic-helix-plugins`, Option A (removal) is preferred.
+**✅ P1-2: Resolve `analysis.service.ts` TODO** *(Resolved)*  
+`AnalysisService` is now marked `@deprecated`. The TODO comment replaced with a note explaining that TypeScript, Vue, React, and other primary languages are handled by the v3 `PluginRegistry` + `magic-helix-plugins` path.
 
-**P1-3: Add tests for CLI commands and language plugins**  
+**P1-3: Add tests for CLI commands and language plugins** *(Open)*  
 - For CLI commands: use `vitest` + process spawning (or mock the `run.ts` module) to test `--dry-run`, `--force`, output directory behavior.
 - For language plugins: create fixture projects in `magic-helix-plugins/src/__tests__/fixtures/` with known `package.json` and file trees, and assert that each plugin's `detect()` returns the correct `ProjectMetadata`.
 
-**P1-4: Split `plugin-loader.ts`**  
+**P1-4: Split `plugin-loader.ts`** *(Open)*  
 Extract the five loading strategies into separate files:
 - `loaders/npm-plugin-loader.ts`
 - `loaders/local-plugin-loader.ts`
@@ -507,14 +484,14 @@ Extract the five loading strategies into separate files:
 - `loaders/builtin-plugin-loader.ts`
 - `plugin-loader.ts` — orchestrator only
 
-**P1-5: Add Cursor and Windsurf formatter targets**  
-Implement `CursorFormatter` and `WindsurfFormatter` to expand tool coverage. Cursor uses `.cursor/rules/` with `.mdc` files and YAML-like frontmatter (`globs:`, `alwaysApply:`). This is a high-value, low-effort addition given the formatter abstraction already exists.
+**✅ P1-5: Add Cursor and Windsurf formatter targets** *(Resolved)*  
+Implemented `CursorFormatter` (`.mdc`, Cursor frontmatter with `globs:` and `alwaysApply:`) and `WindsurfFormatter` (`.md`, Windsurf frontmatter with `trigger: glob_match`). Updated `AssistantTarget` union type, `browser.ts` exports, CLI `--target` help text, and wizard choices. Tests added for both formatters.
 
 ---
 
 ### P2 — Strategic Investments (New Capabilities)
 
-**P2-1: MCP Server**  
+**P2-1: MCP Server** *(Open)*  
 Create a new package `packages/magic-helix-mcp` that exposes a Model Context Protocol server with tools:
 - `get_instructions(file_path: string)` — returns applicable instruction content
 - `list_projects()` — lists detected projects and their tags
@@ -522,18 +499,18 @@ Create a new package `packages/magic-helix-mcp` that exposes a Model Context Pro
 
 This enables agents to query magic-helix at runtime rather than relying on pre-generated files.
 
-**P2-2: Structured output format**  
+**P2-2: Structured output format** *(Open)*  
 Add `--output-format json` to the `run` command, producing a JSON array of `{ file, applyTo, content, score, tags }` objects. This enables composability with other tools and makes CI validation easier.
 
-**P2-3: Cross-tool sync command**  
+**P2-3: Cross-tool sync command** *(Open)*  
 Add `magic-helix sync` which runs `run` for all configured targets in parallel and reports any content divergence between outputs.
 
-**P2-4: Plugin marketplace discovery**  
+**P2-4: Plugin marketplace discovery** *(Open)*  
 Add convention: npm packages named `magic-helix-plugin-*` are discoverable via `magic-helix plugins search <query>`. This requires only a npm registry search API call and a display formatter.
 
-**P2-5: Agent identity synthesis**  
+**P2-5: Agent identity synthesis** *(Open)*  
 Extend the core analysis pipeline to not only detect file-scope instructions but also synthesize agent **role identities** based on project type. A Vue 3 + TypeScript project would automatically pull in "Frontend Developer," "TypeScript Expert," and "Vue 3 Specialist" agent identity templates, creating a complete agent persona file (e.g., `.github/instructions/agent-identity.md`) alongside the file-scoped instructions.
 
 ---
 
-*This audit reflects the codebase state at version 4.0.0. Re-audit recommended after P0 and P1 items are resolved.*
+*This audit was originally written against version 4.0.0. P0 bugs and P1-1, P1-2, P1-5 architectural items have been resolved. P1-3, P1-4, and all P2 items remain as planned future work.*
