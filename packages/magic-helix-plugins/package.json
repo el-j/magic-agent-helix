@@ -91,7 +91,7 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@el-j/magic-helix-core": "^2.0.0"
+    "@el-j/magic-helix-core": "^4.0.0"
   },
   "dependencies": {
     "commander": "^14.0.2",

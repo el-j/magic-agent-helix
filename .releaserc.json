@@ -1,108 +1,97 @@
 {
-	"branches": [
-		"main",
-		{
-			"name": "develop",
-			"prerelease": "beta"
-		},
-		{
-			"name": "feature/*",
-			"prerelease": "alpha"
-		}
-	],
-	"plugins": [
-		[
-			"@semantic-release/commit-analyzer",
-			{
-				"preset": "conventionalcommits",
-				"releaseRules": [
-					{
-						"type": "build",
-						"scope": "deps",
-						"release": "patch"
-					}
-				]
-			}
-		],
-		[
-			"@semantic-release/release-notes-generator",
-			{
-				"preset": "conventionalcommits"
-			}
-		],
-		[
-			"@semantic-release/changelog",
-			{
-				"changelogFile": "CHANGELOG.md"
-			}
-		],
-		[
-			"@semantic-release/npm",
-			{
-				"pkgRoot": "packages/magic-helix-core",
-				"npmPublish": true,
-				"tarballDir": "dist"
-			}
-		],
-		[
-			"@semantic-release/npm",
-			{
-				"pkgRoot": "packages/magic-agent-helix",
-				"npmPublish": true,
-				"tarballDir": "dist"
-			}
-		],
-		[
-			"@semantic-release/npm",
-			{
-				"pkgRoot": "packages/magic-helix-plugins",
-				"npmPublish": true,
-				"tarballDir": "dist"
-			}
-		],
-		[
-			"@semantic-release/npm",
-			{
-				"pkgRoot": "packages/vscode-magic-helix"
-			}
-		],
-		[
-			"@semantic-release/exec",
-			{
-				"verifyConditionsCmd": "npm run package --workspace=magic-helix-vscode",
-				"prepareCmd": "npm run sync:versions -- --set ${nextRelease.version} && npm install --package-lock-only --workspaces"
-			}
-		],
-		[
-			"@semantic-release/github",
-			{
-				"assets": [
-					{
-						"path": "packages/magic-agent-helix/dist/**",
-						"label": "CLI Distribution"
-					},
-					{
-						"path": "packages/vscode-magic-helix/magic-helix-vscode-*.vsix",
-						"label": "VS Code Extension"
-					}
-				]
-			}
-		],
-		[
-			"@semantic-release/git",
-			{
-				"assets": [
-					"package.json",
-					"packages/magic-helix-core/package.json",
-					"packages/magic-agent-helix/package.json",
-					"packages/vscode-magic-helix/package.json",
-					"packages/magic-helix-plugins/package.json",
-					"playground/package.json",
-					"package-lock.json",
-					"CHANGELOG.md"
-				],
-				"message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
-			}
-		]
-	]
+  "branches": [
+    "main",
+    {
+      "name": "develop",
+      "prerelease": "beta"
+    }
+  ],
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "conventionalcommits",
+        "releaseRules": [
+          {
+            "type": "build",
+            "scope": "deps",
+            "release": "patch"
+          }
+        ]
+      }
+    ],
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "preset": "conventionalcommits"
+      }
+    ],
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "CHANGELOG.md"
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "npm run sync:versions -- --set ${nextRelease.version} && npm install --package-lock-only --workspaces && npm run build && npm run package --workspace=magic-helix-vscode"
+      }
+    ],
+    [
+      "@semantic-release/npm",
+      {
+        "pkgRoot": "packages/magic-helix-core",
+        "npmPublish": true,
+        "tarballDir": "dist"
+      }
+    ],
+    [
+      "@semantic-release/npm",
+      {
+        "pkgRoot": "packages/magic-agent-helix",
+        "npmPublish": true,
+        "tarballDir": "dist"
+      }
+    ],
+    [
+      "@semantic-release/npm",
+      {
+        "pkgRoot": "packages/magic-helix-plugins",
+        "npmPublish": true,
+        "tarballDir": "dist"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          {
+            "path": "packages/magic-agent-helix/dist/**",
+            "label": "CLI Distribution"
+          },
+          {
+            "path": "packages/vscode-magic-helix/magic-helix-vscode-*.vsix",
+            "label": "VS Code Extension"
+          }
+        ]
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "package.json",
+          "packages/magic-helix-core/package.json",
+          "packages/magic-agent-helix/package.json",
+          "packages/vscode-magic-helix/package.json",
+          "packages/magic-helix-plugins/package.json",
+          "playground/package.json",
+          "package-lock.json",
+          "CHANGELOG.md"
+        ],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ]
+  ]
 }

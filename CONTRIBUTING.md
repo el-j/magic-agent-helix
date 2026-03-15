@@ -1,150 +1,169 @@
 # Contributing to MagicAgentHelix
 
-## Release Process
+## Development Setup
 
-This project uses [semantic-release](https://semantic-release.gitbook.io/) to automate versioning and publishing to NPM.
+**Prerequisites**: Node.js 20 LTS (use `.nvmrc` with `nvm use` or `fnm use`).
 
-### How Releases Work
+```bash
+# Install all workspace dependencies
+npm install
 
-Releases are **automatically** triggered when commits following the [Conventional Commits](https://www.conventionalcommits.org/) specification are pushed to the `main` branch.
+# Install the pre-commit hook (lint + format on every commit)
+npm run install:hooks
+```
 
-### Conventional Commit Format
+---
 
-Commits must follow this format:
+## Development Workflow
+
+1. Branch from `develop` (use `feature/<topic>` naming)
+2. Make changes with [Conventional Commits](#conventional-commit-format)
+3. Run `npm run lint && npm run format:check && npm test` before pushing
+4. Open a PR against `develop`
+
+### Branch → Release mapping
+
+| Branch | Release channel | Example version |
+|---|---|---|
+| `main` | stable | `4.1.0` |
+| `develop` | beta pre-release | `4.1.0-beta.1` |
+
+> **Note**: `feature/*` branches do **not** trigger automatic releases. Only `main` and `develop` do.
+
+---
+
+## Conventional Commit Format
+
+All commits **must** follow the [Conventional Commits](https://www.conventionalcommits.org/) spec:
 
 ```
 <type>(<scope>): <subject>
 
-<body>
+<optional body>
 
-<footer>
+<optional footer>
 ```
 
-#### Commit Types that Trigger Releases
+### Commit types that trigger a release
 
-- **`feat:`** - A new feature (triggers a **MINOR** version bump, e.g., 1.0.0 → 1.1.0)
-- **`fix:`** - A bug fix (triggers a **PATCH** version bump, e.g., 1.0.0 → 1.0.1)
-- **`perf:`** - Performance improvement (triggers a **PATCH** version bump)
+| Type | Release | Example |
+|---|---|---|
+| `feat` | MINOR | `feat(cli): add --output-format json flag` |
+| `fix` | PATCH | `fix(core): correct globToRegex escaping` |
+| `perf` | PATCH | `perf(plugins): cache detection results` |
+| `build(deps)` | PATCH | `build(deps): bump vitest to 4.1.0` |
+| `feat!` / `BREAKING CHANGE:` | MAJOR | `feat!: remove deprecated v2 plugin API` |
 
-#### Breaking Changes
+### Commit types that do NOT trigger a release
 
-To trigger a **MAJOR** version bump (e.g., 1.0.0 → 2.0.0), add `BREAKING CHANGE:` in the commit footer or append `!` after the type:
-
-```
-feat!: remove deprecated API
-```
-
-or
-
-```
-feat: update authentication
-
-BREAKING CHANGE: The authentication API has been redesigned
-```
-
-#### Other Commit Types (No Release)
-
-These types **do not** trigger a release:
-- `docs:` - Documentation changes
-- `style:` - Code style changes (formatting, etc.)
-- `refactor:` - Code refactoring
-- `test:` - Adding or updating tests
-- `chore:` - Maintenance tasks
-- `ci:` - CI/CD changes
-- `build:` - Build system changes
+`docs`, `style`, `refactor`, `test`, `chore`, `ci`, `build` (without `deps` scope)
 
 ### Examples
 
-#### Feature commit (triggers MINOR release)
-```
-feat: add validate command for instruction files
+```bash
+# New feature → 4.1.0
+feat(formatters): add Cursor and Windsurf formatter targets
 
-Added a new validate command that checks instruction files
-for common issues and provides helpful error messages.
-```
+# Bug fix → 4.0.1
+fix(core): fix globToRegex ** pattern matching
 
-#### Bug fix commit (triggers PATCH release)
-```
-fix: correct path resolution on Windows
+# Breaking change → 5.0.0
+feat!: remove AnalysisService (v2 plugin API)
 
-Fixed an issue where path resolution failed on Windows
-systems due to incorrect path separator handling.
+BREAKING CHANGE: Use PluginRegistry from plugin-registry.ts instead.
 ```
 
-#### Documentation update (no release)
+---
+
+## CI/CD Pipeline
+
+### Workflows
+
+| Workflow | Trigger | Purpose |
+|---|---|---|
+| **CI** | push/PR to `main`, `develop`, `feature/*` | Lint, format-check, test on Node 20 + 22 |
+| **Release** | push to `main` or `develop` | Run CI then semantic-release |
+| **Deploy Web** | push to `main` | Build playground and deploy to GitHub Pages |
+
+### CI checks (must pass before merging)
+- `npm run lint` — Biome linter
+- `npm run format:check` — Biome formatter check
+- `npm run build` — TypeScript compilation + bundling
+- `npm run test` — Vitest unit tests (Node 20 + 22)
+
+### Running checks locally
+
+```bash
+# Full check (matches CI)
+npm run lint && npm run format:check && npm run build && npm run test
+
+# Auto-fix lint + format
+npm run lint:fix && npm run format
+
+# Via Makefile
+make test
 ```
-docs: update README with new command examples
+
+---
+
+## Release Process
+
+This project uses [semantic-release](https://semantic-release.gitbook.io/) to automate versioning and publishing.
+
+### What happens on a release
+
+1. `@semantic-release/commit-analyzer` determines the version bump from commit types
+2. `@semantic-release/release-notes-generator` generates the changelog entry
+3. `@semantic-release/changelog` updates `CHANGELOG.md`
+4. `@semantic-release/exec` — syncs versions across all workspace packages, rebuilds, and packages the VS Code extension
+5. `@semantic-release/npm` — publishes `@el-j/magic-helix-core`, `@el-j/magic-agent-helix`, `@el-j/magic-helix-plugins` to npm (with provenance attestation)
+6. `@semantic-release/github` — creates a GitHub Release with CLI and VSIX assets
+7. `@semantic-release/git` — commits `package.json` files, `package-lock.json`, and `CHANGELOG.md` back to the repo with `[skip ci]`
+
+> **Never manually edit `version` fields in `package.json`** — semantic-release + `scripts/sync-versions.js` handle all version bumps.
+
+### Required repository secrets
+
+| Secret | Purpose |
+|---|---|
+| `GITHUB_TOKEN` | Auto-provided by GitHub Actions — creates releases and writes back |
+| `NPM_TOKEN` | npm access token with `publish` permission for the `@el-j` scope |
+| `CODECOV_TOKEN` | (Optional) Coverage uploads to Codecov |
+
+### npm Provenance
+
+`.npmrc` sets `provenance=true`. The release workflow requests `id-token: write` permission so that npm can attach a signed SLSA provenance attestation to every published package. This requires the npm token to be a [Granular Access Token](https://docs.npmjs.com/creating-and-viewing-access-tokens) with publish access.
+
+---
+
+## Package Structure
+
+```
+magic-agent-helix/
+├── packages/
+│   ├── magic-helix-core/       # @el-j/magic-helix-core — analysis engine
+│   ├── magic-agent-helix/      # @el-j/magic-agent-helix — CLI
+│   ├── magic-helix-plugins/    # @el-j/magic-helix-plugins — language plugins
+│   └── vscode-magic-helix/     # VS Code extension (not published to npm)
+├── playground/                  # Web demo (deployed to GitHub Pages)
+├── scripts/sync-versions.js     # Monorepo version sync utility
+├── .releaserc.json              # semantic-release configuration
+├── .nvmrc                       # Pinned Node.js version (20 LTS)
+└── .npmrc                       # npm provenance setting
 ```
 
-### Publishing to NPM
+---
 
-When a release is triggered:
-1. semantic-release analyzes commits since the last release
-2. Determines the new version number based on commit types
-3. Updates package.json files
-4. Generates/updates CHANGELOG.md
-5. Creates a Git tag
-6. Publishes packages to NPM:
-   - `magic-helix-core`
-   - `magic-agent-helix`
-7. Creates a GitHub release
+## Troubleshooting
 
-### Manual Testing Before Release
+**Release not triggering?**  
+Check your commit follows conventional format and is pushed to `main` or `develop`. Review the GitHub Actions Release workflow logs.
 
-Before pushing commits to `develop` or `main`:
+**npm publish failing with 403?**  
+Ensure `NPM_TOKEN` is set in repository secrets with publish access to the `@el-j` scope.
 
-1. Test locally:
-   ```bash
-   npm ci
-   npm run lint
-   npm run build
-   npm test
-   ```
+**Build failing in CI but passing locally?**  
+Run `npm ci` (not `npm install`) to use the exact locked versions from `package-lock.json`.
 
-2. For the CLI:
-   ```bash
-   cd packages/magic-agent-helix
-   node dist/cli.mjs --help
-   ```
-
-3. Test the packages work together:
-   ```bash
-   npm pack packages/magic-helix-core
-   npm pack packages/magic-agent-helix
-   ```
-
-### Troubleshooting
-
-#### Release not triggering?
-
-Check if your commit follows the conventional commit format:
-- Does it start with `feat:`, `fix:`, or `perf:`?
-- Is it pushed to `main`, `develop`, or a `feature/*` branch?
-- Check the GitHub Actions workflow logs
-
-#### Package version not updating?
-
-semantic-release updates versions automatically. Never manually update version numbers in package.json - let semantic-release handle it.
-
-#### NPM publish failing?
-
-Ensure the `NPM_TOKEN` secret is configured in GitHub repository settings with a valid npm access token that has publish permissions for the `@magic-helix` scope (or remove scope if publishing to root).
-
-### Development Workflow
-
-1. Create a feature branch from `develop` or `main`
-2. Make your changes
-3. Commit with conventional commit messages
-4. Create a PR:
-   - Feature branches (`feature/*`) automatically create **alpha** releases when pushed (e.g., `1.1.0-alpha.1`)
-   - Merging to `develop` automatically creates **beta** releases (e.g., `1.1.0-beta.1`)
-   - Merging `develop` to `main` creates a **stable release** (e.g., `1.1.0`)
-5. semantic-release automatically handles versioning and publishing
-
-### Testing Prerelease Versions
-
-For testing changes before merging to main, push to branches:
-- `develop` - Creates beta releases (e.g., `1.1.0-beta.1`)
-- `feature/*` - Creates alpha releases (e.g., `1.1.0-alpha.1`)
-
-These prereleases allow you to test changes before they are merged to `main` and published as stable releases.
+**Version mismatch across packages?**  
+Run `npm run sync:versions` to reset all workspace packages to the root version.

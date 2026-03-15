@@ -1,0 +1,31 @@
+# CODEOWNERS
+# Each line is a file pattern followed by one or more owners.
+# Owners are automatically requested for review when a PR modifies matching files.
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything
+* @el-j
+
+# Core analysis engine
+/packages/magic-helix-core/ @el-j
+
+# CLI package
+/packages/magic-agent-helix/ @el-j
+
+# Language plugins
+/packages/magic-helix-plugins/ @el-j
+
+# VS Code extension
+/packages/vscode-magic-helix/ @el-j
+
+# Playground / web demo
+/playground/ @el-j
+
+# CI/CD and release infrastructure
+/.github/ @el-j
+/.releaserc.json @el-j
+
+# Documentation
+/README.md @el-j
+/CONTRIBUTING.md @el-j
+/CHANGELOG.md @el-j
