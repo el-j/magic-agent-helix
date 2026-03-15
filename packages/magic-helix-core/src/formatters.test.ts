@@ -3,8 +3,8 @@ import {
   type AssistantTarget,
   CursorFormatter,
   GitHubCopilotFormatter,
-  WindsurfFormatter,
   getFormatter,
+  WindsurfFormatter,
 } from './formatters';
 
 describe('Formatters', () => {

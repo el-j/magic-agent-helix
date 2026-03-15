@@ -42,7 +42,13 @@ export interface Config {
    * - 'windsurf': Windsurf IDE (.windsurf/rules/ format)
    * - 'generic': Generic assistant format
    */
-  target: 'github-copilot' | 'claude' | 'copilot-chat' | 'cursor' | 'windsurf' | 'generic';
+  target:
+    | 'github-copilot'
+    | 'claude'
+    | 'copilot-chat'
+    | 'cursor'
+    | 'windsurf'
+    | 'generic';
 
   /**
    * The *user's* local directory where their .md templates are stored

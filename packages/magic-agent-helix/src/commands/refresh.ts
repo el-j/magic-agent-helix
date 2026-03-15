@@ -11,8 +11,8 @@ import {
   getFormatter,
   loadUserConfig,
   mergeConfigs,
+  PluginRegistry,
 } from '@el-j/magic-helix-core';
-import { PluginRegistry } from '@el-j/magic-helix-core';
 import ora from 'ora';
 import pc from 'picocolors';
 import { buildPreciseGlobPattern } from '../utils/file-extensions';

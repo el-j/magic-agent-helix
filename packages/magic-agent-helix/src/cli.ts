@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
-import { readFileSync } from 'node:fs';
-import { realpathSync } from 'node:fs';
+import { readFileSync, realpathSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Command } from 'commander';

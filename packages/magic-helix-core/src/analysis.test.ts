@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { type ProjectAnalysisData, analyzeProjectTags } from './analysis';
+import { analyzeProjectTags, type ProjectAnalysisData } from './analysis';
 
 describe('Analysis Module', () => {
   const mockAnalysisData: ProjectAnalysisData = {
@@ -136,9 +136,14 @@ describe('globToRegex (via analyzeProjectTags)', () => {
         'packages/core/src/utils/helper.ts',
       ],
     };
-    const tags = analyzeProjectTags(data, {}, {}, {
-      'packages/**/*.ts': 'lang-typescript',
-    });
+    const tags = analyzeProjectTags(
+      data,
+      {},
+      {},
+      {
+        'packages/**/*.ts': 'lang-typescript',
+      },
+    );
     expect(tags.has('lang-typescript')).toBe(true);
   });
 
@@ -148,9 +153,14 @@ describe('globToRegex (via analyzeProjectTags)', () => {
       configFiles: [],
       projectFiles: ['index.ts', 'README.md'],
     };
-    const tags = analyzeProjectTags(data, {}, {}, {
-      '*.ts': 'lang-typescript',
-    });
+    const tags = analyzeProjectTags(
+      data,
+      {},
+      {},
+      {
+        '*.ts': 'lang-typescript',
+      },
+    );
     expect(tags.has('lang-typescript')).toBe(true);
     // *.ts should NOT match nested paths
     const nestedData: ProjectAnalysisData = {
@@ -158,9 +168,14 @@ describe('globToRegex (via analyzeProjectTags)', () => {
       configFiles: [],
       projectFiles: ['src/index.ts'],
     };
-    const nestedTags = analyzeProjectTags(nestedData, {}, {}, {
-      '*.ts': 'lang-typescript',
-    });
+    const nestedTags = analyzeProjectTags(
+      nestedData,
+      {},
+      {},
+      {
+        '*.ts': 'lang-typescript',
+      },
+    );
     expect(nestedTags.has('lang-typescript')).toBe(false);
   });
 
@@ -170,9 +185,14 @@ describe('globToRegex (via analyzeProjectTags)', () => {
       configFiles: [],
       projectFiles: ['src/App.vue', 'src/main.ts', 'src/style.css'],
     };
-    const tags = analyzeProjectTags(data, {}, {}, {
-      'src/**/*.{ts,vue}': 'ts-or-vue',
-    });
+    const tags = analyzeProjectTags(
+      data,
+      {},
+      {},
+      {
+        'src/**/*.{ts,vue}': 'ts-or-vue',
+      },
+    );
     expect(tags.has('ts-or-vue')).toBe(true);
     // CSS file should not trigger the tag
     const cssOnlyData: ProjectAnalysisData = {
@@ -180,9 +200,14 @@ describe('globToRegex (via analyzeProjectTags)', () => {
       configFiles: [],
       projectFiles: ['src/style.css'],
     };
-    const cssTags = analyzeProjectTags(cssOnlyData, {}, {}, {
-      'src/**/*.{ts,vue}': 'ts-or-vue',
-    });
+    const cssTags = analyzeProjectTags(
+      cssOnlyData,
+      {},
+      {},
+      {
+        'src/**/*.{ts,vue}': 'ts-or-vue',
+      },
+    );
     expect(cssTags.has('ts-or-vue')).toBe(false);
   });
 
@@ -192,9 +217,14 @@ describe('globToRegex (via analyzeProjectTags)', () => {
       configFiles: [],
       projectFiles: ['src/index.ts'],
     };
-    const tags = analyzeProjectTags(data, {}, {}, {
-      'src/**/*.ts': 'lang-typescript',
-    });
+    const tags = analyzeProjectTags(
+      data,
+      {},
+      {},
+      {
+        'src/**/*.ts': 'lang-typescript',
+      },
+    );
     expect(tags.has('lang-typescript')).toBe(true);
   });
 
@@ -204,10 +234,15 @@ describe('globToRegex (via analyzeProjectTags)', () => {
       configFiles: [],
       projectFiles: ['src/component.tsx', 'src/style.css'],
     };
-    const tags = analyzeProjectTags(data, {}, {}, {
-      'src/**/*.ts': 'lang-typescript',
-      'src/**/*.vue': 'framework-vue-files',
-    });
+    const tags = analyzeProjectTags(
+      data,
+      {},
+      {},
+      {
+        'src/**/*.ts': 'lang-typescript',
+        'src/**/*.vue': 'framework-vue-files',
+      },
+    );
     // .tsx and .css should NOT match .ts or .vue globs
     expect(tags.has('lang-typescript')).toBe(false);
     expect(tags.has('framework-vue-files')).toBe(false);
@@ -219,9 +254,14 @@ describe('globToRegex (via analyzeProjectTags)', () => {
       configFiles: [],
       projectFiles: ['a/b/c/d/test.spec.ts', 'test.spec.ts'],
     };
-    const tags = analyzeProjectTags(data, {}, {}, {
-      '**/*.spec.ts': 'test-files',
-    });
+    const tags = analyzeProjectTags(
+      data,
+      {},
+      {},
+      {
+        '**/*.spec.ts': 'test-files',
+      },
+    );
     expect(tags.has('test-files')).toBe(true);
   });
 });

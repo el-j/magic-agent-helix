@@ -4,10 +4,10 @@ import {
   validateInstructions,
 } from './instruction-validator';
 import {
-  type PatternContext,
   combinePatterns,
   generateInstructions,
   loadPatternTemplates,
+  type PatternContext,
   selectPatterns,
 } from './pattern-combiner';
 

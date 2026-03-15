@@ -9,11 +9,11 @@ import type {
 } from '@el-j/magic-helix-core';
 import {
   type AssistantTarget,
-  PluginRegistry,
-  type TemplateDefinition,
   getFormatter,
   loadUserConfig,
   mergeConfigs,
+  PluginRegistry,
+  type TemplateDefinition,
 } from '@el-j/magic-helix-core';
 import { glob } from 'glob';
 import gradient from 'gradient-string';

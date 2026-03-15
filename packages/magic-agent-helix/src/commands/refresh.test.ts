@@ -1,16 +1,16 @@
 import * as fs from 'node:fs';
 import type * as path from 'node:path';
+import type { LanguagePlugin } from '@el-j/magic-helix-core';
 import {
   BUILT_IN_CONFIG,
   getFormatter,
   loadUserConfig,
   mergeConfigs,
 } from '@el-j/magic-helix-core';
-import type { LanguagePlugin } from '@el-j/magic-helix-core';
 import { glob } from 'glob';
 import inquirer from 'inquirer';
 import ora from 'ora';
-import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 import { refresh } from './refresh';
 
 const mockPluginRegistry = {
