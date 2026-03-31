@@ -16,7 +16,7 @@
     "commander": "^14.0.2",
     "inquirer": "^13.1.0",
     "primevue": "^4.5.3",
-    "vue": "^3.5.25"
+    "vue": "^3.5.31"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
