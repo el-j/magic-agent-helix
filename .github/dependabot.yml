@@ -67,6 +67,11 @@ updates:
       prefix: 'build(core)'
     labels:
       - 'dependencies'
+    groups:
+      vite:
+        patterns:
+          - 'vite'
+          - '@vitejs/*'
 
   # Maintain npm dependencies for magic-agent-helix (CLI)
   - package-ecosystem: 'npm'
@@ -78,6 +83,11 @@ updates:
       prefix: 'build(cli)'
     labels:
       - 'dependencies'
+    groups:
+      vite:
+        patterns:
+          - 'vite'
+          - '@vitejs/*'
 
   # Maintain npm dependencies for magic-helix-plugins
   - package-ecosystem: 'npm'
@@ -89,6 +99,19 @@ updates:
       prefix: 'build(plugins)'
     labels:
       - 'dependencies'
+    groups:
+      vite:
+        patterns:
+          - 'vite'
+          - '@vitejs/*'
+      typescript:
+        patterns:
+          - 'typescript'
+          - 'vue-tsc'
+      vitest:
+        patterns:
+          - 'vitest'
+          - '@vitest/*'
 
   # Maintain npm dependencies for the VS Code extension
   - package-ecosystem: 'npm'
@@ -100,6 +123,11 @@ updates:
       prefix: 'build(vscode)'
     labels:
       - 'dependencies'
+    groups:
+      typescript:
+        patterns:
+          - 'typescript'
+          - 'vue-tsc'
 
   # Maintain npm dependencies for the playground
   - package-ecosystem: 'npm'
@@ -111,3 +139,12 @@ updates:
       prefix: 'build(playground)'
     labels:
       - 'dependencies'
+    groups:
+      vite:
+        patterns:
+          - 'vite'
+          - '@vitejs/*'
+      typescript:
+        patterns:
+          - 'typescript'
+          - 'vue-tsc'
