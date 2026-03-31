@@ -66,11 +66,11 @@
     "pkg": "^5.8.1",
     "semantic-release": "^24.2.9",
     "tailwindcss": "^4.1.18",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.2",
     "vite": "^7.3.0",
     "vitest": "^4.0.15",
     "vue": "^3.5.25",
-    "vue-tsc": "^3.1.8"
+    "vue-tsc": "^3.2.6"
   },
   "dependencies": {
     "commander": "^14.0.2",
