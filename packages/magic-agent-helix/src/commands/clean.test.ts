@@ -7,7 +7,7 @@ import {
 } from '@el-j/magic-helix-core';
 import inquirer from 'inquirer';
 import ora from 'ora';
-import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 import { clean } from './clean';
 
 // Mock all external dependencies

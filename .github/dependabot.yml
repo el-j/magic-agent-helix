@@ -1,0 +1,113 @@
+version: 2
+
+updates:
+  # Maintain GitHub Actions dependencies
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    commit-message:
+      prefix: 'ci'
+    labels:
+      - 'dependencies'
+      - 'ci'
+
+  # Maintain npm dependencies for the root workspace
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    commit-message:
+      prefix: 'build'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+    groups:
+      biome:
+        patterns:
+          - '@biomejs/*'
+      semantic-release:
+        patterns:
+          - 'semantic-release'
+          - '@semantic-release/*'
+      vite:
+        patterns:
+          - 'vite'
+          - '@vitejs/*'
+      vitest:
+        patterns:
+          - 'vitest'
+          - '@vitest/*'
+      typescript:
+        patterns:
+          - 'typescript'
+          - 'vue-tsc'
+      vue:
+        patterns:
+          - 'vue'
+          - '@vue/*'
+      tailwind:
+        patterns:
+          - 'tailwindcss'
+          - '@tailwindcss/*'
+    ignore:
+      # Keep Node.js type definitions aligned with the engine version
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+
+  # Maintain npm dependencies for magic-helix-core
+  - package-ecosystem: 'npm'
+    directory: '/packages/magic-helix-core'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    commit-message:
+      prefix: 'build(core)'
+    labels:
+      - 'dependencies'
+
+  # Maintain npm dependencies for magic-agent-helix (CLI)
+  - package-ecosystem: 'npm'
+    directory: '/packages/magic-agent-helix'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    commit-message:
+      prefix: 'build(cli)'
+    labels:
+      - 'dependencies'
+
+  # Maintain npm dependencies for magic-helix-plugins
+  - package-ecosystem: 'npm'
+    directory: '/packages/magic-helix-plugins'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    commit-message:
+      prefix: 'build(plugins)'
+    labels:
+      - 'dependencies'
+
+  # Maintain npm dependencies for the VS Code extension
+  - package-ecosystem: 'npm'
+    directory: '/packages/vscode-magic-helix'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    commit-message:
+      prefix: 'build(vscode)'
+    labels:
+      - 'dependencies'
+
+  # Maintain npm dependencies for the playground
+  - package-ecosystem: 'npm'
+    directory: '/playground'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    commit-message:
+      prefix: 'build(playground)'
+    labels:
+      - 'dependencies'

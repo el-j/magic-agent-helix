@@ -9,11 +9,11 @@ import type {
 } from '@el-j/magic-helix-core';
 import {
   type AssistantTarget,
-  PluginRegistry,
-  type TemplateDefinition,
   getFormatter,
   loadUserConfig,
   mergeConfigs,
+  PluginRegistry,
+  type TemplateDefinition,
 } from '@el-j/magic-helix-core';
 import { glob } from 'glob';
 import gradient from 'gradient-string';
@@ -53,8 +53,10 @@ async function runWizard(): Promise<Partial<CliOptions>> {
       message: 'Which AI assistant are you using?',
       choices: [
         { name: 'GitHub Copilot', value: 'github-copilot' },
-        { name: 'Claude/Cursor', value: 'claude' },
+        { name: 'Claude / Claude Code', value: 'claude' },
         { name: 'GitHub Copilot Chat', value: 'copilot-chat' },
+        { name: 'Cursor IDE', value: 'cursor' },
+        { name: 'Windsurf IDE', value: 'windsurf' },
         { name: 'Generic Assistant', value: 'generic' },
       ],
       default: 'github-copilot',

@@ -6,9 +6,9 @@ import type {
   FileGlobTagMap,
 } from '@el-j/magic-helix-core';
 import {
-  PluginRegistry,
   loadUserConfig,
   mergeConfigs,
+  PluginRegistry,
 } from '@el-j/magic-helix-core';
 import ora from 'ora';
 import pc from 'picocolors';

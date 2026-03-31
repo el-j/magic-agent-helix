@@ -6,7 +6,7 @@ import {
   mergeConfigs,
 } from '@el-j/magic-helix-core';
 import ora from 'ora';
-import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 import { validate } from './validate';
 
 // Mock all external dependencies

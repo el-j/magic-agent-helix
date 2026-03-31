@@ -68,6 +68,12 @@ export interface InstructionTemplate {
 
 /**
  * Core interface that all detection plugins must implement.
+ *
+ * @deprecated This is the **v2** plugin interface. New plugins should implement
+ * the `LanguagePlugin` interface from `./types` (v3) and register via
+ * `PluginRegistry` from `./plugin-registry`. The v2 interface is retained for
+ * the internal `AnalysisService` only and will be removed in a future major
+ * version.
  */
 export interface DetectionPlugin {
   /** Unique identifier for this plugin (e.g., "golang", "docker", "github-actions") */

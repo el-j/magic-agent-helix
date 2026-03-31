@@ -5,12 +5,12 @@ on:
     branches:
       - main
       - develop
-      - 'feature/*'
-    tags:
-      - 'v*.*.*'        # Main release tags
-      - '*-alpha.*'     # Alpha tags
-      - '*-beta.*'      # Beta tags
   workflow_dispatch:
+
+# Prevent concurrent releases to avoid version conflicts
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   release:
@@ -35,7 +35,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version-file: '.nvmrc'
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
 
@@ -50,18 +50,18 @@ jobs:
       - name: Lint Check
         run: npm run lint
 
-      - name: Build Package
+      - name: Format Check
+        run: npm run format:check
+
+      - name: Build Packages
         run: npm run build
 
       - name: Test & Coverage
         run: npm run test:coverage
 
       - name: Semantic Release
-        if: startsWith(github.ref, 'refs/tags/') == false
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          # OIDC authentication - no token needed when Trusted Publisher is configured!
-          # npm will automatically use OIDC if provenance is enabled

@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
-import { readFileSync } from 'node:fs';
-import { realpathSync } from 'node:fs';
+import { readFileSync, realpathSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Command } from 'commander';
@@ -26,7 +25,7 @@ function getVersion(): string {
     const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
     return packageJson.version;
   } catch (_error) {
-    return '2.0.0-beta.1'; // Fallback version
+    return '4.0.0'; // Fallback version
   }
 }
 
@@ -63,7 +62,7 @@ async function main() {
       .option('--config <path>', 'Path to custom config file')
       .option(
         '--target <assistant>',
-        'AI assistant target (github-copilot, claude, copilot-chat, generic)',
+        'AI assistant target (github-copilot, claude, copilot-chat, cursor, windsurf, generic)',
       )
       .option('--verbose', 'Show detailed output')
       .option('--quiet', 'Show minimal output')
@@ -88,7 +87,7 @@ async function main() {
       .option('--config <path>', 'Path to custom config file')
       .option(
         '--target <assistant>',
-        'AI assistant target (github-copilot, claude, copilot-chat, generic)',
+        'AI assistant target (github-copilot, claude, copilot-chat, cursor, windsurf, generic)',
       )
       .option('--verbose', 'Show detailed output')
       .option('--quiet', 'Show minimal output')

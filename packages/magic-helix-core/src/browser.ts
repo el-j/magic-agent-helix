@@ -4,12 +4,14 @@ export { analyzeProjectTags, type ProjectAnalysisData } from './analysis';
 export { BUILT_IN_CONFIG } from './built-in-config';
 export {
   type AssistantTarget,
-  getFormatter,
-  type InstructionFormatter,
-  GitHubCopilotFormatter,
   ClaudeFormatter,
   CopilotChatFormatter,
+  CursorFormatter,
   GenericFormatter,
+  GitHubCopilotFormatter,
+  getFormatter,
+  type InstructionFormatter,
+  WindsurfFormatter,
 } from './formatters';
 export * from './types';
 

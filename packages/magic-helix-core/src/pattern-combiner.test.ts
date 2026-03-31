@@ -1,10 +1,10 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import {
-  type PatternContext,
-  type PatternTemplate,
   combinePatterns,
   generateInstructions,
   loadPatternTemplates,
+  type PatternContext,
+  type PatternTemplate,
   selectPatterns,
 } from './pattern-combiner';
 

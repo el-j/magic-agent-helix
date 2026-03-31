@@ -1,22 +1,24 @@
 name: Deploy Web Playground to GitHub Pages
 
 on:
-  # Runs on pushes targeting the main branch
   push:
     branches:
       - main
   workflow_dispatch:
 
-# Allow one concurrent deployment
+# Allow one concurrent deployment; do not cancel in-progress (let it finish)
 concurrency:
-  group: 'pages'
-  cancel-in-progress: true
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   deploy:
     name: Build and Deploy
     runs-on: ubuntu-latest
-    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     # Grant GITHUB_TOKEN permissions to deploy to GitHub Pages
     permissions:
       contents: read
@@ -32,7 +34,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Install Dependencies
@@ -42,7 +44,6 @@ jobs:
         run: npm run build:core
 
       - name: Build Web Playground
-        # Use --base=./ for correct relative paths on GitHub Pages
         run: npm run build --workspace=playground
 
       - name: Setup GitHub Pages
@@ -51,7 +52,6 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload the built web app
           path: 'playground/dist'
 
       - name: Deploy to GitHub Pages
