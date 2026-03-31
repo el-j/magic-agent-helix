@@ -59,7 +59,7 @@
     "@types/node": "^25.0.2",
     "@types/vscode": "^1.107.0",
     "@vitejs/plugin-vue": "^6.0.3",
-    "@vitest/coverage-v8": "^4.0.15",
+    "@vitest/coverage-v8": "^4.1.2",
     "@vscode/test-cli": "^0.0.12",
     "conventional-changelog-conventionalcommits": "^9.1.0",
     "mocha": "^11.7.5",
