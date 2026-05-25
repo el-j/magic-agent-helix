@@ -304,7 +304,7 @@
     "@el-j/magic-helix-core": "*",
     "@types/node": "^25.0.2",
     "commander": "^14.0.2",
-    "inquirer": "^13.1.0"
+    "inquirer": "^14.0.0"
   },
   "devDependencies": {
     "@types/vscode": "^1.107.0",
