@@ -36,7 +36,7 @@
   "dependencies": {
     "@el-j/magic-helix-core": "*",
     "commander": "^14.0.2",
-    "inquirer": "^13.1.0"
+    "inquirer": "^14.0.2"
   },
   "devDependencies": {
     "vite": "^8.0.3"
