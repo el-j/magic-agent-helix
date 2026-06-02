@@ -94,7 +94,7 @@
     "@el-j/magic-helix-core": "^4.0.0"
   },
   "dependencies": {
-    "commander": "^14.0.2",
+    "commander": "^15.0.0",
     "glob": "^13.0.0",
     "inquirer": "^13.1.0"
   },
