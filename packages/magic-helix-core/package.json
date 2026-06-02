@@ -40,7 +40,7 @@
   "dependencies": {
     "@el-j/magic-helix-plugins": "*",
     "@iarna/toml": "^3.0.0",
-    "commander": "^14.0.2",
+    "commander": "^15.0.0",
     "glob": "^13.0.0",
     "gradient-string": "^3.0.0",
     "inquirer": "^13.1.0",
