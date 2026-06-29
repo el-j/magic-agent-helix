@@ -302,7 +302,7 @@
   },
   "dependencies": {
     "@el-j/magic-helix-core": "*",
-    "@types/node": "^25.0.2",
+    "@types/node": "^26.0.1",
     "commander": "^14.0.2",
     "inquirer": "^13.1.0"
   },
