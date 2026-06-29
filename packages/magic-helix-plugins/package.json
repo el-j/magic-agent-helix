@@ -100,7 +100,7 @@
   },
   "devDependencies": {
     "@el-j/magic-helix-core": "*",
-    "@types/node": "^25.0.2",
+    "@types/node": "^26.0.1",
     "typescript": "^6.0.2",
     "vite": "^8.0.3",
     "vitest": "^4.0.15"
