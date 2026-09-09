@@ -1,5 +1,9 @@
 # ✨ MagicAgentHelix Monorepo ✨
 
+> **Status: Archived (September 2026).** This project is no longer actively maintained. It ran as a solo, largely AI-assisted build from October 2025 to March 2026 (163 commits, four major versions, nine language plugins) but never found external users — zero GitHub stars/issues, and npm download volume consistent only with CI, not real adoption. The core idea it chased — auto-generating per-tool AI instruction files — is increasingly handled natively by the coding agents themselves (Claude Code's `/init`, Copilot's own custom instructions, Cursor rules) and by the emerging cross-tool [AGENTS.md](https://agents.md) standard, which points the ecosystem toward *one* shared instructions file rather than many generated ones. The code is left here as a working example of a plugin-based project-detection engine, an instruction quality-scoring system, and a full semantic-release/CI setup — not as a maintained tool. Issues and PRs are not being monitored.
+>
+> The description below is the original pitch, kept for context.
+
 A powerful tool that inspects your project and generates granular, path-specific AI instructions for agents like GitHub Copilot.
 
 **Current Version: 2.0.0-beta.1** | **Roadmap: [v2.0.0 Polyglot](ROADMAP-v2.0.0.md)** | **Plugin System: [Documentation](PLUGIN-SYSTEM.md)**
